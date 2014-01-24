@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Vilfredo Client</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--
+		<link rel="stylesheet" type="text/css" href="static/bootstrap/dist/css/bootstrap.css"/>
+		-->
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
+		<!--
+		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
+		-->
+		<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
+    	<!--[if lt IE 9]>
+      	<script src="static/bootstrap/docs-assets/js/html5shiv.js"></script>
+      	<script src="static/bootstrap/docs-assets/js/respond.min.js"></script>
+    	<![endif]-->
+		
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svganim.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		{{ flask_util_js.js }}
+    </head>
+    <body>
+	<!-- Fixed navbar -->
+	<div class="navbar navbar-inverse navbar-fixed-top main">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button> <a class="navbar-brand" href="#">Vilfredo goes to Athens</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li class="active">
+						<a href="http://0.0.0.0:8080">Home</a>
+					</li>
+					<li data-bind="visible: isLoggedIn" class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">My Activity<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="#">My Questions</a>
+							</li>
+							<li>
+								<a href="#">Key Player</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Room">
+					</div><button class="btn btn-default">Go</button>
+				</form>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="https://github.com/pietrosperoni/Vilfredo/wiki">About</a>&gt;
+					</li>
+					<li>
+						<a href="#contact">Contact</a>
+					</li>
+					<li data-bind="visible: isLoggedOut"> 
+						<a data-toggle="modal" data-target="#login" href="#login">Login</a>
+					</li>
+					<li data-bind="visible: isLoggedOut"> 
+						<a data-toggle="modal" data-target="#register" href="#register">Register</a>
+					</li>
+					<!-- Account dropdown begin -->
+					<li data-bind="visible: userid" class="userdata dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span data-bind="text: username" id="currentuser"></span><b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li class="dropdown-header">Account
+							</li>
+							<li>
+								<a href="#">My Details</a>
+							</li>
+							<li>
+								<a href="#">Change Password</a>
+							</li>
+							<li>
+								<a data-bind="click: logout" href="#">Logout</a>
+							</li>
+						</ul>
+					</li><!-- Account dropdown end -->
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</div>
+	<!-- navbar -->
+
+	<div class="container main">
+		<div class="question-view">
+		<div class="page-header question-info">
+			<h1 data-bind="text: title"></h1>
+			<h5>by <span class="authorname" data-bind="text: author"></span></h5>
+			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
+			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
+			<p>This question will be moved on automatically in <span data-bind="text: time_dhm(last_move_on()+maximum_time()-get_timestamp())"></span></p>
+			<!-- ko if: author_id() == currentUserViewModel.userid() && minimum_time_passed() -->
+			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
+			<!-- /ko -->
+		</div>
+		<div class="panel question-info">
+			<div class="well">
+				<span class="blurb" data-bind="html: blurb"></span>
+				<span data-bind="visible: phase() == 'writing'">
+				<br><br>
+				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Answer</a></span>	
+			</div>
+		</div>
+		</div>
+		<!-- question-view end -->
+		
+		<!-- Graphs -->
+		<div class="voting-graphs">
+		<br>
+		<div class="controls text-center">	
+			  <button id="vgonly" type="button" class="btn btn-md btn-info">All Proposals</button>
+			  <button id="bothgraphs" type="button" class="btn btn-md btn-info">Show Both</button>
+			  <button id="pfonly" type="button" class="btn btn-md btn-info">Winning Proposals Only</button>
+		</div>
+		<br>
+		<div class="graphs">
+			<div class="singlegraph"></div>
+			<div class="graphcontainer">
+				<div id="votesgraph" class="leftgraph"></div>
+				<div id="pfgraph" class="rightgraph"></div>
+			</div>
+		</div>
+		</div>
+		<!-- Graphs end -->
+		
+		
+		<!-- 
+		Inherited Proposals 
+		-->
+		<div data-bind="visible: questionViewModel.phase() == 'writing' && questionViewModel.generation() > 1" class="inherited_proposals narrow">
+			
+		<div class="page-header">
+			<h1>
+				Inherited Proposals
+			</h1>
+			<h3>These proposals were inherited from the previous generation:</h3>
+		</div>
+			
+		<div class="proposal_list row">
+			<!-- ko foreach: inherited_proposals -->
+			<div class="proposal col-md-4">
+			<input data-bind="value: id" type="hidden" class="propId" value="">
+			<input data-bind="value: $index" type="hidden" class="index" value="">
+     		<input data-bind="value: author" type="hidden" class="author" value="">
+			<input data-bind="value: uri" type="hidden" class="uri" value="">
+			<div data-bind="css: endorse_type" class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title" data-bind="text: title"></h3>
+				</div>
+				<div class="panel-body proposal-blurb">
+					<span data-bind="html: blurb"></span>
+				</div>
+				<div class="panel-footer proposal-footer">
+					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
+					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+				</div>
+			</div>
+			</div><!-- /ko -->
+		</div>
+		</div>
+		<!-- 
+		Inherited Proposals End
+		-->
+		
+				
+		<!-- 
+		Current Proposals 
+		-->
+		<div class="proposals narrow">
+		
+		<div class="current-proposals">
+		<div data-bind="visible: questionViewModel.phase() == 'voting'" class="page-header">
+			<h1>
+				Current Proposals
+			</h1>
+			<h3 data-bind="visible: proposals().length > 0">Vote on the ones you agree with:</h3>
+		</div>
+		<div data-bind="visible: questionViewModel.phase() == 'writing'" class="page-header">
+			<h1>
+				Your New Proposals
+			</h1>
+			<h3 data-bind="visible: proposals().length > 0">Below are the proposals you have created during the writing phase of this generation:</h3>
+		</div>
+		
+		<div data-bind="visible: proposals().length == 0 && questionViewModel.phase() == 'writing'" class="well highlight">
+		<p>There are no proposals so far. Why not be the first to propose an answer?</p>
+		<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Answer</a>
+		</div>
+		
+		<div class="proposal_list row">
+			<!-- ko foreach: proposals -->
+			<div class="proposal col-md-4">
+			<input data-bind="value: id" type="hidden" class="propId" value="">
+			<input data-bind="value: $index" type="hidden" class="index" value="">
+     		<input data-bind="value: author" type="hidden" class="author" value="">
+			<input data-bind="value: uri" type="hidden" class="uri" value="">
+			<div data-bind="css: endorse_type" class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title" data-bind="text: title"></h3>
+				</div>
+				<div class="panel-body proposal-blurb">
+					<span data-bind="html: blurb"></span>
+				</div>
+				<div class="panel-footer proposal-footer">
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
+					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+					<!--
+					<button data-bind="click: $parent.endorse.bind($data, 'endorse')" type="button" class="btn btn-xs btn-success">Endorse</button>
+					<button data-bind="click: $parent.endorse.bind($data, 'oppose')" type="button" class="btn btn-xs btn-danger">Oppose</button>
+					<button data-bind="click: $parent.endorse.bind($data, 'confused')" type="button" class="btn btn-xs btn-primary">Confused</button>
+					-->
+					<!--<div data-toggle="modal" data-target="#votenowwindow" class="pull-right voting"></div>-->
+					 <!--<a data-toggle="popover" data-placement="top" rel="popover" title="">popover</a>-->
+					<!--<div data-bind="click: $parent.show3WayTriangle" class="pull-right voting"></div>-->
+					<!--
+					<a data-toggle="popover" data-placement="top" rel="popover" title="">
+					<div class="voting"></div>
+					</a>
+					-->
+					<div class="voting"></div>
+					<!--
+					<a data-toggle="popover" data-placement="top" rel="popover" title="">
+					<img src="static/images/triangle.svg" width="40" height="40" alt="">
+					</a>
+					-->
+				</div>
+			</div>
+			</div><!-- /ko -->
+		</div>
+		</div>
+		<!-- 
+		Current Proposals End
+		-->
+		
+	</div><!-- /container -->
+
+
+	<div id="footer">
+	    <div class="container">
+	      <p class="text-muted credit">&copy; 2009-2013 Pietro Speroni & Derek Paterson </p>
+	    </div>
+	</div>
+	
+	
+	<!-- Tri Voting Modal -->
+	<div id="vote3waywindow" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-bind="click: close3WayTriangle" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Please Vote</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="show3waytriangle"></div>
+		  </div><!-- /.modal-body -->
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+
+	<!-- Continuous Voting Modal -->
+	<div id="votenowwindow" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Please Vote</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="showtriangle"></div>
+		  </div><!-- /.modal-body -->
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	
+	<!-- View Proposal Modal -->
+	<div data-bind="with: proposal" id="viewproposal" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="ViewProposalBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div data-bind="css: endorse_type" class="vpheader modal-header">
+			<div class="votebox"></div>
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="vptitle modal-title" data-bind="text: title"></h4>
+			<div class="controls">
+			<a data-bind="click: showProposalContent"><span class="glyphicon glyphicon-file"></span> Proposal</a>&nbsp;&nbsp;&nbsp;
+			<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
+			<a data-bind="click: showProposalQuestions"><span class="glyphicon glyphicon-question-sign"></span> Questions</a>
+			<!-- ko if: questionViewModel.phase() == 'voting' -->
+			&nbsp;&nbsp;&nbsp;
+			<a title="Add a point for or against" data-bind="click: beginNewComment.bind($data, 'comment')"><span class="glyphicon glyphicon-plus-sign"></span> Add Comment</a>
+			<!-- /ko -->
+			<!-- ko if: $data.author_id() != currentUserViewModel.userid() && questionViewModel.phase() == 'voting' -->
+			&nbsp;&nbsp;&nbsp;
+			<a title="Ask the author of this proposal a question" data-bind="click: beginNewComment.bind($data, 'question')"><span class="glyphicon glyphicon-question-sign"></span> Ask Question</a>
+			<!-- /ko -->
+			</div> <!-- controls -->
+	      </div><!-- modal-header -->
+	      <div id="viewproposalbody" class="modal-body">
+		   <div>
+								
+			<!-- New comment panel -->
+			<div class="newcommentpanel">
+				<div class="newcomment">
+					<h4>
+						Add a point for or against this proposal
+					</h4>
+					<form autocomplete="off" class="form-horizontal" role="form">
+						<input type="hidden" id="new_comment_type" value="comment" />
+						<input type="hidden" id="reply_to" value=0 />
+						<div id="form-type-select" class="form-group">
+							<label for="inputCommentType" class="col-sm-2 control-label">Comment Type</label>
+							<div class="col-sm-10">
+								<select data-bind="value: comment_type" id="inputCommentType" class="form-control">
+									<option>
+										Select comment type:
+									</option>
+									<option>
+										for
+									</option>
+									<option>
+										against
+									</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label id='comment-label' for="inputComment" class="col-sm-2 control-label">Comment</label>
+							<div class="col-sm-10">
+								<textarea data-bind="value: comment" id="inputComment" class="form-control" rows="6" placeholder="Comment Text">
+								</textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button data-bind="click: add" type="button" class="btn btn-primary">Submit</button> <button type="button" data-bind="click: showNewCommentPanel" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- newcomment -->
+			</div><!-- New comment panel end -->
+
+			
+			<div id="propdetails">
+				<div data-bind="html: blurb">Hmm... This proposal has no content.</div>
+			</div>
+			<div id="showcomments">
+				<div class="col-md-6">
+					<h4>Points For</h4>
+					<div class="comments">
+					<!-- ko foreach: comments -->
+					<!-- ko if: comment_type() == 'for' -->
+					<div class="comment for">
+						<span data-bind="html: comment"></span>
+						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
+						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
+						</div>
+					</div>
+					<!-- /ko -->
+					<!-- /ko -->
+					</div>
+				</div>
+				<div class="col-md-6">
+					<h4>Points Against</h4>
+					<div class="comments">
+					<!-- ko foreach: comments -->
+					<!-- ko if: comment_type() == 'against' -->
+					<div class="comment against">
+						<span data-bind="html: comment"></span>
+						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
+						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
+						</div>
+					</div>
+					<!-- /ko -->
+					<!-- /ko -->
+					</div>
+				</div>
+			</div> 
+			<div id="showquestions">
+				<div class="row qaheaders">
+					<div class="col-md-6">
+						<h4>Questions</h4>
+					</div>
+					<div class="col-md-6">
+						<h4>Answers</h4>
+					</div>
+				</div>
+				<div class="comments">
+					<!-- ko foreach: comments -->
+					<!-- ko if: comment_type() == 'question' -->
+					<div class="qabox row">
+						<div class="col-md-6">
+							<div class="comment question">
+								<span data-bind="html: comment"></span>
+								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
+								<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<!-- ko if: $parent.getAnswerObject(id) -->
+							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
+								<span data-bind="html: $data.comment"></span>
+								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
+								<button data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like</button>
+								</div>
+							</div>
+							<!-- /ko -->
+							
+							<!-- ko ifnot: $parent.getAnswerObject(id) -->
+							<div class="comment no-answer">
+								<span>No answer yet</span>
+								<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id -->
+								<div class="select_comment">
+								<button type="button" data-bind="click: $root.beginAnswer.bind($data)" class="btn btn-default btn-xs">answer</button>
+								</div>
+								<!-- /ko -->
+							</div>
+							<!-- /ko -->
+						</div>
+					</div>
+					<!-- /ko -->
+					<!-- /ko -->
+				</div>
+			</div>
+			</div>
+		  </div><!-- modal-body -->
+		<div class="modal-footer">
+		</div><!-- modal-footer -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- modal -->
+	
+	
+	
+	<!-- New Proposal Modal -->
+	<div id="addproposal" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="AddProposalBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Add Proposal</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="alert alert-danger"></div>
+			<form autocomplete="off" class="form-horizontal" role="form">
+		  		<div class="form-group">
+		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
+		    <div class="col-sm-10">
+		      <input data-bind="value: title" type="text" class="input-lg" id="inputProposalTitle" placeholder="Title">
+		    </div>
+		  </div>
+		<div class="form-group">
+		    <label for="inputAbstract" class="col-sm-2 control-label">Abstract</label>
+		    <div class="col-sm-10">
+			<textarea data-bind="value: abstract" id="inputProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text"></textarea>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputBlurb" class="col-sm-2 control-label">Proposal Text</label>
+		    <div class="col-sm-10">
+			<textarea data-bind="value: blurb" id="inputProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text"></textarea>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button data-bind="click: addProposal" type="button" class="btn btn-primary">Submit</button>
+			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+		    </div>
+		  </div>
+		</form>
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- modal -->
+	
+		<!-- Register Modal -->
+	<div id="register" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="RegisterBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Register
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="message alert alert-danger"></div>
+					<p>Enter your details below. A confirmation email will be sent to the address you give after which you will be able to log in.</p>
+					<form autocomplete="off" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
+							<div class="col-sm-10">
+								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+							<div class="col-sm-10">
+								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-10">
+								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email">
+								<span class="help-block">A valid email address is required to activate your account and reset your password if you lose it.</span>
+
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button data-bind="click: register" type="button" class="btn btn-primary">Register</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- register modal -->
+
+	<!-- Login Modal -->
+	<div id="login" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="LoginBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title" id="myModalLabel">Log in</h4>
+	      </div>
+	      <div class="modal-body">
+		<div class="message alert alert-danger"></div>
+		<form autocomplete="off" class="form-horizontal" role="form">
+		  <div class="form-group">
+		    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
+		    <div class="col-sm-10">
+		      <input data-bind="value: username" type="text" class="input-lg" id="inputUsername" placeholder="Username">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+		    <div class="col-sm-10">
+		      <input data-bind="value: password" type="password" class="input-lg" id="inputPassword" placeholder="Password">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <div class="checkbox">
+		        <label>
+		          <input data-bind="checked: remember" type="checkbox"> Remember me
+		        </label>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button data-bind="click: dologin" type="button" class="btn btn-primary">Sign in</button>
+			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+		    </div>
+		  </div>
+		</form>
+		</div><!-- modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog xxxx -->
+	</div><!-- login modal -->
+	</body>
+	<script type="text/javascript">
+	function initPage()
+	{
+		console.log('initPage called...');
+		$('.question-view, .voting-graphs, .current-proposals').show();
+		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion()).done(function( user_resp, quest_resp )
+		{
+			console.log('User and question loaded...');
+			fetchGraphs(quest_resp[0].question);
+			if (currentUserViewModel.isLoggedIn())
+			{
+				resetGraphsForUser();
+			}
+			if (questionViewModel.phase() == 'writing')
+		    {
+		        proposalsViewModel.fetchProposals({user_only: true});
+		    }
+		    else
+		    {
+		        proposalsViewModel.fetchProposals();
+		    }
+			//proposalsViewModel.fetchProposals({inherited_only: true});
+		});
+	}
+	
+	$(function() 
+	{
+		currentUserViewModel = new CurrentUserViewModel();
+		proposalsViewModel = new ProposalsViewModel();
+	    loginViewModel = new LoginViewModel();
+		addProposalViewModel = new AddProposalViewModel();
+		threeWayVoteViewModel = new ThreeWayVoteViewModel();
+		viewProposalViewModel = new ViewProposalViewModel();
+		newCommentViewModel = new NewCommentViewModel();
+		questionViewModel = new QuestionViewModel();
+		registerViewModel = new RegisterViewModel();
+		
+		initPage();
+		
+		$(".question-info").each(function(){
+		    ko.applyBindings(questionViewModel, $(this)[0]);
+		});
+	
+		ko.applyBindings(loginViewModel, $('#login')[0]);
+		$(".proposals").each(function(){
+		    ko.applyBindings(proposalsViewModel, $(this)[0]);
+		});
+		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
+		//ko.applyBindings(proposalsViewModel, $('.heading')[0]);
+		
+		ko.applyBindings(viewProposalViewModel, $('#viewproposal #propdetails')[0]);
+		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showcomments')[0]);
+		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showquestions')[0]);
+		ko.applyBindings(viewProposalViewModel, $('#viewproposal .vpheader')[0]);
+		ko.applyBindings(newCommentViewModel, $('.newcommentpanel')[0]);
+		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
+		
+		ko.applyBindings(registerViewModel, $('#register')[0]);
+		ko.applyBindings(addProposalViewModel, $('#addproposal')[0]);
+		ko.applyBindings(threeWayVoteViewModel, $('#vote3waywindow')[0]);
+		
+		
+		$('.votenow').on( "click", function(e) {
+        	var posX = $(this).offset().left,
+            posY = $(this).offset().top;
+        	alert((e.pageX - posX) + ' , ' + (e.pageY - posY));
+    	});
+
+		$('#vote3waywindow').on('hidden.bs.modal', function () {
+  			console.log('vote3waywindow hidden...');
+			$(this).find('.show3waytriangle').svg('destroy');
+		});
+		
+		$('#viewproposal').on('hidden.bs.modal', function () {
+  			console.log('viewproposal hidden...');
+			viewProposalViewModel.reset();
+		});	
+		$('#viewproposal').on('shown.bs.modal', function () {
+			viewProposalViewModel.displayProposalContent();
+		});
+		
+		
+		$('body').popover({
+		    selector: '[rel="popover"]',
+			trigger: 'hover',
+			html: true,
+			placement: 'top',
+			content: 'hello world',
+			title: 'Add your vote',
+			content: '<div class="poptriangle"></div>'
+		});
+		
+		$('body').on('show.bs.popover', function () {
+  			console.log('popover displayed...');
+		});
+		$('body').on('hidden.bs.popover', function () {
+  			console.log('popover hidden...');
+		});	
+		
+		$("#inputProposalBlurb").charCount({
+			allowed: 1000,		
+			warning: 100,
+			counterText: "Characters left" + " "
+		});
+	});	
+	</script>
+</html>

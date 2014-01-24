@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Vilfredo Client</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--
+		<link rel="stylesheet" type="text/css" href="static/bootstrap/dist/css/bootstrap.css"/>
+		-->
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
+		<!--
+		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
+		-->
+		<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
+    	<!--[if lt IE 9]>
+      	<script src="static/bootstrap/docs-assets/js/html5shiv.js"></script>
+      	<script src="static/bootstrap/docs-assets/js/respond.min.js"></script>
+    	<![endif]-->
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svganim.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		{{ flask_util_js.js }}
+    </head>
+    <body>
+	<!-- Fixed navbar -->
+	<div class="navbar navbar-inverse navbar-fixed-top main">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button> <a class="navbar-brand" href="#">Vilfredo goes to Athens</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li class="active">
+						<a href="http://0.0.0.0:8080">Home</a>
+					</li>
+					<li data-bind="visible: isLoggedIn" class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">My Activity<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="#">My Questions</a>
+							</li>
+							<li>
+								<a href="#">Key Player</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Room">
+					</div><button class="btn btn-default">Go</button>
+				</form>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="https://github.com/pietrosperoni/Vilfredo/wiki">About</a>&gt;
+					</li>
+					<li>
+						<a href="#contact">Contact</a>
+					</li>
+					<li data-bind="visible: isLoggedOut"> 
+						<a data-toggle="modal" data-target="#login" href="#login">Login</a>
+					</li>
+					<li data-bind="visible: isLoggedOut"> 
+						<a data-toggle="modal" data-target="#register" href="#register">Register</a>
+					</li>
+					<!-- Account dropdown begin -->
+					<li data-bind="visible: userid" class="userdata dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span data-bind="text: username" id="currentuser"></span><b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li class="dropdown-header">Account
+							</li>
+							<li>
+								<a href="#">My Details</a>
+							</li>
+							<li>
+								<a href="#">Change Password</a>
+							</li>
+							<li>
+								<a data-bind="click: logout" href="#">Logout</a>
+							</li>
+						</ul>
+					</li><!-- Account dropdown end -->
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</div>
+	<!-- navbar -->
+
+	<div class="container main">
+		
+		<div class="main alert alert-success alert-dismissable">
+			<span class="flash"></span> <span class="text"></span>
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		</div>
+		
+		<div class="jumbotron intro">
+		  <h1>Welcome to Vilfredo</h1>
+		  <p>...</p>
+		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> <a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-lg" role="button" data-toggle="modal" data-target="#register" href="#register" >Register</a></p>
+		</div>
+		
+		<h1>Active Questions</h1>
+		
+		<div class="all-questions">
+		<div class="row">
+			<div class="col-md-12 icons new panel">
+				<div class="panel-heading">
+					<span rel="tooltip" title="Please Register or Log In to Ask a Question" class="pointer">
+					<a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-md" role="button" disabled>Ask a Question</a></span>
+					<a data-bind="click: beginNewQuestion, visible: currentUserViewModel.isLoggedIn" class="btn btn-success btn-md" role="button">Ask a Question</a>
+                </div>
+                <div class="panel-body">
+				<div class="">
+					<!-- ko foreach: questions -->
+					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
+					<div class="item">
+					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<img src="{{ url_for('static', filename='images/germinating.jpg') }}" height=42 /> 
+					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
+					<!-- ko if: $root.minimum_time_passed($data) -->
+					<img rel="tooltip" src="{{ url_for('static', filename='images/clock.jpg') }}" height=42 title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<!-- /ko -->
+					<!-- ko if: $root.maximum_time_passed($data) -->
+					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<!-- /ko -->
+					</div>
+					<!-- /ko -->
+					<!-- /ko -->
+				</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 icons writing panel">
+				<div class="panel-heading">
+                  <h2 class="panel-title"><img src="{{ url_for('static', filename='images/writing.jpg') }}" height=42 /> Propose an Answer to a Question</h2>
+                </div>
+                <div class="panel-body">
+				<div class="">
+					<!-- ko foreach: questions -->
+					<!-- ko if: phase() == "writing" && !$root.is_new_question($data) -->
+					<div class="item">
+					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<img src="{{ url_for('static', filename='images/tree.jpg') }}" height=42 /> 
+					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
+					<!-- ko if: $root.minimum_time_passed($data) -->
+					<img rel="tooltip" src="{{ url_for('static', filename='images/clock.jpg') }}" height=42 title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<!-- /ko -->
+					<!-- ko if: $root.maximum_time_passed($data) -->
+					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<!-- /ko -->
+					</div>
+					<!-- /ko -->
+					<!-- /ko -->
+				</div>
+				</div>
+			</div>
+			<div class="col-md-6 icons voting panel">
+				<div class="panel-heading">
+                  <h4 class="panel-title"><img src="{{ url_for('static', filename='images/endorsing.jpg') }}" height=42 /> Vote all the Answers you Agree On</h4>
+                </div>
+                <div class="panel-body">
+				<div class="">
+					<!-- ko foreach: questions -->
+					<!-- ko if: phase() == "voting" -->
+					<div class="item">
+					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<img src="{{ url_for('static', filename='images/flowers.jpg') }}" height=42 /> 
+					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
+					<!-- ko if: $root.minimum_time_passed($data) -->
+					<img rel="tooltip" src="{{ url_for('static', filename='images/clock.jpg') }}" height=42 title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<!-- /ko -->
+					<!-- ko if: $root.maximum_time_passed($data) -->
+					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<!-- /ko -->
+					</div>
+					<!-- /ko -->
+					<!-- /ko -->
+				</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 icons consensus panel">
+				<div class="panel-heading">
+                  <h2 class="panel-title"><img src="{{ url_for('static', filename='images/manyhands.jpg') }}" height=42 /> Questions Which have Reached a Consensus</h2>
+                </div>
+                <div class="panel-body">
+				<div class="">
+					<!-- ko foreach: questions -->
+					<!-- ko if: phase() == "consensus" -->
+					<!-- /ko -->
+					<!-- /ko -->
+				</div>
+				</div>
+			</div>
+		</div>
+		</div> <!-- all-questions -->
+		
+		
+
+	</div><!-- container -->
+
+
+	<div id="footer">
+	    <div class="container">
+	      <p class="text-muted credit">&copy; 2009-2013 Pietro Speroni & Derek Paterson </p>
+	    </div>
+	</div>
+	
+	
+<!-- New Proposal Modal -->
+	<div id="addquestion" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="AddQuestionBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Ask a Question</h4>
+	      </div>
+	      <div class="modal-body">
+		<div class="message alert alert-danger"></div>
+		<form autocomplete="off" class="form-horizontal" role="form">
+		<div class="form-group">
+		    <label for="inputQuestionRoom" class="col-sm-2 control-label">Room</label>
+		    <div class="col-sm-10">
+		      <input data-bind="value: room" type="text" class="form-control input-lg" id="inputQuestionRoom" placeholder="Room">
+		    </div>
+		  </div>  
+		<div class="form-group">
+		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>
+		    <div class="col-sm-10">
+		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputQuestionTitle" placeholder="Title">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputQuestionBlurb" class="col-sm-2 control-label">Question Text</label>
+		    <div class="col-sm-10">
+			<textarea data-bind="value: blurb" id="inputQuestionBlurb" class="form-control" rows="6" placeholder="Type your question here"></textarea>
+		    </div>
+		  </div>
+		
+		<div id="form-type-select" class="form-group">
+			<label for="inputQuestionMinMoveTime" class="col-sm-2 control-label">Minimum</label>
+			<div class="col-sm-10">
+				<select data-bind="options: availableTimePeriods, optionsText: 'period', value: minimum_time, optionsCaption: 'Choose...'" id="inputQuestionMinMoveTime"></select>
+			</div>
+		</div>
+		<div id="form-type-select" class="form-group">
+			<label for="inputQuestionMaxMoveTime" class="col-sm-2 control-label">Maximum</label>
+			<div class="col-sm-10">
+				<select data-bind="options: availableTimePeriods, optionsText: 'period', value: maximum_time, optionsCaption: 'Choose...'" id="inputQuestionMaxMoveTime"></select>
+			</div>
+		</div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button data-bind="click: add" type="button" class="btn btn-primary">Submit</button>
+			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+		    </div>
+		  </div>
+		</form>
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- modal -->
+	
+	
+	
+	<!-- Tri Voting Modal -->
+	<div id="vote3waywindow" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-bind="click: close3WayTriangle" aria-hidden="true">×</button>
+					<h4 class="modal-title">
+						Please Vote
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="show3waytriangle"></div>
+				</div><!-- /.modal-body -->
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	
+
+	<!-- Continuous Voting Modal -->
+	<div id="votenowwindow" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Please Vote</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="showtriangle"></div>
+		  </div><!-- /.modal-body -->
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	<!-- Login Modal -->
+	<div id="login" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="LoginBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Log in
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="message alert alert-danger"></div>
+					<form autocomplete="off" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
+							<div class="col-sm-10">
+								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+							<div class="col-sm-10">
+								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<div class="checkbox">
+									<label><input data-bind="checked: remember" type="checkbox"> Remember me</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button data-bind="click: dologin" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- login modal -->
+	
+	<!-- Register Modal -->
+	<div id="register" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="RegisterBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Register
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="message alert alert-danger"></div>
+					<p>Enter your details below. A confirmation email will be sent to the address you give after which you will be able to log in.</p>
+					<form autocomplete="off" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
+							<div class="col-sm-10">
+								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+							<div class="col-sm-10">
+								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-10">
+								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email" type="email" required>
+								<span class="help-block">A valid email address is required to activate your account and reset your password if you lose it.</span>
+
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button data-bind="click: register" type="button" class="btn btn-primary">Register</button> 
+								<button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- register modal -->
+
+	</body>
+	<script type="text/javascript">
+	function initPage()
+	{
+		console.log('initPage called...');
+		$('.current-questions').show();
+		
+		$.when(currentUserViewModel.loadUser()).then()
+		{
+			console.log('loadUser completed...');
+			questionsViewModel.fetchQuestions();
+		}	
+	}
+	
+	$(function() {
+		currentUserViewModel = new CurrentUserViewModel();
+		questionsViewModel = new QuestionsViewModel();
+		loginViewModel = new LoginViewModel();
+		newQuestionViewModel = new NewQuestionViewModel();
+		registerViewModel = new RegisterViewModel();
+		
+		initPage();
+	
+		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
+		ko.applyBindings(loginViewModel, $('#login')[0]);
+		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
+		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
+		ko.applyBindings(registerViewModel, $('#register')[0]);
+		ko.applyBindings(currentUserViewModel, $('.intro')[0]);
+		
+		
+		$('body').popover({
+		    selector: '[rel="popover"]',
+			trigger: 'hover',
+			html: true,
+			placement: 'top',
+			content: 'hello world',
+			title: 'Add your vote',
+			content: '<div class="poptriangle"></div>'
+		});
+		
+		$('body').on('show.bs.popover', function() {
+  			console.log('popover displayed...');
+		});
+		$('body').on('hidden.bs.popover', function() {
+  			console.log('popover hidden...');
+		});	
+		
+		$('body').tooltip({
+		    selector: '[rel=tooltip]',
+			html: true,
+			container: 'body'
+		});
+	
+		
+		$("#inputQuestionRoom").charCount({
+			allowed: 20,		
+			warning: 15,
+			counterText: "Left" + " "
+		});
+		
+		$("#inputQuestionTitle").charCount({
+			allowed: 50,		
+			warning: 40,
+			counterText: "Left" + " "
+		});
+		
+		$("#inputQuestionBlurb").charCount({
+			allowed: 1000,		
+			warning: 100,
+			counterText: "Left" + " "
+		});
+				
+		//$("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
+		$("textarea").jqBootstrapValidation();
+		
+		$(document).on({
+		    mouseenter: function () {
+		        $(this).addClass('over');
+		    },
+		    mouseleave: function () {
+		        $(this).removeClass('over');
+		    }
+		}, ".question-blurb");		
+	});
+	</script>
+</html>

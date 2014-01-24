@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin" viewBox="0.00 0.00 200.00 200.00" width="200pt" height="200pt" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path d="M100,0l0,80l-50,20l-50,-100z" fill="#d9534f" stroke="#d9534f" stroke-width="2" id="oppose" title="click if you oppose"/><path d="M100,0l0,80l50,20l50,-100z" fill="#5cb85c" stroke="#5cb85c" stroke-width="2" id="endorse" title="click if you endorse"/><path d="M100,200l50,-100l-50,-20l-50,20z" fill="#428bca" stroke="#428bca" stroke-width="2" id="confused" title="click if you do not fully understand"/>
+</svg>
