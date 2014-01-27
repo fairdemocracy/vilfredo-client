@@ -1,3 +1,23 @@
+/****************************************************************************
+#
+# This file is part of the Vilfredo Client.
+#
+# Copyright © 2009-2014 Pietro Speroni di Fenizio / Derek Paterson.
+#
+# VilfredoReloadedCore is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation version 3 of the License.
+#
+# VilfredoReloadedCore is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License
+# for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with VilfredoReloadedCore.  If not, see <http://www.gnu.org/licenses/>.
+#
+****************************************************************************/
+
 	var TimePeriod = function(label, seconds) {
         this.period = label;
         this.seconds = seconds;
@@ -144,7 +164,7 @@
 		}
 		self.getAuthToken = function()
 		{
-			var URI = 'http://0.0.0.0:8080/api/v1/authtoken';
+			var URI = VILFREDO_API +'/authtoken';
 			$.cookie('vgaclient', null, { path: '/' });
 			self.authToken = '';
 			return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
@@ -167,7 +187,8 @@
 		}
 		self.fetchCurrentUser = function()
 		{
-			var URI = 'http://0.0.0.0:8080/api/v1/currentuser';
+			//var URI = 'http://0.0.0.0:8080/api/v1/currentuser';
+			var URI = VILFREDO_API + '/currentuser';
 			return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Current user data returned...');
 				console.log(data);
@@ -309,7 +330,7 @@
 				return;
 			}
             var new_user = {username: self.username(), password: self.password(), email: self.email()};
-            ajaxRequest('http://0.0.0.0:8080/api/v1/users', 'POST', new_user).done(function(data, textStatus, jqXHR) 
+            ajaxRequest(VILFREDO_API + '/users', 'POST', new_user).done(function(data, textStatus, jqXHR) 
 			{
 			    console.log('toggleCommentSupport data returned...');
 				console.log(data);
@@ -681,7 +702,7 @@
 			{
 				OPP = 'DELETE';
 			}
-			var URI = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments/' + comment.id() + '/support';
+			var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments/' + comment.id() + '/support';
 			console.log("ViewProposalViewModel.supportComment() URI set to " + URI);
 			ajaxRequest(URI, OPP).done(function(data, textStatus, jqXHR) 
 			{
@@ -704,7 +725,7 @@
 		self.addComment = function(comment)
 		{
 			console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
-			var URI = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';
+			var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';
 			ajaxRequest(URI, 'POST', comment).done(function(data, textStatus, jqXHR) {
 			    console.log('Add comment data returned...');
 				console.log(data);
@@ -786,7 +807,7 @@
 		}
 		
 		self.fetchComments = function() {
-			ajaxRequest('http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals/'+ self.proposal.id() +'/comments', 
+			ajaxRequest(VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ self.proposal.id() +'/comments', 
 						'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Comments data returned...');
 				//console.log(data);
@@ -818,7 +839,7 @@
 		{
 			console.log("QuestionsViewModel.addQuestion() called...");
 			console.log(question);
-			var URI = 'http://0.0.0.0:8080/api/v1/questions';
+			var URI = VILFREDO_API + '/questions';
 			ajaxRequest(URI, 'POST', question).done(function(data, textStatus, jqXHR) {
 			    console.log('Add question data returned...');
 				console.log(data);
@@ -842,7 +863,7 @@
 						new_proposal_count: ko.observable(parseInt(data.question.new_proposal_count)),
 						new_proposer_count: ko.observable(parseInt(data.question.new_proposer_count)),
 						inherited_proposal_count: ko.observable(parseInt(data.question.inherited_proposal_count)),
-						link: "http://0.0.0.0:8080/question/" + data.question.id
+						link: VILFREDO_URL + "/question/" + data.question.id
 			  		});
 				}
 				else
@@ -864,7 +885,7 @@
 		}
 		
 	    self.fetchQuestions = function() {
-			var url = 'http://0.0.0.0:8080/api/v1/questions';
+			var url = VILFREDO_API + '/questions';
 			var room_query = (room) ? '?room=' + room : '';
 			ajaxRequest(url+room_query, 'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Questions data returned...');
@@ -887,7 +908,7 @@
 						new_proposal_count: ko.observable(parseInt(data.questions[i].new_proposal_count)),
 						new_proposer_count: ko.observable(parseInt(data.questions[i].new_proposer_count)),
 						inherited_proposal_count: ko.observable(parseInt(data.questions[i].inherited_proposal_count)),
-						link: "http://0.0.0.0:8080/question/" + data.questions[i].id
+						link: VILFREDO_URL + "/question/" + data.questions[i].id
 			  		});
 				}
 			});
@@ -966,7 +987,7 @@
 		
 		self.add = function(proposal)
 		{
-			var URI = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals';
+			var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
 			ajaxRequest(URI, 'POST', proposal).done(function(data, textStatus, jqXHR) {
 			    console.log('Proposals data returned...');
 				console.log(data);
@@ -1013,7 +1034,7 @@
 			    return;
 			}
 			console.log(endorsement_type);
-			var endorse_uri = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
+			var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
 			console.log('endorse uri = ' + endorse_uri);
 			
 			ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
@@ -1053,7 +1074,7 @@
 			}
 			var proposal = self.proposals()[index];
 			console.log('endorseWithIndex called with index ' + index + ' and endorsement_type ' + endorsement_type);
-			var endorse_uri = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
+			var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
 			console.log('endorse uri = ' + endorse_uri);
 			
 			ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
@@ -1106,7 +1127,7 @@
 		}
 		
 		self.fetchKeyPlayers = function() {
-			return ajaxRequest('http://0.0.0.0:8080/api/v1/questions/' + question_id + '/key_players', 'GET').done(function(data, textStatus, jqXHR) {
+			return ajaxRequest(VILFREDO_API + '/questions/' + question_id + '/key_players', 'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Key Player data returned...');
 				console.log(data.key_players);
 				return;
@@ -1129,7 +1150,7 @@
 
 		self.fetchProposals = function(options) {
 		    console.log('fetchProposals() called...');
-			var proposalsURI = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/proposals';
+			var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
 			var proposals_list = self.proposals;
 			
 		    if (options != null && options.user_only != null)
@@ -1392,7 +1413,7 @@
     function QuestionViewModel()
 	{
 		var self = this;
-		self.URI = 'http://0.0.0.0:8080/api/v1/questions/' + question_id;		
+		self.URI = VILFREDO_API + '/questions/' + question_id;		
 		self.id = ko.observable();
 		self.title = ko.observable();
 		self.blurb = ko.observable();
@@ -1439,7 +1460,7 @@
 		    console.log('moveOn called...');
 		    //initPage();
 		    //return;
-		    ajaxRequest('http://0.0.0.0:8080/api/v1/questions/' + question_id, 'PATCH', {move_on:true}).done(function(data) {
+		    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_on:true}).done(function(data) {
     		    add_page_alert('success', 'Question now in ' + data.question.phase + ' phase');
     		    console.log('Move on question data returned...');
     			console.log(data);
@@ -1482,7 +1503,7 @@
 	
 	function fetchGraph(map_type, generation)
 	{
-		var URI = 'http://0.0.0.0:8080/api/v1/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type;		
+		var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type;		
 		
 		return ajaxRequest(URI, 'GET').done(function(data) {
 		    console.log('fetchGraph data returned...');

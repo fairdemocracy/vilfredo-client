@@ -1,1 +1,22 @@
-For now, copy both directories static and template into the VilfredoReloadedCore directory of vilfredo-core https://github.com/fairdemocracy/vilfredo-core.git
+This Javascript client is a work in progress, also helping to refine the vilfredo-core REST API which had previously been unit tested only.
+
+Clone the vilfredo-core  into your development directory workspace. Run setup and the tests which will build the test database.
+
+Clone the vilfredo_client into your development directory workspace where you have cloned the vilfredo-core server.
+
+Eg Using a development directory /Users/[user]/python
+
+cd /Users/[user]/python
+git clone https://github.com/fairdemocracy/vilfredo-client.git
+
+Then for now, for development probably the easiest way to work with the client is to cd into the VilfredoReloadedCore subdirectory of the vilfredo-core project and create soft links that point to the client files as follows:
+
+cd vilfredo-core/VilfredoReloadedCore
+ln -s /Users/[user]/python/vilfredo-client/static ./static
+ln -s /Users/[user]/python/vilfredo-client/templates ./templates
+
+Of course you could also copy the static and template subdirectories into the VilfredoReloadedCore directory of vilfredo-core but this seems easier.
+
+Start flask inbuilt server:
+vr
+2014-01-25 14:56:18,797 - INFO -  * Running on http://0.0.0.0:8080/
