@@ -1290,7 +1290,7 @@
 		console.log('init3WayTriangle function called... index = ' + index);
 		$('.oppose', svg.root()).click(function(e) {
 			//console.log("I oppose proposal " + index);
-			xproposalsViewModel.endorseWithIndex('oppose', index);
+			proposalsViewModel.endorseWithIndex('oppose', index);
 		});
 		$('.endorse', svg.root()).click(function(e) {
         	//console.log("I endorse proposal " + index);
