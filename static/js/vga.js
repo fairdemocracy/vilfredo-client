@@ -1190,7 +1190,8 @@
 						$(this).data('pid', pid).addClass('threeway').data('index', index);
 						//console.log('check if pid added ==> ' + $(this).data('pid'));
 						console.log('Load triangle into proposal box');
-						$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
+						//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
+						$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg',
 									 onLoad: init3WayTriangle});
 					});
 					self.fetchKeyPlayers();
@@ -1617,6 +1618,7 @@
 				}
 				else if (currentUserViewModel.username() != '' && currentUserViewModel.password != '')
 				{
+					console.log("Use login details");
 					xhr.setRequestHeader("Authorization", 
                     	"Basic " + btoa(currentUserViewModel.username() + ":" + currentUserViewModel.password));
 				}

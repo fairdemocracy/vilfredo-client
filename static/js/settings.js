@@ -24,3 +24,5 @@ var API_VERSION = 'v1';
 // Don't edit below
 //
 var VILFREDO_API = VILFREDO_URL + '/api/' + API_VERSION;
+
+var STATIC_FILES = VILFREDO_URL + '/static';
