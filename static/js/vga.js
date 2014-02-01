@@ -801,7 +801,8 @@
                 }
 				
 				$('.votebox').data('pid', self.proposal.id).addClass('threeway').data('index', self.index);
-				$('.votebox').svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
+				//$('.votebox').svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
+				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg',
 								   onLoad: self.init3WayTriangle});
 			}
 		}
