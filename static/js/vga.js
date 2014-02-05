@@ -175,7 +175,7 @@
 				if (self.remember)
 				{
 					console.log('Remember login = ' + self.remember + ': Storing token in cookie');
-					$.cookie('vgaclient', data.token, {expires: 1, path: '/'});
+					$.cookie('vgaclient', data.token, {expires: 3, path: '/'});
 				}
 				self.fetchCurrentUser();
 			}).fail(function(jqXHR) {
