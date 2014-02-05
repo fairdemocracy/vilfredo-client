@@ -966,6 +966,15 @@
 		// Writing phase only
 		self.inherited_proposals = ko.observableArray();
 		
+		self.vote_for_list = function (keyplayer) {
+		    html = '';
+		    for (var i = 0; i < keyplayer.add_vote().length; i++) 
+		    {
+		        html = html + '<span class="prop_link">' + keyplayer.add_vote()[i] + '</span>'
+		    }
+		    return html;
+		}
+		
 		self.showProposalNode = function(proposal_id)
 		{
 		    console.log("ProposalsViewModel.showProposalNode() called with pid = " + proposal_id);
@@ -1098,6 +1107,8 @@
 					{
 						console.log('Refreshing graphs after vote...');
 						fetchVotingGraphs();
+						// reset key players
+						self.fetchKeyPlayers();
 					}
 				}
 				else
@@ -1131,19 +1142,15 @@
 			return ajaxRequest(VILFREDO_API + '/questions/' + question_id + '/key_players', 'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Key Player data returned...');
 				console.log(data.key_players);
-				return;
+				//console.log(data.key_players[0]);
+				//console.log(data.key_players[0]['user'].id);
+				//return;
 				self.key_players([]);
 				for (var i = 0; i < data.key_players.length; i++) {
 			  		self.key_players.push({
-			      		id: ko.observable(parseInt(data.proposals[i].id)),
-						title: ko.observable(data.proposals[i].title),
-			      		blurb: ko.observable(data.proposals[i].blurb),
-			      		author: ko.observable(data.proposals[i].author),
-						endorse_type: ko.observable(data.proposals[i].endorse_type),
-						uri: ko.observable(data.proposals[i].uri),
-						author_id: ko.observable(parseInt(data.proposals[i].author_id)),
-						question_count: ko.observable(parseInt(data.proposals[i].question_count)),
-						comment_count: ko.observable(parseInt(data.proposals[i].comment_count))
+			      		id: ko.observable(parseInt(data.key_players[i]['user'].id)),
+						username: ko.observable(data.key_players[i]['user'].username),
+			      		add_vote: ko.observable(data.key_players[i]['add_vote'])
 			  		});
 				}
 			});
@@ -1552,7 +1559,7 @@
         });
 	}
 	
-	function fetchVotingGraphs() // fuck
+	function fetchVotingGraphs()
 	{
 		console.log("fetchGraphs called...")
 		$.when(fetchGraph('all', 1), fetchGraph('pareto', 1)).done(function( all, pareto )

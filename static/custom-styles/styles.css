@@ -5988,6 +5988,32 @@ body {
 .proposalgroup text {
   cursor: pointer;
 }
+.prop_link {
+  margin: 0 5px;
+  padding: 0 5px;
+  background-color: green;
+  color: white;
+  cursor: pointer;
+}
+.user_link {
+  margin: 0;
+  padding: 0 5px;
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+}
+.keyplayer {
+  margin: 10px auto;
+  background-color: #E0EEEE;
+  border: #C0D9D9	1px solid;
+  border-radius: 5px;
+  width: 600px;
+  padding: 10px;
+}
+.keyplayer p {
+  margin: 0;
+  padding: 0;
+}
 .vote_button {
   width: 75px;
   height: 75px;

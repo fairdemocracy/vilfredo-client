@@ -122,6 +122,7 @@
 	<!-- navbar -->
 
 	<div class="container main">
+
 		<div class="question-view">
 		<div class="page-header question-info">
 			<h1 data-bind="text: title"></h1>
@@ -143,6 +144,23 @@
 		</div>
 		</div>
 		<!-- question-view end -->
+		
+		<div id="keyplayer_info">
+		<!-- ko if: key_players().length -->
+		<div class="keyplayers">
+			<h2>Key Players</h2>
+			<p>There are currently <strong><span data-bind="text: key_players().length"></span> Key Players</strong>, though this can change at any moment as people change their votes.</p>
+				<p>Key Players are users who if they were to vote for a proposal they currently disagree with or do not understand then we would move closer to reaching a consensus (i.e. the number of winning proposals accepted by everyone would decrease).</p>
+			<!-- ko foreach: key_players -->
+			<div class="keyplayer">
+			<p>User <span class="user_link" data-bind="text: username"></span> did not vote for proposal(s) <span data-bind="html: $root.vote_for_list($data)"></span></p>
+			<p>The result would be simpler if they were to vote for it (them).</p>
+			<p><strong>Can you try to convince them?</strong></p>
+			</div>
+			<!-- /ko -->
+		</div>
+		<!-- /ko -->
+		</div>
 		
 		<!-- Graphs -->
 		<div class="voting-graphs">
@@ -654,6 +672,9 @@
 		    ko.applyBindings(proposalsViewModel, $(this)[0]);
 		});
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
+		
+		ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
+		
 		//ko.applyBindings(proposalsViewModel, $('.heading')[0]);
 		
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #propdetails')[0]);
