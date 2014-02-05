@@ -66,7 +66,7 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li class="active">
-						<a href="http://0.0.0.0:8080">Home</a>
+						<a class="home" href="">Home</a>
 					</li>
 					<li data-bind="visible: isLoggedIn" class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">My Activity<b class="caret"></b></a>
@@ -453,6 +453,7 @@
 		ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(currentUserViewModel, $('.intro')[0]);
 		
+		$('.home').attr('href', VILFREDO_URL);
 		
 		$('body').popover({
 		    selector: '[rel="popover"]',
