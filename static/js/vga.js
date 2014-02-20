@@ -92,7 +92,7 @@
         return days + ' days ' + hours + ' hours and ' + minutes + ' minutes ';
 	}
 	
-	function CurrentUserViewModel() 
+	function CurrentUserViewModel()
 	{
 		var self = this;
 		self.username = ko.observable('');
@@ -189,7 +189,8 @@
 		{
 			//var URI = 'http://0.0.0.0:8080/api/v1/currentuser';
 			var URI = VILFREDO_API + '/currentuser';
-			return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+			return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) 
+			{
 			    console.log('Current user data returned...');
 				console.log(data);
 				self.userid(parseInt(data.user.id));
@@ -514,7 +515,7 @@
 		}
 	}
 
-	function ViewProposalViewModel() // donow
+	function ViewProposalViewModel()
 	{
 		var self = this;
 		self.id = ko.observable();
@@ -814,7 +815,7 @@
 			ajaxRequest(VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ self.proposal.id() +'/comments', 
 						'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Comments data returned...');
-				//console.log(data);
+				console.log(data);
 				for (var i = 0; i < data.comments.length; i++) {
 			  		var supporters = JSON.parse(data.comments[i].supporters)
 					self.comments.push({
@@ -959,7 +960,7 @@
 		}
 	}
 
-	function ProposalsViewModel() //donow
+	function ProposalsViewModel()
 	{
 	    var self = this;
 	    
@@ -968,6 +969,69 @@
 		self.key_players = ko.observableArray();
 		// Writing phase only
 		self.inherited_proposals = ko.observableArray();
+		
+		self.getUserKeyPlayerInfo = function() //donow
+	    {
+	        var match = ko.utils.arrayFirst(self.key_players(), function (key_player)
+	        {
+	            return currentUserViewModel.userid() === key_player.id();
+	        });
+	        console.log('getUserKeyPlayerInfo');
+	        if (match) 
+	        {
+	            console.log('Current user IS a key player');
+	            console.log(match.id());
+            }
+            else
+            {
+                console.log('Current user IS NOT a key player');
+            }
+	        return match;
+	    };
+		
+		self.vote_for_list_v3 = function (props) 
+		{
+		    html = '';
+		    for (var i = 0; i < props.length; i++) 
+		    {
+		        html = html + '<span class="prop_link">' + props[i] + '</span>'
+		    }
+		    return html;
+	    }
+		
+		self.vote_for_list_v2 = function (keyplayer) 
+		{
+		    html = '';
+		    $.each(keyplayer.add_vote(), function (endorse_type, pids) 
+		    {
+                switch(endorse_type)
+                {
+                    case 'notvoted':
+                        html = html + '<br>Did not vote for proposals '
+                        $.each(pids, function (pid) 
+                        {
+                            html = html + '<span class="prop_link">' + pid + '</span>'
+                        })
+                        break;
+                    case 'oppose':
+                        html = html + '<br>Voted against proposals '
+                        $.each(pids, function (pid) 
+                        {
+                            html = html + '<span class="prop_link">' + pid + '</span>'
+                        })
+                        break;
+                    case 'confused':
+                        html = html + '<br>Did not understand proposals '
+                        $.each(pids, function (pid) 
+                        {
+                            html = html + '<span class="prop_link">' + pid + '</span>'
+                        })
+                        break;
+                    default:  
+                }
+            })
+		    return html;
+		}
 		
 		self.vote_for_list = function (keyplayer) {
 		    html = '';
@@ -986,6 +1050,17 @@
             });
             var proposal = proposalsViewModel.proposals()[index];
 		    self.read(index, proposal);
+		}
+		
+		self.fetchIndex = function(id)
+		{
+		    
+		}
+		
+		self.readproposal = function(id)
+		{
+		    console.log("ProposalsViewModel.readproposal called with id " + id);
+		    index = self.fetchIndex(id);
 		}
 		
 		self.read = function(index, proposal)
@@ -1110,9 +1185,9 @@
 					{
 						console.log('Refreshing graphs after vote...');
 						fetchVotingGraphs();
-						// reset key players
-						self.fetchKeyPlayers();
 					}
+					// reset key players
+					self.fetchKeyPlayers();
 				}
 				else
 				{
@@ -1215,7 +1290,6 @@
         }
 		
 		//self.fetchProposals();
-		
 		//self.beginLogin();
 	}
 	
