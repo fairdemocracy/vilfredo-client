@@ -617,6 +617,7 @@
 		}
 		self.showProposalContent = function()
 		{
+			newCommentViewModel.resetNewCommentPanel();
 			var $showing = $('#showquestions, #showcomments').filter(function() {
 			   return $(this).is(':visible');
 		    });
@@ -627,6 +628,7 @@
 		}
 		self.showProposalComments = function()
 		{
+			newCommentViewModel.resetNewCommentPanel();
 			var $showing = $('#propdetails, #showquestions').filter(function() {
 			   return $(this).is(':visible');
 		    });
@@ -637,6 +639,7 @@
 		}
 		self.showProposalQuestions = function()
 		{
+			newCommentViewModel.resetNewCommentPanel();
 			var $showing = $('#propdetails, #showcomments').filter(function() {
 			   return $(this).is(':visible');
 		    });
