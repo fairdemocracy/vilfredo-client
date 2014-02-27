@@ -1329,6 +1329,7 @@
 	var viewProposalViewModel;
     var loginViewModel;
 	var addProposalViewModel;
+	var newQuestionViewModel;
 	var svggraph;
 	var userid = false;
 	var votesgraph;// =    'static/maps/map_Q1_G1_all_1_1.svg';
