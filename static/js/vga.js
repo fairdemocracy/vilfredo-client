@@ -851,6 +851,8 @@
 				
 				if (jqXHR.status == 201)
 				{
+					newQuestionViewModel.close();
+					
 					console.log('Updating questions list');
 					self.questions.push({
 			      		id: ko.observable(data.question.id),
