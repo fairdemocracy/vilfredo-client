@@ -54,6 +54,8 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localisation/en-US.js') }}"></script>
 		{{ flask_util_js.js }}
     </head>
     <body>
@@ -587,27 +589,30 @@
 	      <div class="modal-body">
 			<div class="alert alert-danger"></div>
 			<form autocomplete="off" class="form-horizontal" role="form">
-		  		<div class="form-group">
+		  	<div class="form-group">
 		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
 		    <div class="col-sm-10">
-		      <input data-bind="value: title" type="text" class="input-lg" id="inputProposalTitle" placeholder="Title">
+			  <span class="errormsg" data-bind="validationMessage: title"></span>
+		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputProposalTitle" placeholder="Title">
 		    </div>
 		  </div>
 		<div class="form-group">
-		    <label for="inputAbstract" class="col-sm-2 control-label">Abstract</label>
+		    <label for="inputAbstract" class="col-sm-2 control-label">Abstract (optional)</label>
 		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: abstract"></span>
 			<textarea data-bind="value: abstract" id="inputProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text"></textarea>
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="inputBlurb" class="col-sm-2 control-label">Proposal Text</label>
 		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: blurb"></span>
 			<textarea data-bind="value: blurb" id="inputProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text"></textarea>
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button data-bind="click: addProposal" type="button" class="btn btn-primary">Submit</button>
+		      <button data-bind="click: addProposal, enable: isValid()" type="button" class="btn btn-primary">Submit</button>
 			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
 		    </div>
 		  </div>
@@ -617,12 +622,57 @@
 	  </div><!-- modal-dialog -->
 	</div><!-- modal -->
 	
-		<!-- Register Modal -->
+	<!-- Login Modal -->
+	<div id="login" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="LoginBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Log in
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="message alert alert-danger"></div>
+					<form autocomplete="off" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
+							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: username"></span>
+								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: password"></span>
+								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<div class="checkbox">
+									<label><input data-bind="checked: remember" type="checkbox"> Remember me</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button data-bind="click: dologin, enable: isValid()" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- login modal -->
+	
+	<!-- Register Modal -->
 	<div id="register" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="RegisterBox" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 					<h4 class="modal-title" id="myModalLabel">
 						Register
 					</h4>
@@ -634,26 +684,30 @@
 						<div class="form-group">
 							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: username"></span>
 								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: password"></span>
 								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
 							<div class="col-sm-10">
-								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email">
+								<span class="errormsg" data-bind="validationMessage: email"></span>
+								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email" type="email" required>
 								<span class="help-block">A valid email address is required to activate your account and reset your password if you lose it.</span>
 
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
-								<button data-bind="click: register" type="button" class="btn btn-primary">Register</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+								<button data-bind="click: register, enable: isValid()" type="button" class="btn btn-primary">Register</button> 
+								<button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
 							</div>
 						</div>
 					</form>
@@ -661,50 +715,11 @@
 			</div><!-- modal-content -->
 		</div><!-- modal-dialog -->
 	</div><!-- register modal -->
-
-	<!-- Login Modal -->
-	<div id="login" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="LoginBox" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title" id="myModalLabel">Log in</h4>
-	      </div>
-	      <div class="modal-body">
-		<div class="message alert alert-danger"></div>
-		<form autocomplete="off" class="form-horizontal" role="form">
-		  <div class="form-group">
-		    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
-		    <div class="col-sm-10">
-		      <input data-bind="value: username" type="text" class="input-lg" id="inputUsername" placeholder="Username">
-		    </div>
-		  </div>
-		  <div class="form-group">
-		    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
-		    <div class="col-sm-10">
-		      <input data-bind="value: password" type="password" class="input-lg" id="inputPassword" placeholder="Password">
-		    </div>
-		  </div>
-		  <div class="form-group">
-		    <div class="col-sm-offset-2 col-sm-10">
-		      <div class="checkbox">
-		        <label>
-		          <input data-bind="checked: remember" type="checkbox"> Remember me
-		        </label>
-		      </div>
-		    </div>
-		  </div>
-		  <div class="form-group">
-		    <div class="col-sm-offset-2 col-sm-10">
-		      <button data-bind="click: dologin" type="button" class="btn btn-primary">Sign in</button>
-			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
-		    </div>
-		  </div>
-		</form>
-		</div><!-- modal-body -->
-	    </div><!-- modal-content -->
-	  </div><!-- modal-dialog xxxx -->
-	</div><!-- login modal -->
+	
+	<script id="customMessageTemplate" type="text/html">
+    <em class="customMessage" data-bind='validationMessage: field'></em>
+	</script>
+	
 	</body>
 	<script type="text/javascript">
 	function initPage()
@@ -736,15 +751,17 @@
 	{
 		currentUserViewModel = new CurrentUserViewModel();
 		proposalsViewModel = new ProposalsViewModel();
-	    loginViewModel = new LoginViewModel();
-		addProposalViewModel = new AddProposalViewModel();
+		addProposalViewModel = ko.validatedObservable( new AddProposalViewModel() );
+		loginViewModel = ko.validatedObservable( new LoginViewModel() );
+		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		threeWayVoteViewModel = new ThreeWayVoteViewModel();
 		viewProposalViewModel = new ViewProposalViewModel();
 		newCommentViewModel = new NewCommentViewModel();
 		questionViewModel = new QuestionViewModel();
-		registerViewModel = new RegisterViewModel();
 		
 		initPage();
+		
+		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 		
 		$(".question-info").each(function(){
 		    ko.applyBindings(questionViewModel, $(this)[0]);
@@ -810,7 +827,19 @@
   			console.log('popover hidden...');
 		});	
 		
+		$("#inputProposalTitle").charCount({
+			allowed: 50,		
+			warning: 40,
+			counterText: "Characters Left" + " "
+		});
+		
 		$("#inputProposalBlurb").charCount({
+			allowed: 1000,		
+			warning: 100,
+			counterText: "Characters left" + " "
+		});
+		
+		$("#inputProposalAbstract").charCount({
 			allowed: 1000,		
 			warning: 100,
 			counterText: "Characters left" + " "

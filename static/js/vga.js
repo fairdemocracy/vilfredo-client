@@ -169,7 +169,7 @@
 			self.authToken = '';
 			return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 			    self.authToken = data.token;
-				loginViewModel.close();
+				loginViewModel().close();
 				console.log('CurrentUserViewModel.getAuthToken:: Authtoken returned...');
 				console.log(data);
 				if (self.remember)
@@ -253,10 +253,8 @@
 	{
         var self = this;
         self.room = ko.observable('');
-        self.title = ko.observable('');
-        self.blurb = ko.observable('');
-        self.minimum_time = ko.observable({});
-        self.maximum_time = ko.observable({});
+        self.title = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
+        self.blurb = ko.observable('').extend({ required: true, maxLength: 1000, minLength:10 });
 
         self.availableTimePeriods = ko.observableArray([
            new TimePeriod("1 second", 1),
@@ -267,18 +265,25 @@
            new TimePeriod("30 days", 2592000)
         ]);
         
-        self.reset = function()
+        self.minimum_time = ko.observable(self.availableTimePeriods()[2]);
+        self.maximum_time = ko.observable(self.availableTimePeriods()[3]);
+        
+        self.resetform = function()
         {
+			console.log("NewQuestionViewModel.resetform() called ...");
 			self.room('');
             self.title('');
             self.blurb('');
+            self.title.isModified(false);
+            self.blurb.isModified(false);
             self.minimum_time({});
             self.maximum_time({});
             $('#addquestion .alert').css('display', 'none').html('');
         }
         self.close = function()
         {
-            self.reset();
+            console.log("NewQuestionViewModel.close() called ...");
+            self.resetform();
             $('#addquestion').modal('hide');
         }
         self.add = function()
@@ -290,7 +295,7 @@
                 title: self.title(),
                 blurb: self.blurb(),
                 minimum_time: self.minimum_time().seconds,
-                maximum_time : self.maximum_time().seconds
+                maximum_time: self.maximum_time().seconds
             });
 		}
 	}
@@ -298,9 +303,9 @@
 	function RegisterViewModel()
 	{
 	    var self = this;
-	    self.username = ko.observable('');
-        self.password = ko.observable('');
-        self.email = ko.observable('');
+	    self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
+        self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
+        self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:2, email: true });
 	    
 	    self.reset = function()
         {
@@ -308,6 +313,9 @@
             self.password('');
             self.email('');
             $('#register .alert').css('display', 'none').html('');
+            self.username.isModified(false);
+            self.password.isModified(false);
+            self.email.isModified(false);
         }
         self.close = function()
         {
@@ -340,7 +348,7 @@
 				{
 					console.log(data.message);
 					
-					registerViewModel.close();
+					registerViewModel().close();
 					
 					$('.main.alert')
 					.html("Congratulations, you just registered with Vilfredo! You can now log in using your password.")
@@ -369,8 +377,8 @@
 	function LoginViewModel() 
 	{
         var self = this;
-        self.username = ko.observable('');
-        self.password = ko.observable('');
+        self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
+        self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
 		self.remember = ko.observable(false);
 
         self.dologin = function() {
@@ -389,18 +397,24 @@
 			self.username = "";
 			self.password = "";
 			self.currentuser("");
+			self.username.isModified(false);
+			self.password.isModified(false);
 		}
 		self.clear = function()
 		{
 			self.username(''); 
 			self.password('');
+			self.username.isModified(false);
+			self.password.isModified(false);
 			self.remember(false);
 		}
 		self.close = function()
 		{
 			$('#login .message').text('').hide();
-			self.username(''); 
+			self.username('');
 			self.password('');
+			self.username.isModified(false);
+			self.password.isModified(false);
 			self.remember(false);
 			$('#login').modal('hide');
 		}
@@ -421,9 +435,9 @@
 	function AddProposalViewModel() 
 	{
         var self = this;
-        self.title = ko.observable('');
-        self.abstract = ko.observable('');
-        self.blurb = ko.observable('');
+        self.title = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
+        self.abstract = ko.observable('').extend({ maxLength: 1000, minLength:10 });
+        self.blurb = ko.observable('').extend({ required: true, maxLength: 1000, minLength:10 });
 
         self.addProposal = function() { //now
             $('#addproposal .alert').text('').fadeOut(100);
@@ -444,6 +458,9 @@
 			self.title(''); 
 			self.abstract('');
 			self.blurb('');
+			self.title.isModified(false);
+			self.abstract.isModified(false);
+			self.blurb.isModified(false);
 		}
 		self.close = function()
 		{
@@ -851,7 +868,7 @@
 				
 				if (jqXHR.status == 201)
 				{
-					newQuestionViewModel.close();
+					newQuestionViewModel().close();
 					
 					console.log('Updating questions list');
 					self.questions.push({
@@ -1054,11 +1071,6 @@
 		    self.read(index, proposal);
 		}
 		
-		self.fetchIndex = function(id)
-		{
-		    
-		}
-		
 		self.readproposal = function(id)
 		{
 		    console.log("ProposalsViewModel.readproposal called with id " + id);
@@ -1097,7 +1109,7 @@
 						question_count: ko.observable(parseInt(data.proposal.question_count)),
 						comment_count: ko.observable(parseInt(data.proposal.comment_count))
     		  		});
-    		  		addProposalViewModel.close();
+    		  		addProposalViewModel().close();
 		  		}
 		  		else
 				{
@@ -1332,8 +1344,8 @@
 	var newQuestionViewModel;
 	var svggraph;
 	var userid = false;
-	var votesgraph;// =    'static/maps/map_Q1_G1_all_1_1.svg';
-	var pfvotesgraph;// = 	'static/maps/map_Q1_G1_pareto_1_1.svg';
+	var votesgraph;
+	var pfvotesgraph;
 	var triangle;
 	
 	function drawTriangle(svg)

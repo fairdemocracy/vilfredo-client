@@ -54,6 +54,8 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		{{ flask_util_js.js }}
     </head>
     <body>
@@ -141,7 +143,7 @@
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
 					<span rel="tooltip" title="Please Register or Log In to Ask a Question" class="pointer">
-					<a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-md" role="button" disabled>Ask a Question</a></span>
+					<a data-bind="visible: currentUserViewModel.FisLoggedOut" class="btn btn-success btn-md" role="button" disabled>Ask a Question</a></span>
 					<a data-bind="click: beginNewQuestion, visible: currentUserViewModel.isLoggedIn" class="btn btn-success btn-md" role="button">Ask a Question</a>
                 </div>
                 <div class="panel-body">
@@ -232,8 +234,6 @@
 		</div>
 		</div> <!-- all-questions -->
 		
-		
-
 	</div><!-- container -->
 
 
@@ -256,7 +256,7 @@
 		<div class="message alert alert-danger"></div>
 		<form autocomplete="off" class="form-horizontal" role="form">
 		<div class="form-group">
-		    <label for="inputQuestionRoom" class="col-sm-2 control-label">Room</label>
+		    <label for="inputQuestionRoom" class="col-sm-2 control-label">Room (optional)</label>
 		    <div class="col-sm-10">
 		      <input data-bind="value: room" type="text" class="form-control input-lg" id="inputQuestionRoom" placeholder="Room">
 		    </div>
@@ -264,12 +264,14 @@
 		<div class="form-group">
 		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>
 		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: title"></span>
 		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputQuestionTitle" placeholder="Title">
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="inputQuestionBlurb" class="col-sm-2 control-label">Question Text</label>
 		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: blurb"></span>
 			<textarea data-bind="value: blurb" id="inputQuestionBlurb" class="form-control" rows="6" placeholder="Type your question here"></textarea>
 		    </div>
 		  </div>
@@ -277,18 +279,18 @@
 		<div id="form-type-select" class="form-group">
 			<label for="inputQuestionMinMoveTime" class="col-sm-2 control-label">Minimum</label>
 			<div class="col-sm-10">
-				<select data-bind="options: availableTimePeriods, optionsText: 'period', value: minimum_time, optionsCaption: 'Choose...'" id="inputQuestionMinMoveTime"></select>
+				<select data-bind="options: availableTimePeriods, optionsText: 'period', value: minimum_time" id="inputQuestionMinMoveTime"></select>
 			</div>
 		</div>
 		<div id="form-type-select" class="form-group">
 			<label for="inputQuestionMaxMoveTime" class="col-sm-2 control-label">Maximum</label>
 			<div class="col-sm-10">
-				<select data-bind="options: availableTimePeriods, optionsText: 'period', value: maximum_time, optionsCaption: 'Choose...'" id="inputQuestionMaxMoveTime"></select>
+				<select data-bind="options: availableTimePeriods, optionsText: 'period', value: maximum_time" id="inputQuestionMaxMoveTime"></select>
 			</div>
 		</div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button data-bind="click: add" type="button" class="btn btn-primary">Submit</button>
+		      <button data-bind="click: add, enable: isValid()" type="button" class="btn btn-primary">Submit</button>
 			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
 		    </div>
 		  </div>
@@ -350,12 +352,14 @@
 						<div class="form-group">
 							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: username"></span>
 								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: password"></span>
 								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
 							</div>
 						</div>
@@ -368,7 +372,7 @@
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
-								<button data-bind="click: dologin" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+								<button data-bind="click: dologin, enable: isValid()" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
 							</div>
 						</div>
 					</form>
@@ -394,18 +398,21 @@
 						<div class="form-group">
 							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: username"></span>
 								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: password"></span>
 								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: email"></span>
 								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email" type="email" required>
 								<span class="help-block">A valid email address is required to activate your account and reset your password if you lose it.</span>
 
@@ -413,7 +420,7 @@
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
-								<button data-bind="click: register" type="button" class="btn btn-primary">Register</button> 
+								<button data-bind="click: register, enable: isValid()" type="button" class="btn btn-primary">Register</button> 
 								<button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
 							</div>
 						</div>
@@ -422,6 +429,7 @@
 			</div><!-- modal-content -->
 		</div><!-- modal-dialog -->
 	</div><!-- register modal -->
+	
 
 	</body>
 	<script type="text/javascript">
@@ -440,16 +448,21 @@
 	$(function() {
 		currentUserViewModel = new CurrentUserViewModel();
 		questionsViewModel = new QuestionsViewModel();
-		loginViewModel = new LoginViewModel();
-		newQuestionViewModel = new NewQuestionViewModel();
-		registerViewModel = new RegisterViewModel();
+		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
+		loginViewModel = ko.validatedObservable( new LoginViewModel() );
+		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		
 		initPage();
+		
+		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 	
 		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
 		ko.applyBindings(loginViewModel, $('#login')[0]);
+		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
+		
 		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
+		
 		ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(currentUserViewModel, $('.intro')[0]);
 		

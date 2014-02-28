@@ -5988,6 +5988,9 @@ body {
 .proposalgroup text {
   cursor: pointer;
 }
+.errormsg {
+  color: red;
+}
 .prop_link {
   margin: 0 5px;
   padding: 0 5px;
