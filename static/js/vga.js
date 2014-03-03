@@ -347,13 +347,8 @@
 				if (jqXHR.status == 201)
 				{
 					console.log(data.message);
-					
 					registerViewModel().close();
-					
-					$('.main.alert')
-					.html("Congratulations, you just registered with Vilfredo! You can now log in using your password.")
-					.setAlertClass('success')
-					.fadeIn()
+					add_page_alert('success', 'Congratulations, you just registered with Vilfredo! You can now log in using your password.');				
 				}
 				else //here
 				{
@@ -361,7 +356,7 @@
 					$('#register .alert')
 					.html(data.message)
 					.setAlertClass('danger')
-					.fadeIn()
+					.fadeIn();
 				}
 			}).fail(function(jqXHR) 
     		{
@@ -369,7 +364,7 @@
     			$('#register .alert')
 				.html(JSON.parse(jqXHR.responseText).message)
 				.setAlertClass('danger')
-				.fadeIn()
+				.fadeIn();
             });
         }
 	}
@@ -473,20 +468,41 @@
 	function NewCommentViewModel()
 	{
 		var self = this;
-		self.comment = ko.observable();
-		self.comment_type = ko.observable();
+		self.comment = ko.observable().extend({ required: true, maxLength: 300, minLength:10 });
+		
+		self.validate_comment_type = ko.observable(true);
+        self.comment_type = ko.observable().extend({ required: { onlyIf: self.validate_comment_type } });
+		//self.comment_type = ko.observable().extend({ required: true });
+		
+		self.comment_type_options = ['for', 'against'];
+		
 		self.setProposal = function(proposal)
 		{
 			self.proposal = proposal;
 		}
 		
+		self.clear = function() // noo
+		{
+		    console.log("newCommentViewModel clear called..");
+		    self.comment('')
+		    self.comment_type(null);
+		    self.comment.isModified(false);
+			self.comment_type.isModified(false);
+			$('.newcommentpanel .alert')
+					.html('')
+					.setAlertClass('danger')
+					.fadeOut();
+		}
+		
 		self.resetNewCommentPanel = function()
 		{
-			console.log("resetNewCommentPanel called..");
+			console.log("resetNewCommentPanel called.....");
 			var panel = $('.newcommentpanel');
+			self.clear();
 			if ($('.newcommentpanel').is(":visible"))
 			{
 	          return panel.slideUp(400);
+	          self.clear();
 	        } 
 			else
 			{
@@ -500,6 +516,7 @@
 			if (panel.is(":visible")) 
 			{
 	          panel.slideUp(400);
+	          self.resetNewCommentPanel();
 	        } 
 			else 
 			{
@@ -508,8 +525,7 @@
 		}
 		self.add = function()
 		{
-			console.log("NewCommentViewModel.add() called ...");
-			self.showNewCommentPanel();			
+			console.log("NewCommentViewModel.add() called ...");		
 			var reply_to = $('.newcommentpanel #reply_to').attr('value');
 			var new_comment_type = $('.newcommentpanel #new_comment_type').attr('value');
 			if (new_comment_type == 'answer' || new_comment_type == 'question')
@@ -527,8 +543,6 @@
 	                comment_type: self.comment_type()
 	            });
 			}
-            self.comment("");
-            self.comment_type("");
 		}
 	}
 
@@ -635,7 +649,7 @@
 		}
 		self.showProposalContent = function()
 		{
-			newCommentViewModel.resetNewCommentPanel();
+			newCommentViewModel().resetNewCommentPanel();
 			var $showing = $('#showquestions, #showcomments').filter(function() {
 			   return $(this).is(':visible');
 		    });
@@ -646,7 +660,7 @@
 		}
 		self.showProposalComments = function()
 		{
-			newCommentViewModel.resetNewCommentPanel();
+			newCommentViewModel().resetNewCommentPanel();
 			var $showing = $('#propdetails, #showquestions').filter(function() {
 			   return $(this).is(':visible');
 		    });
@@ -657,7 +671,7 @@
 		}
 		self.showProposalQuestions = function()
 		{
-			newCommentViewModel.resetNewCommentPanel();
+			newCommentViewModel().resetNewCommentPanel();
 			var $showing = $('#propdetails, #showcomments').filter(function() {
 			   return $(this).is(':visible');
 		    });
@@ -667,17 +681,12 @@
 			});
 		}
 		
-		self.test = function()
-		{
-			alert('test called for no fucking reason...');
-		}
-		
 		self.beginNewComment = function(operation, proposalmodel, reply_to)
 		{
 			console.log('beginNewComment called with op ' + operation);
 			//return;
-			newCommentViewModel.setProposal(proposalmodel);
-			$.when(newCommentViewModel.resetNewCommentPanel()).done(function()
+			newCommentViewModel().setProposal(proposalmodel);
+			$.when(newCommentViewModel().resetNewCommentPanel()).done(function()
 			{
 				if (operation == 'question')
 				{
@@ -686,6 +695,7 @@
 					$('.newcommentpanel #form-type-select').addClass('hidden');
 					$('.newcommentpanel #comment-label').text('Question');
 					$('.newcommentpanel textarea').attr('placeholder', 'Question Text');
+					newCommentViewModel().validate_comment_type(false);
 				}
 				else if (operation == 'answer')
 				{
@@ -695,6 +705,7 @@
 					$('.newcommentpanel #form-type-select').addClass('hidden');
 					$('.newcommentpanel #comment-label').text('Answer');
 					$('.newcommentpanel textarea').attr('placeholder', 'Answer Text');
+					newCommentViewModel().validate_comment_type(false);
 				}
 				else // comment
 				{
@@ -703,9 +714,10 @@
 					$('.newcommentpanel #form-type-select').removeClass('hidden');
 					$('.newcommentpanel #comment-label').text('Comment');
 					$('.newcommentpanel textarea').attr('placeholder', 'Comment Text');
+					newCommentViewModel().validate_comment_type(true);
 				}
-				console.log('comment_type default = ' + newCommentViewModel.comment_type());
-				newCommentViewModel.showNewCommentPanel();
+				console.log('comment_type default = ' + newCommentViewModel().comment_type());
+				newCommentViewModel().showNewCommentPanel();
 			});
 		}
 		
@@ -753,6 +765,7 @@
 				
 				if (jqXHR.status == 201)
 				{
+					newCommentViewModel().showNewCommentPanel();
 					console.log('Updating comments list for propsalal' + self.proposal.id());
 					self.comments.push({
 			      		id: ko.observable(data.comment.id),
@@ -766,9 +779,20 @@
 				}
 				else
 				{
-					alert(jqXHR.status);
+					console.log('addcomment: There was an problem adding the comment. Status ' + jqXHR.status);
+					$('.newcommentpanel .alert')
+					.html(data.message)
+					.setAlertClass('danger')
+					.fadeIn();
 				}
-			});
+			}).fail(function(jqXHR) 
+    		{
+    			console.log('addcomment: There was an error with add comment. Status ' + jqXHR.status);
+    			$('.newcommentpanel .alert')
+				.html(JSON.parse(jqXHR.responseText).message)
+				.setAlertClass('danger')
+				.fadeIn();
+            });
 		}
 		
 		self.setIndex = function(index)

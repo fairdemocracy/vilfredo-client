@@ -55,7 +55,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='localisation/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		{{ flask_util_js.js }}
     </head>
     <body>
@@ -446,6 +446,7 @@
 								
 			<!-- New comment panel -->
 			<div class="newcommentpanel">
+				<div class="message alert alert-danger"></div>
 				<div class="newcomment">
 					<h4>
 						Add a point for or against this proposal
@@ -456,29 +457,22 @@
 						<div id="form-type-select" class="form-group">
 							<label for="inputCommentType" class="col-sm-2 control-label">Comment Type</label>
 							<div class="col-sm-10">
-								<select data-bind="value: comment_type" id="inputCommentType" class="form-control">
-									<option>
-										Select comment type:
-									</option>
-									<option>
-										for
-									</option>
-									<option>
-										against
-									</option>
-								</select>
+								<span class="errormsg" data-bind="validationMessage: comment_type"></span>
+								<select data-bind="options: comment_type_options, value: comment_type, optionsCaption: 'Select Comment Type...'" id="inputQuestionMinMoveTime"></select>
+									
 							</div>
 						</div>
 						<div class="form-group">
 							<label id='comment-label' for="inputComment" class="col-sm-2 control-label">Comment</label>
 							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: comment"></span>
 								<textarea data-bind="value: comment" id="inputComment" class="form-control" rows="6" placeholder="Comment Text">
 								</textarea>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
-								<button data-bind="click: add" type="button" class="btn btn-primary">Submit</button> <button type="button" data-bind="click: showNewCommentPanel" class="btn btn-default">Cancel</button>
+								<button data-bind="click: add, enable: isValid()" type="button" class="btn btn-primary">Submit</button> <button type="button" data-bind="click: showNewCommentPanel" class="btn btn-default">Cancel</button>
 							</div>
 						</div>
 					</form>
@@ -754,9 +748,12 @@
 		addProposalViewModel = ko.validatedObservable( new AddProposalViewModel() );
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
+		
+		//newCommentViewModel = new NewCommentViewModel();
+		newCommentViewModel = ko.validatedObservable( new NewCommentViewModel() );
+		
 		threeWayVoteViewModel = new ThreeWayVoteViewModel();
 		viewProposalViewModel = new ViewProposalViewModel();
-		newCommentViewModel = new NewCommentViewModel();
 		questionViewModel = new QuestionViewModel();
 		
 		initPage();
@@ -774,9 +771,7 @@
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
 		
 		ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
-		
-		//ko.applyBindings(proposalsViewModel, $('.heading')[0]);
-		
+				
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #propdetails')[0]);
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showcomments')[0]);
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showquestions')[0]);
