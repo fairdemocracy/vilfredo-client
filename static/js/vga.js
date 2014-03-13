@@ -18,6 +18,256 @@
 #
 ****************************************************************************/
 
+	
+	function getNumericStyleProperty(style, prop){
+        return parseInt(style.getPropertyValue(prop),10) ;
+    }
+
+    function element_position(e) {
+        var x = 0, y = 0;
+        var inner = true ;
+        do {
+            x += e.offsetLeft;
+            y += e.offsetTop;
+            var style = getComputedStyle(e,null) ;
+            var borderTop = getNumericStyleProperty(style,"border-top-width") ;
+            var borderLeft = getNumericStyleProperty(style,"border-left-width") ;
+            y += borderTop ;
+            x += borderLeft ;
+            if (inner){
+              var paddingTop = getNumericStyleProperty(style,"padding-top") ;
+              var paddingLeft = getNumericStyleProperty(style,"padding-left") ;
+              y += paddingTop ;
+              x += paddingLeft ;
+            }
+            inner = false ;
+        } while (e = e.offsetParent);
+        return { x: x, y: y };
+    }
+    
+    // Get point in global SVG space
+    function cursorPoint(svg, evt){
+      var pt = svg.createSVGPoint();
+      pt.x = evt.clientX; pt.y = evt.clientY;
+      return pt.matrixTransform(svg.getScreenCTM().inverse());
+    }
+    function initCVTriangle_v2(svg)
+	{
+		$('#votenowwindow .showtriangle .votenow').on( "click", function(e) {
+        	var loc = cursorPoint(svg, e);
+            console.log(loc.x + ' , ' + loc.y);
+        	//svg = $('#votenowwindow .showtriangle').svg('get');
+        	//svg.circle(currentx, currenty, 12, {class: 'vote', fill: 'white', stroke: 'white', strokeWidth: 2, cursor:     'pointer'});
+    	});
+	}
+	
+	
+	function drawTriangle2(svg, width, height)
+	{
+		var path = svg.createPath();
+	    var triangle = svg.path(
+	        path.move( 100, 0)
+	        .line( -100, 200, true )
+	        .line( 200, 0, true )
+	        .close(),
+	        {
+	            fill: 'blue', 
+	            stroke: 'white', 
+	            strokeWidth: 2
+	        }
+	    );
+	}
+	
+	
+	
+	function initCVTriangleLarge_v2(svg)
+	{
+	    var c = document.getElementsByClassName('pointer');
+	    var cx = c.cx.baseVal;
+	    var cy = c.cy.baseVal;
+	    var svg = this;
+	    var point = svg.createSVGPoint();
+	    svg.onmousemove = function(e){
+	        point.x = e.clientX;
+	        point.y = e.clientY;
+	        var ctm = c.getScreenCTM();
+	        var inverse = ctm.inverse();
+	        var p = point.matrixTransform(inverse);
+	        cx.value = p.x;
+	        cy.value = p.y;
+	    };
+    }
+    
+    function createVotesMap_v1(svg)
+	{
+		container_width = $(svg._container).innerWidth();
+	    container_height = 0.7 * container_width;
+	    
+		var path = svg.createPath();
+	    var triangle = svg.path(
+	        path.move(0, 0)
+	        .line( 100, 140, true )
+	        .line( 100, -140, true )
+	        .close(),
+	        {
+	            fill: 'blue',
+	            stroke: 'white',
+	            strokeWidth: 2
+	        }
+	    );
+	}
+	
+	function createVotesMap(svg)
+	{
+		console.log('createVotesMap called...');
+		container_width = $(svg._container).innerWidth();
+		console.log('container_width = ' + container_width);
+	    container_height = 0.7 * container_width;
+	    console.log('container_height = ' + container_height);
+		var path = svg.createPath();
+	    var triangle = svg.path(
+	        path.move(0, 0)
+	        .line( container_width/2, container_height, true )
+	        .line( container_width/2, -container_height, true )
+	        .close(),
+	        {
+	            fill: 'blue',
+	            stroke: 'white',
+	            strokeWidth: 2
+	        }
+	    );
+	    var g = svg.group({id : 'votes'});
+	    var radius = 10;
+	    var cursor = svg.circle(100, 50, radius, {class: 'cursor', fill: 'blue', cursor: 'pointer'});
+	    $(triangle).on( "mousemove", function(e) {
+        	if ($(cursor).attr('fill') == 'blue') { $(cursor).attr('fill', 'white'); }
+        	var posX = $(this).offset().left;
+            var posY = $(this).offset().top;
+        	$(cursor).attr('cx', e.pageX - posX - radius)
+        	.attr('cy', e.pageY - posY - radius);
+    	});
+    	$(cursor).on( "mousemove", function(e) {
+        	var posX = $(triangle).offset().left;
+            var posY = $(triangle).offset().top;
+        	$(this).attr('cx', e.pageX - posX - radius)
+        	.attr('cy', e.pageY - posY - radius);
+    	});
+    	$(cursor).on( "click", function(e) {
+        	console.log('mouse click...');
+        	var posX = $(triangle).offset().left;
+        	var cx = e.pageX - posX - radius;
+            var posY = $(triangle).offset().top;
+            var cy = e.pageY - posY - radius;
+        	svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+    	});
+	}
+	
+	function initCVTriangleLarge(jqsvg)
+	{
+		width = $(jqsvg._container).innerWidth();
+	    height = $(jqsvg._container).innerHeight();
+	    //svg.configure({width: width, height: height}, true);
+	    panelwidth = $('#cvtriangle').innerWidth();
+        panelheight = $('#cvtriangle').innerHeight();
+		//svg.configure({width: panelwidth, height: panelheight}, true);
+
+		//jqsvg = $('#cvtriangle').svg('get');
+		var votemap = $('.votemap', jqsvg.root()).get(0);
+		var pointer = $('.pointer', jqsvg.root()).get(0);
+
+		$(pointer).on( "click", function(e) {
+        	console.log('mouse click...');
+        	//return;
+        	//jqsvg = $('#cvtriangle').svg('get');
+        	//svg = document.querySelector("svg");
+        	svg = document.getElementsByTagName("svg")[1];
+        	var pt = svg.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            pt = pt.matrixTransform(svg.getScreenCTM().inverse());
+            console.log('Draw point at pt.x ' + pt.x + ' , pt.y ' + pt.y);
+            // Add vote to votes group
+            var votes = $('.votes', jqsvg.root()).get(0);
+        	jqsvg.circle(pt.x, pt.y, 5, {class: 'vote', fill: 'yellow', stroke: 'white', strokeWidth: 0, cursor: 'pointer'});
+    	});
+    	
+    	$(votemap).on( "mouseout", function(e) {
+        	console.log('mouse out...');
+        	return;
+        	var jqsvg = $('#cvtriangle').svg('get');
+        	var pointer = $('.pointer', jqsvg.root()).remove();
+    	});
+		
+		$(votemap).on( "mousemove", function(e) {
+        	console.log('mouse move...');
+        	//svg = document.querySelector("svg");
+        	svg = document.getElementsByTagName("svg")[1];
+        	var pt = svg.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            pt = pt.matrixTransform(svg.getScreenCTM().inverse());
+            console.log('Move point to pt.x ' + pt.x + ' , pt.y ' + pt.y);
+        	
+        	var pointer = $('.pointer', jqsvg.root()).get(0);
+        	$(pointer).attr('fill', 'white');
+    	    var cx = pointer.cx.baseVal;
+            var cy = pointer.cy.baseVal;
+    	    cx.value = Math.round(pt.x);
+            cy.value = Math.round(pt.y);
+    	});
+    	$(pointer).on( "mousemove", function(e) {
+        	console.log('mouse move...');
+        	//svg = document.querySelector("svg");
+        	svg = document.getElementsByTagName("svg")[1];
+        	var pt = svg.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            pt = pt.matrixTransform(svg.getScreenCTM().inverse());
+            console.log('Move point to pt.x ' + pt.x + ' , pt.y ' + pt.y);
+        	
+        	var pointer = $('.pointer', jqsvg.root()).get(0);
+        	$(pointer).attr('fill', 'white');
+        	    var cx = pointer.cx.baseVal;
+	            var cy = pointer.cy.baseVal;
+        	    cx.value = pt.x;
+	            cy.value = pt.y;
+    	});
+	}
+	
+	function initCVTriangle(svg)
+	{
+		$('#votenowwindow .showtriangle .votenow').on( "click", function(e) {
+        	
+        	var posX = $(this).offset().left;
+            var posY = $(this).offset().top;
+            
+            console.log('posX ' + posX + ' , ' + 'posY ' + posY);
+            console.log('e.pageX ' + e.pageX + ' , ' + 'e.pageY ' + e.pageY);
+            
+            panelwidth = $('.showtriangle').innerWidth();
+            panelheight = $('.showtriangle').innerHeight();
+            
+            console.log('panelwidth ' + panelwidth + ' , ' + 'panelheight ' + panelheight);
+            
+        	console.log((e.pageX - posX) + ' , ' + (e.pageY - posY));
+        	currentx = (e.pageX - posX);
+            currenty = (e.pageY - posY);
+            console.log(currentx + ' , ' + currenty);
+        	svg = $('#votenowwindow .showtriangle').svg('get');
+        	svg.circle(currentx, currenty, 5, {class: 'vote', fill: 'white', stroke: 'white', strokeWidth: 2, cursor: 'pointer'});
+
+    	});
+	}
+	
+    showCVTriangle = function()
+	{
+		$('#votenowwindow').modal('show');
+		//$('.showtriangle').svg({onLoad: drawVotingTriangle});
+		$('#votenowwindow .showtriangle').svg({loadURL: STATIC_FILES + '/images/voting_triangle.svg', onLoad: initCVTriangle});
+	}
+
+	
+	
 	var TimePeriod = function(label, seconds) {
         this.period = label;
         this.seconds = seconds;
@@ -162,6 +412,23 @@
 				return false;
 			}
 		}
+		
+		self.requestPasswordReset = function(email)
+		{
+			var URI = VILFREDO_API +'/request_password_reset';
+			return ajaxRequest(URI, 'POST', {email: email}).done(function(data, textStatus, jqXHR) {
+				loginViewModel().close();
+				console.log('CurrentUserViewModel.requestPasswordReset');
+				console.log(data);
+			}).fail(function(jqXHR) {
+               console.log('requestPasswordReset: There was an error. Status ' + jqXHR.status);
+    			$('#pwdreset .message .alert')
+				.html(JSON.parse(jqXHR.responseText).message)
+				.setAlertClass('danger')
+				.fadeIn();
+            });
+		}
+		
 		self.getAuthToken = function()
 		{
 			var URI = VILFREDO_API +'/authtoken';
@@ -253,7 +520,7 @@
 	{
         var self = this;
         self.room = ko.observable('');
-        self.title = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
+        self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:2 });
         self.blurb = ko.observable('').extend({ required: true, maxLength: 1000, minLength:10 });
 
         self.availableTimePeriods = ko.observableArray([
@@ -1372,6 +1639,7 @@
 	var pfvotesgraph;
 	var triangle;
 	
+	
 	function drawTriangle(svg)
 	{
 		var path = svg.createPath();
@@ -1395,7 +1663,7 @@
 		var height = 700; 
 		gwidth = width || $(svg._container).innerWidth();
 		gheight = height || $(svg._container).innerHeight();
-		svg.configure({width: gwidth, height: gheight});
+		svg.configure({width: gwidth, height: gheight}, true);
 	}
 	
 	function initTriangle(svg)

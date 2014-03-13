@@ -5991,6 +5991,17 @@ body {
 .errormsg {
   color: red;
 }
+.votesmap {
+  width: 70%;
+  height: 500px;
+  border: 1px solid grey;
+  margin: auto, 0;
+}
+#cvtriangle {
+  width: 100%;
+  height: 100%;
+  border: 1px solid grey;
+}
 .prop_link {
   margin: 0 5px;
   padding: 0 5px;

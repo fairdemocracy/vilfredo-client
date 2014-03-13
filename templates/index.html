@@ -46,7 +46,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svganim.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
@@ -128,9 +128,13 @@
 		<div class="jumbotron intro">
 		  <h1>Welcome to Vilfredo</h1>
 		  <p>...</p>
-		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> <a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-lg" role="button" data-toggle="modal" data-target="#register" href="#register" >Register</a></p>
+		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> <a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-lg" role="button" data-toggle="modal" data-target="#register" href="#register">Register</a></p>
 		</div>
 		
+		<div class="votesmap"></div> 
+		
+		<!-- <div id="cvtriangle"></div> -->
+	
 		<h1>Active Questions</h1>
 		
 		<div class="all-questions">
@@ -375,6 +379,7 @@
 			</div><!-- modal-content -->
 		</div><!-- modal-dialog -->
 	</div><!-- login modal -->
+
 	
 	<!-- Register Modal -->
 	<div id="register" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="RegisterBox" aria-hidden="true">
@@ -449,10 +454,16 @@
 		
 		initPage();
 		
+		$('.votesmap').svg({onLoad: createVotesMap});
+		
+		//$('#cvtriangle').svg({loadURL: STATIC_FILES + '/images/voting_triangle.svg', onLoad: initCVTriangleLarge});
+		
+		
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 	
 		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
-		ko.applyBindings(loginViewModel, $('#login')[0]);
+		
+		ko.applyBindings(loginViewModel, $('#login')[0]);		
 		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
 		
