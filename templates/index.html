@@ -131,7 +131,7 @@
 		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> <a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-lg" role="button" data-toggle="modal" data-target="#register" href="#register">Register</a></p>
 		</div>
 		
-		<div class="votesmap"></div> 
+		<!-- <div class="votesmap"></div> -->
 		
 		<!-- <div id="cvtriangle"></div> -->
 	
@@ -329,7 +329,7 @@
 	        <h4 class="modal-title">Please Vote</h4>
 	      </div>
 	      <div class="modal-body">
-			<div class="showtriangle"></div>
+			<div class="modalvotesmap"></div>
 		  </div><!-- /.modal-body -->
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
@@ -454,7 +454,12 @@
 		
 		initPage();
 		
-		$('.votesmap').svg({onLoad: createVotesMap});
+		//$('.votesmap').svg({onLoad: createVotesMap});
+		
+		$('#votenowwindow').on('shown.bs.modal', function() {
+			//console.log('votenowwindow modal shown...');
+			$('.modalvotesmap').svg({onLoad: createVoteMap});
+		})
 		
 		//$('#cvtriangle').svg({loadURL: STATIC_FILES + '/images/voting_triangle.svg', onLoad: initCVTriangleLarge});
 		
@@ -463,7 +468,7 @@
 	
 		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
 		
-		ko.applyBindings(loginViewModel, $('#login')[0]);		
+		ko.applyBindings(loginViewModel, $('#login')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
 		

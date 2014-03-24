@@ -5991,6 +5991,16 @@ body {
 .errormsg {
   color: red;
 }
+#votenowwindow .modal-dialog {
+  width: 60%;
+  height: 100% !important;
+  overflow-y: hidden;
+}
+.modalvotesmap {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 .votesmap {
   width: 70%;
   height: 500px;

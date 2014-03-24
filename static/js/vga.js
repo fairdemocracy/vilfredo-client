@@ -117,13 +117,24 @@
 	    );
 	}
 	
-	function createVotesMap(svg)
+	function resetSize(svg, width, height) 
+    {
+    	svg.configure({width: width, height: height}, true);
+    }
+	
+	function createVoteMap(svg)
 	{
 		console.log('createVotesMap called...');
 		container_width = $(svg._container).innerWidth();
 		console.log('container_width = ' + container_width);
 	    container_height = 0.7 * container_width;
 	    console.log('container_height = ' + container_height);
+	    
+	    var max_x = container_width;
+	    var max_y = container_height;
+	    
+	    resetSize(svg, container_width, container_height); 
+	    
 		var path = svg.createPath();
 	    var triangle = svg.path(
 	        path.move(0, 0)
@@ -136,8 +147,38 @@
 	            strokeWidth: 2
 	        }
 	    );
+
+	    // Add current threshold point - debugging
+	    var threshold = svg.circle(container_width*questionViewModel.mapx, container_height*questionViewModel.mapx, 6, {class: 'threshold', fill: 'yellow'});
+	    
 	    var g = svg.group({id : 'votes'});
 	    var radius = 10;
+
+	    // Add current votes to votemap
+	    ko.utils.arrayForEach(proposalsViewModel.proposals(), function(proposal) {
+	        cx = container_width * proposal.mapx();
+	        cy = container_height * proposal.mapy();
+	        console.log("Draw vote at (" + cx + ", " + cy +")");
+	        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+	        $(vote).data('pid', proposal.id());
+	        $(vote).on( "mouseenter", function(e) {
+	            console.log("Proposal " + $(this).data('pid'));
+	            $('#votemap-thisprop').html($(this).data('pid'));
+	        });
+	    });
+	    
+	    $(cursor).on( "click", function(e) {
+        	console.log('mouse click...');
+        	var posX = $(triangle).offset().left;
+        	var cx = e.pageX - posX - radius;
+            var posY = $(triangle).offset().top;
+            var cy = e.pageY - posY - radius;
+        	svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+        	// Endorse with normalised vote coordinates
+        	var n_cx = max_x / cx;
+        	var n_cy = max_y / cy;
+    	});
+	    /*
 	    var cursor = svg.circle(100, 50, radius, {class: 'cursor', fill: 'blue', cursor: 'pointer'});
 	    $(triangle).on( "mousemove", function(e) {
         	if ($(cursor).attr('fill') == 'blue') { $(cursor).attr('fill', 'white'); }
@@ -152,6 +193,7 @@
         	$(this).attr('cx', e.pageX - posX - radius)
         	.attr('cy', e.pageY - posY - radius);
     	});
+    	
     	$(cursor).on( "click", function(e) {
         	console.log('mouse click...');
         	var posX = $(triangle).offset().left;
@@ -159,7 +201,11 @@
             var posY = $(triangle).offset().top;
             var cy = e.pageY - posY - radius;
         	svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+        	// Endorse with normalised vote coordinates
+        	var n_cx = max_x / cx;
+        	var n_cy = max_y / cy;
     	});
+    	*/
 	}
 	
 	function initCVTriangleLarge(jqsvg)
@@ -1270,6 +1316,12 @@
 		}
 	}
 
+	function voteMapViewModel()
+	{
+	    var self = this;
+	    self.proposal_index;
+	}
+
 	function ProposalsViewModel()
 	{
 	    var self = this;
@@ -1289,12 +1341,12 @@
 	        console.log('getUserKeyPlayerInfo');
 	        if (match) 
 	        {
-	            console.log('Current user IS a key player');
-	            console.log(match.id());
+	            //console.log('Current user IS a key player');
+	            //console.log(match.id());
             }
             else
             {
-                console.log('Current user IS NOT a key player');
+                //console.log('Current user IS NOT a key player');
             }
 	        return match;
 	    };
@@ -1366,6 +1418,14 @@
 		{
 		    console.log("ProposalsViewModel.readproposal called with id " + id);
 		    index = self.fetchIndex(id);
+		}
+		
+		self.openvotemap = function(index, proposal)
+		{
+			console.log("ProposalsViewModel.openvotemap called with index " + index);
+			voteMapViewModel.setProposal(proposal);
+			voteMapViewModel.index = index;
+			$('#votenowwindow').modal('show');
 		}
 		
 		self.read = function(index, proposal)
@@ -1458,6 +1518,54 @@
 				}
 			});
 		}
+		
+		self.mapEndorseWithIndex = function(mapx, mapy, index)
+		{
+			if (currentUserViewModel.isLoggedIn() == false)
+			{
+			    console.log("Not logged in");
+			    return;
+			}
+			var proposal = self.proposals()[index];
+			console.log('mapEndorseWithIndex called with index ' + index + ' and coords ' + mapx + ', ' + mapy);
+			var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
+			console.log('endorse uri = ' + endorse_uri);
+			
+			// Normalize vote coordinates
+            
+            var coords = {mapx: mapx, mapy: mapy};
+			
+			ajaxRequest(endorse_uri, 'POST', {use_votemap:true, coords:coord})
+			.done(function(data, textStatus, jqXHR)
+			{
+			    console.log('Proposals data returned...');
+				console.log(data);
+				
+				if (jqXHR.status == 201)
+				{
+					console.log('Updating proposal ' + proposal.id() + ' to ' + endorsement_type);
+					var prev_endorsement_type = proposal.endorse_type();
+					proposal.endorse_type(endorsement_type);
+					viewProposalViewModel.setProposal(proposal);
+					if ( (prev_endorsement_type == 'endorse'
+						&& (endorsement_type == 'confused' || endorsement_type == 'oppose')) 
+					|| (endorsement_type == 'endorse'
+						&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
+						    || prev_endorsement_type == 'notvoted')) )
+					{
+						console.log('Refreshing graphs after vote...');
+						fetchVotingGraphs();
+					}
+					// reset key players
+					self.fetchKeyPlayers();
+				}
+				else
+				{
+					alert(jqXHR.status);
+				}
+			});
+		}
+		
 		self.endorseWithIndex = function(endorsement_type, index)
 		{
 			if (currentUserViewModel.isLoggedIn() == false)
@@ -1568,7 +1676,9 @@
 						uri: ko.observable(data.proposals[i].uri),
 						author_id: ko.observable(parseInt(data.proposals[i].author_id)),
 						question_count: ko.observable(parseInt(data.proposals[i].question_count)),
-						comment_count: ko.observable(parseInt(data.proposals[i].comment_count))
+						comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+						mapx: ko.observable(parseFloat(data.proposals[i].mapx)),
+						mapy: ko.observable(parseFloat(data.proposals[i].mapy))
 			  		});
 				}
 				
@@ -1818,6 +1928,8 @@
 		self.last_move_on = ko.observable();
 		self.minimum_time = ko.observable();
 		self.maximum_time = ko.observable();
+		self.mapx = ko.observable();
+		self.mapy = ko.observable();
 		self.created;
 		
 		self.canMoveOn = ko.computed(function() {
@@ -1885,6 +1997,8 @@
         		self.maximum_time(parseInt(data.question.maximum_time));
         		self.generation(data.question.generation);
         		self.created = parseInt(data.question.created);
+        		self.mapx = parseFloat(data.question.mapx);
+        		self.mapy = parseFloat(data.question.mapy);
         		
         		/*
         		$(".question-info").each(function(){
