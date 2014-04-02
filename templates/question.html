@@ -349,7 +349,8 @@
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
-					
+					<!-- <a data-toggle="modal" data-target="#votemapwindow">votemap</a> -->
+					<a data-bind="click: $parent.openvotemap.bind($data, $index())">votemap</a>
 					<!--
 					<button data-bind="click: $parent.endorse.bind($data, 'endorse')" type="button" class="btn btn-xs btn-success">Endorse</button>
 					<button data-bind="click: $parent.endorse.bind($data, 'oppose')" type="button" class="btn btn-xs btn-danger">Oppose</button>
@@ -363,7 +364,7 @@
 					<div class="voting"></div>
 					</a>
 					-->
-					<div class="voting"></div>
+					<div data-bind="click: $parent.openvotemap.bind($data, $index())" class="voting"></div>
 					<!--
 					<a data-toggle="popover" data-placement="top" rel="popover" title="">
 					<img src="static/images/triangle.svg" width="40" height="40" alt="">
@@ -407,13 +408,13 @@
 	<!-- Continuous Voting Modal -->
 	<div id="votemapwindow" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
 	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
+	    <div class="modal-content"> 
+	      <div class="vpheader modal-header"> <!-- add here -->
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title">Please Vote <span id="votemap-thisprop"></span></h4>
+			<p class="modal-title"><span id="votemap-thisprop"></span></p>
 	      </div>
 	      <div class="modal-body">
-			<div class="modalvotesmap"></div>
+			<div id="modalvotesmap"></div>
 		  </div><!-- /.modal-body -->
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
@@ -425,7 +426,7 @@
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div data-bind="css: endorse_type" class="vpheader modal-header">
-			<div class="votebox"></div>
+			<div data-bind="click: openvotemap.bind($data)" class="votebox"></div>
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	        <h4 class="vptitle modal-title" data-bind="text: title"></h4>
 			<div class="controls">
@@ -443,8 +444,7 @@
 			</div> <!-- controls -->
 	      </div><!-- modal-header -->
 	      <div id="viewproposalbody" class="modal-body">
-		   <div>
-								
+		   <div>				
 			<!-- New comment panel -->
 			<div class="newcommentpanel">
 				<div class="message alert alert-danger"></div>
@@ -749,6 +749,7 @@
 		addProposalViewModel = ko.validatedObservable( new AddProposalViewModel() );
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
+		voteMapViewModel = new VoteMapViewModel();
 		
 		//newCommentViewModel = new NewCommentViewModel();
 		newCommentViewModel = ko.validatedObservable( new NewCommentViewModel() );
@@ -761,12 +762,13 @@
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
-			$('.modalvotesmap').svg({onLoad: createVoteMap});
+			$('#modalvotesmap').svg({onLoad: createVoteMap});
 		})
 		
 		$('#votemapwindow').on('hide.bs.modal', function() {
 			console.log('votemapwindow modal about to close, destroy map...');
-			$('.modalvotesmap').svg('destroy');
+			$('#modalvotesmap').svg('destroy');
+			$('#votemap-thisprop').html('');
 		})
 		
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
@@ -793,6 +795,8 @@
 		ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(addProposalViewModel, $('#addproposal')[0]);
 		ko.applyBindings(threeWayVoteViewModel, $('#vote3waywindow')[0]);
+		
+		ko.applyBindings(voteMapViewModel, $('#votemapwindow')[0]);
 		
 		/*
 		$('.votenow').on( "click", function(e) {

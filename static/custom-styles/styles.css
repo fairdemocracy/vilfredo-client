@@ -6227,6 +6227,14 @@ fieldset[disabled] .select_comment.supports button.active {
     width: 16.666666666666664%;
   }
 }
+#votemapwindow {
+  z-index: 5000;
+}
+#votemapwindow .modal-dialog {
+  width: 63%;
+  /*height: 800px !important;*/
+  overflow-y: hidden;
+}
 #viewproposal .modal-dialog {
   width: 90%;
   height: 100% !important;
