@@ -147,7 +147,6 @@
 		</div>
 		<!-- question-view end -->
 		
-		
 		<div id="keyplayer_info">
 		<!-- ko if: key_players().length --> <!-- 0 -->
 		<div class="keyplayers">
@@ -759,6 +758,12 @@
 		questionViewModel = new QuestionViewModel();
 		
 		initPage();
+		
+		$('#viewproposal').on('shown.bs.modal', function() { // coin
+			//console.log('votemapwindow modal shown...');
+			$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
+									   onLoad: init3WayTriangle});
+		})
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');

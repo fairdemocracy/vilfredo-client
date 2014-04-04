@@ -264,7 +264,18 @@ $.extend(SVGWrapper.prototype, {
 			}
 		}
 		for (var attrName in settings) {
-			node.setAttribute($.svg._attrNames[attrName] || attrName, settings[attrName]);
+			/*
+			if (attrName == 'width' || attrName == 'height')
+			{
+			    if ((attrName == 'width' && settings[attrName]) || (attrName == 'height' && settings[attrName]))
+    			{
+    			    node.setAttribute($.svg._attrNames[attrName] || attrName, settings[attrName]);
+    			}
+    		}
+    		else
+    		{*/
+    		    node.setAttribute($.svg._attrNames[attrName] || attrName, settings[attrName]);
+    		//}
 		}
 		return this;
 	},

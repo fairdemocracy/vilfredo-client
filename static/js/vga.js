@@ -1307,16 +1307,22 @@
 			{
 				console.log('Loading voting triangle to view proposal window...');
 				
+				/*
 				if ($('.votebox').svg('get'))
                 {
                     console.log('Removing svg from votebox------------');
                     $('.votebox').svg('destroy').data('pid', false).data('index', false);
-                }
+                }*/
 				
 				$('.votebox').data('pid', self.proposal.id).addClass('threeway').data('index', self.index);
 				//$('.votebox').svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
-				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
-								   //onLoad: self.init3WayTriangle});
+				/*
+				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
+								   onLoad: init3WayTriangle});
+				*/
+				
+				//var bg_image = "url('" + STATIC_FILES + "/images/triangle.svg" + "')";
+				//$('.votebox').css('background-image', bg_image);
 			}
 		}
 		
