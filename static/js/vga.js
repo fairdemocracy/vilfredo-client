@@ -130,8 +130,24 @@
 			$(vote).remove();
 		}
 		
+		// Set color based on endorse_type
+		switch(proposal.endorse_type())
+        {
+        case 'endorse':
+            fill_color = 'green';
+            break;
+        case 'oppose':
+            fill_color = 'red';
+            break;
+        case 'confused':
+            fill_color = 'blue';
+            break;
+        default:
+            fill_color = 'yellow';
+        }
+		
 		// Plot vote on votemap
-		vote = svg.circle(votesgroup, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+		vote = svg.circle(votesgroup, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
         $(vote).data('pid', proposal.id());
         $(vote).on( "mouseenter", function(e) {
             //console.log("Proposal " + $(this).data('pid'));
@@ -190,14 +206,13 @@
 	        .line( container_width/2, -container_height, true )
 	        .close(),
 	        {
-	            fill: 'blue',
-	            stroke: 'white',
+	            fill: 'white',
+	            stroke: '#CDCDCD',
 	            strokeWidth: 2,
 	            id: 'map'
 	        }
 	    );
 
-	    
 	    var threshold_x = container_width*questionViewModel.mapx;
 	    var threshold_y = container_height*questionViewModel.mapy;
 	    // Add current threshold point - debugging
@@ -206,8 +221,8 @@
 	    
 	    
 	    // Add threshold marker
-	    var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'white'});
-	    var marker_left = svg.line(0, threshold_y, max_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'white'});
+	    var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: '#CDCDCD'});
+	    var marker_left = svg.line(0, threshold_y, max_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: '#CDCDCD'});
 	    /*
 	    var threshold = svg.circle(threshold_x, threshold_y, 6, {class: 'threshold', fill: '#D1EEEE'});
 	    $(threshold).on( "mouseenter", function(e) {
@@ -240,11 +255,25 @@
 	        
 	        if (proposal.id() == voteMapViewModel.proposal_id()) // here
 	        {
-	            fill_color = 'yellow';
+	            console.log('VoteMap point is of type' + voteMapViewModel.endorse_type());
+	            switch(voteMapViewModel.endorse_type())
+                {
+                case 'endorse':
+                    fill_color = 'green';
+                    break;
+                case 'oppose':
+                    fill_color = 'red';
+                    break;
+                case 'confused':
+                    fill_color = 'blue';
+                    break;
+                default:
+                    fill_color = 'yellow';
+                }
 	        }
 	        else
 	        {
-	            fill_color = 'white';
+	            fill_color = '#BEBEBE';
 	        }
 	        
 	        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
@@ -1264,6 +1293,7 @@
 			console.log("ViewProposalViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
 			voteMapViewModel.proposal_index(index);
 			voteMapViewModel.proposal_id(proposal.id());
+			voteMapViewModel.endorse_type(proposal.endorse_type());
 			$('#votemap-thisprop').html(proposal.title());
 			$('#votemapwindow').modal('show');
 		}
@@ -1482,6 +1512,7 @@
 	    var self = this;
 	    self.proposal_index = ko.observableArray();
 	    self.proposal_id = ko.observableArray();
+	    self.endorse_type = ko.observableArray();
 	}
 
 	function ProposalsViewModel()
@@ -1593,10 +1624,9 @@
 		self.openvotemap = function(index, proposal)
 		{
 			console.log("ProposalsViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
-			//voteMapViewModel.proposal_index = index;
 			voteMapViewModel.proposal_index(index);
-			//voteMapViewModel.proposal_id = proposal.id();
 			voteMapViewModel.proposal_id(proposal.id());
+			voteMapViewModel.endorse_type(proposal.endorse_type());
 			$('#votemap-thisprop').html(proposal.title());
 			$('#votemapwindow').modal('show');
 		}
