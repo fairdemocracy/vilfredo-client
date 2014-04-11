@@ -19,6 +19,10 @@
 ****************************************************************************/
 
 	
+	function plotThresholdEndpoint(Ax, Ay, Bx, By, Ty) {
+	    return (Ty - (Ay - (Ax * (By - Ay) ) / (Bx - Ax))) / ((By - Ay) / (Bx - Ax));
+	}
+	
 	function getNumericStyleProperty(style, prop){
         return parseInt(style.getPropertyValue(prop),10) ;
     }
@@ -196,6 +200,8 @@
 	    
 	    var max_x = container_width;
 	    var max_y = container_height;
+	    var mid_x = container_width/2;
+	    var mid_y = container_height/2;
 	    
 	    resetSize(svg, container_width, container_height); 
 	    
@@ -221,8 +227,16 @@
 	    
 	    
 	    // Add threshold marker
-	    var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: '#CDCDCD'});
-	    var marker_left = svg.line(0, threshold_y, max_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: '#CDCDCD'});
+	    var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
+	    
+	    var Lx = plotThresholdEndpoint(0, 0, mid_x, max_y, threshold_y);
+	    console.log("Left point at " + Lx + ", " + threshold_y);
+	    
+	    var Rx = plotThresholdEndpoint(max_x, 0, mid_x, max_y, threshold_y);
+	    console.log("Right point at " + Rx + ", " + threshold_y);
+	    // #CDCDCD
+	    var marker_left = svg.line(Lx, threshold_y, Rx, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
+	
 	    /*
 	    var threshold = svg.circle(threshold_x, threshold_y, 6, {class: 'threshold', fill: '#D1EEEE'});
 	    $(threshold).on( "mouseenter", function(e) {
