@@ -757,8 +757,11 @@
 		
 		$('#viewproposal').on('shown.bs.modal', function() { // coin
 			//console.log('votemapwindow modal shown...');
-			$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
-									   onLoad: init3WayTriangle});
+			if (question.phase == 'voting')
+			{
+				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
+										   onLoad: init3WayTriangle});
+			}
 		})
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
