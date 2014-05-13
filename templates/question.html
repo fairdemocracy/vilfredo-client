@@ -731,7 +731,8 @@
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
-		        proposalsViewModel.fetchProposals({user_only: true});
+				proposalsViewModel.fetchInheritedProposals();
+				proposalsViewModel.fetchProposals({user_only: true});
 		    }
 		    else
 		    {
@@ -825,6 +826,18 @@
 		
 		$('.home').attr('href', VILFREDO_URL);
 		$('.navbar-brand').attr('href', VILFREDO_URL);
+		
+		
+		// Goto room
+		$( "#gotoroom" ).on( "click", function() {
+			var gotoroom = $("#gotoroom_txt").val();
+			if (gotoroom != "")
+			{
+				var url = VILFREDO_URL+ "/room/" + gotoroom;
+				window.location = url;
+			}
+		});
+		
 		
 		$('body').popover({
 		    selector: '[rel="popover"]',

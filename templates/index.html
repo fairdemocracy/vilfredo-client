@@ -174,7 +174,8 @@
                 <div class="panel-body">
 				<div class="">
 					<!-- ko foreach: questions -->
-					<!-- ko if: phase() == "writing" && !$root.is_new_question($data) -->
+					<!-- ko if: !consensus_found() && phase() == "writing" && !$root.is_new_question($data) -->
+					
 					<div class="item">
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<img src="{{ url_for('static', filename='images/tree.jpg') }}" height=42 /> 
@@ -186,6 +187,7 @@
 					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
 					<!-- /ko -->
 					</div>
+					
 					<!-- /ko -->
 					<!-- /ko -->
 				</div>
@@ -224,7 +226,15 @@
                 <div class="panel-body">
 				<div class="">
 					<!-- ko foreach: questions -->
-					<!-- ko if: phase() == "consensus" -->
+					<!-- ko if: consensus_found() -->
+					
+					<div class="item">
+					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<img src="{{ url_for('static', filename='images/tree.jpg') }}" height=42 /> 
+					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
+					
+					</div>
+					
 					<!-- /ko -->
 					<!-- /ko -->
 				</div>
@@ -501,6 +511,16 @@
 		    selector: '[rel=tooltip]',
 			html: true,
 			container: 'body'
+		});
+		
+		// Goto room
+		$( "#gotoroom" ).click(function(){
+			var gotoroom = $("#gotoroom_txt").val();
+			if (gotoroom != "")
+			{
+				var url = VILFREDO_URL + "/room/" + gotoroom;
+				window.location = url;
+			}
 		});
 	
 		

@@ -19,6 +19,28 @@
 ****************************************************************************/
 
 	
+	function getQuerySegment(variable)
+	{
+        //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
+		var params = $.url().segment();
+		var match = params.indexOf(variable);
+		//console.log('getQueryVariable: match index = ' + match);
+		if (match > -1 && typeof params[match+1] != "undefined")
+		{
+			return params[match+1]
+		}
+		else
+		{
+			return false;
+		}
+	}
+	function getQueryVariable(variable)
+	{
+        //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
+		return $.url().param(variable);
+	}
+	
+	
 	function plotThresholdEndpoint(Ax, Ay, Bx, By, Ty) {
 	    return (Ty - (Ay - (Ax * (By - Ay) ) / (Bx - Ax))) / ((By - Ay) / (Bx - Ax));
 	}
@@ -1428,6 +1450,7 @@
 						proposal_count: ko.observable(parseInt(data.question.proposal_count)),
 						new_proposal_count: ko.observable(parseInt(data.question.new_proposal_count)),
 						new_proposer_count: ko.observable(parseInt(data.question.new_proposer_count)),
+						consensus_found: ko.observable(data.question.consensus_found),
 						inherited_proposal_count: ko.observable(parseInt(data.question.inherited_proposal_count)),
 						link: VILFREDO_URL + "/question/" + data.question.id
 			  		});
@@ -1473,6 +1496,7 @@
 						proposal_count: ko.observable(parseInt(data.questions[i].proposal_count)),
 						new_proposal_count: ko.observable(parseInt(data.questions[i].new_proposal_count)),
 						new_proposer_count: ko.observable(parseInt(data.questions[i].new_proposer_count)),
+						consensus_found: ko.observable(data.questions[i].consensus_found),
 						inherited_proposal_count: ko.observable(parseInt(data.questions[i].inherited_proposal_count)),
 						link: VILFREDO_URL + "/question/" + data.questions[i].id
 			  		});
@@ -1878,6 +1902,33 @@
 				}
 			});
 		}
+		
+		self.fetchInheritedProposals = function() {
+		    console.log('fetchInheritedProposals() called...');
+			var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
+			proposalsURI = proposalsURI + '?inherited_only=true';
+
+			ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
+			    console.log('Proposals data returned...');
+				console.log(data);
+				self.proposals([]);
+				for (var i = 0; i < data.proposals.length; i++) {
+			  		self.inherited_proposals.push({
+			      		id: ko.observable(parseInt(data.proposals[i].id)),
+						title: ko.observable(data.proposals[i].title),
+			      		blurb: ko.observable(data.proposals[i].blurb),
+			      		author: ko.observable(data.proposals[i].author),
+						endorse_type: ko.observable(data.proposals[i].endorse_type),
+						uri: ko.observable(data.proposals[i].uri),
+						author_id: ko.observable(parseInt(data.proposals[i].author_id)),
+						question_count: ko.observable(parseInt(data.proposals[i].question_count)),
+						comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+						mapx: parseFloat(data.proposals[i].mapx),
+						mapy: parseFloat(data.proposals[i].mapy)
+			  		});
+				}
+			});
+		}
 
 		self.fetchProposals = function(options) {
 		    console.log('fetchProposals() called...');
@@ -1888,12 +1939,14 @@
 		    {
 		        proposalsURI = proposalsURI + '?user_only=true';
 		    }
+		    /*
 		    else if (options != null && options.inherited_only != null)
 		    {
 		        proposalsURI = proposalsURI + '?inherited_only=true';
 		        // Add to inherited list
 		        proposals_list = self.inherited_proposals;
 		    }
+		    */
 			ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
 			    console.log('Proposals data returned...');
 				console.log(data);
@@ -1940,8 +1993,8 @@
 		//self.beginLogin();
 	}
 	
-	var username = "";//"john";
-	var password = "";//"test123";
+	var username = "";
+	var password = "";
 	/*
 	var question_id;
 	if ($.url().fsegment(1) == 'question')
@@ -1960,11 +2013,13 @@
 	//var question_id = ($.url().fsegment(1) == 'question') ? $.url().fsegment(2) : 1;
 	
 	var question_id = getQuerySegment('question');
+	var room = getQuerySegment('room');
 	
 	console.log(question_id);
 	//question_id = 1;
 		
-	var room = $.url().param('room') ? $.url().param('room') : '';
+	//var room = $.url().param('room') ? $.url().param('room') : '';
+	//var room = getQuerySegment('room');
 	
 	console.log(room);
 	
@@ -2230,7 +2285,7 @@
         		self.last_move_on(parseInt(data.question.last_move_on));
         		self.minimum_time(parseInt(data.question.minimum_time));
         		self.maximum_time(parseInt(data.question.maximum_time));
-        		self.generation(data.question.generation);
+        		self.generation(parseInt(data.question.generation));
         		self.created = parseInt(data.question.created);
         		self.mapx = parseFloat(data.question.mapx);
         		self.mapy = parseFloat(data.question.mapy);
@@ -2247,7 +2302,7 @@
 	{
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type;		
 		
-		return ajaxRequest(URI, 'GET').done(function(data) {
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('fetchGraph data returned...');
 			console.log(data);
 		});
@@ -2255,6 +2310,7 @@
 	
 	function fetchGraphs(question)
 	{
+	    console.log("fetchGraphs called...")
 	    generation = parseInt(question['generation']);
 	    if (question.phase == 'writing' && generation > 1)
 	    {
@@ -2271,7 +2327,8 @@
 		console.log("fetchWritingGraphs called...")
 		$.when(fetchGraph('pareto', generation-1)).done(function( graph_resp )
 		{
-			if (graph_resp[2].status == 204)
+			//if (typeof graph_resp[2].status !== 'undefined' && graph_resp[2].status == 204)
+			if (false)
 			{
 			    $('.voting-graphs').hide();
 			    console.log('fetchWritingGraphs: No endorsememnts yet');
@@ -2319,26 +2376,7 @@
         });
 	}
 	
-	function getQuerySegment(variable)
-	{
-        //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
-		var params = $.url().segment();
-		var match = params.indexOf(variable);
-		console.log('getQueryVariable: match index = ' + match);
-		if (match > -1 && typeof params[match+1] != "undefined")
-		{
-			return params[match+1]
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function getQueryVariable(variable)
-	{
-        //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
-		return $.url().param(variable);
-	}
+
   
 	var ajaxRequest = function(uri, method, data) {
 		console.log('ajaxRequest: request made... ' + uri);
