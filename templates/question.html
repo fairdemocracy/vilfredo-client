@@ -755,9 +755,9 @@
 		
 		initPage();
 		
-		$('#viewproposal').on('shown.bs.modal', function() { // coin
+		$('#viewproposal').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
-			if (question.phase == 'voting')
+			if (questionViewModel.phase() == 'voting')
 			{
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
 										   onLoad: init3WayTriangle});
@@ -825,16 +825,6 @@
 		$('.home').attr('href', VILFREDO_URL);
 		$('.navbar-brand').attr('href', VILFREDO_URL);
 		
-		
-		// Goto room
-		$( "#gotoroom" ).on( "click", function() {
-			var gotoroom = $("#gotoroom_txt").val();
-			if (gotoroom != "")
-			{
-				var url = VILFREDO_URL+ "/room/" + gotoroom;
-				window.location = url;
-			}
-		});
 		
 		
 		$('body').popover({

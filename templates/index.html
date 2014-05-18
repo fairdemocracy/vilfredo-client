@@ -258,13 +258,7 @@
 	      </div>
 	      <div class="modal-body">
 		<div class="message alert alert-danger"></div>
-		<form autocomplete="off" class="form-horizontal" role="form">
-		<div class="form-group">
-		    <label for="inputQuestionRoom" class="col-sm-2 control-label">Room (optional)</label>
-		    <div class="col-sm-10">
-		      <input data-bind="value: room" type="text" class="form-control input-lg" id="inputQuestionRoom" placeholder="Room">
-		    </div>
-		  </div>  
+		<form autocomplete="off" class="form-horizontal" role="form"> 
 		<div class="form-group">
 		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>
 		    <div class="col-sm-10">
@@ -508,22 +502,6 @@
 			container: 'body'
 		});
 		
-		// Goto room
-		$( "#gotoroom" ).click(function(){
-			var gotoroom = $("#gotoroom_txt").val();
-			if (gotoroom != "")
-			{
-				var url = VILFREDO_URL + "/room/" + gotoroom;
-				window.location = url;
-			}
-		});
-	
-		
-		$("#inputQuestionRoom").charCount({
-			allowed: 20,		
-			warning: 15,
-			counterText: "Left" + " "
-		});
 		
 		$("#inputQuestionTitle").charCount({
 			allowed: 50,		

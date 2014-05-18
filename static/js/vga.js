@@ -775,7 +775,6 @@
 	function NewQuestionViewModel() 
 	{
         var self = this;
-        self.room = ko.observable('');
         self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:2 });
         self.blurb = ko.observable('').extend({ required: true, maxLength: 1000, minLength:10 });
 
@@ -794,7 +793,6 @@
         self.resetform = function()
         {
 			console.log("NewQuestionViewModel.resetform() called ...");
-			self.room('');
             self.title('');
             self.blurb('');
             self.title.isModified(false);
@@ -814,7 +812,6 @@
 			console.log("NewQuestionViewModel.add() called ...");
 			
 			questionsViewModel.addQuestion({
-                room: self.room(),
                 title: self.title(),
                 blurb: self.blurb(),
                 minimum_time: self.minimum_time().seconds,
@@ -2215,7 +2212,6 @@
 		self.author_id = ko.observable();
 		self.phase = ko.observable();
 		self.generation = ko.observable();
-		self.room = ko.observable();
 		self.last_move_on = ko.observable();
 		self.minimum_time = ko.observable();
 		self.maximum_time = ko.observable();
@@ -2282,7 +2278,6 @@
         		self.author(data.question.author);
         		self.author_id(data.question.author_id);
         		self.phase(data.question.phase);
-        		self.room(data.question.room);
         		self.last_move_on(parseInt(data.question.last_move_on));
         		self.minimum_time(parseInt(data.question.minimum_time));
         		self.maximum_time(parseInt(data.question.maximum_time));

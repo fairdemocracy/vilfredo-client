@@ -5916,6 +5916,9 @@ body {
 .container.main {
   padding-top: 75px;
 }
+#footer {
+  margin-top: 40px;
+}
 .question-view,
 .voting-graphs,
 .current-proposals {
