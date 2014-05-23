@@ -21,6 +21,8 @@ var VILFREDO_URL = 'http://0.0.0.0:8080';
 
 var API_VERSION = 'v1';
 
+var ALGORITHM_VERSION = '1';
+
 // Don't edit below
 //
 var VILFREDO_API = VILFREDO_URL + '/api/' + API_VERSION;
