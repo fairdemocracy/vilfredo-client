@@ -5932,6 +5932,9 @@ body {
 .pointer {
   cursor: pointer;
 }
+td.verthdr {
+  font-weight: bold;
+}
 .alert {
   display: none;
 }
