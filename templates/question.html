@@ -72,12 +72,15 @@
 					</li>
 					<li data-bind="visible: isLoggedIn" class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">My Activity<b class="caret"></b></a>
-						<ul class="dropdown-menu">
+						<ul data-bind="visible: isLoggedIn" class="dropdown-menu">
 							<li>
 								<a href="#">My Questions</a>
 							</li>
 							<li>
 								<a href="#">Key Player</a>
+							</li>
+							<li>
+								<a class="alglink" href="">Algorithms</a>
 							</li>
 						</ul>
 					</li>
@@ -89,6 +92,11 @@
 					<li>
 						<a href="#contact">Contact</a>
 					</li>
+					
+					<li data-bind="visible: isLoggedIn">
+					<a class="alglink" href="">Algorithms</a>
+					</li>
+					
 					<li data-bind="visible: isLoggedOut"> 
 						<a data-toggle="modal" data-target="#login" href="#login">Login</a>
 					</li>
@@ -734,6 +742,10 @@
 		        proposalsViewModel.fetchProposals();
 		    }
 		
+			var qid = questionViewModel.id();
+			var gid = questionViewModel.generation();
+			$('.alglink').attr('href', VILFREDO_URL + '/domination/' + qid + '/gen/' + gid);
+		
 		});
 	}
 	
@@ -817,6 +829,8 @@
 		});
 		
 		$('.home').attr('href', VILFREDO_URL);
+		
+		
 		$('.navbar-brand').attr('href', VILFREDO_URL);
 		
 		
