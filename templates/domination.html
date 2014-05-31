@@ -293,7 +293,7 @@
 			<tr>
 				<td class="verthdr" data-bind="text: id"></td>
 				<!-- ko foreach: dominations -->
-				<td data-bind="text: $data"></td>
+				<td data-bind="html: $data"></td>
 				<!-- /ko -->
 			</tr>
 			<!-- /ko -->
@@ -308,16 +308,16 @@
 		</tr>
 		<tbody>
 		<tr>
-		<td class="verthdr">-1&nbsp;&nbsp;&nbsp;&nbsp;</td><td>Self relation</td>	
+		<td class="verthdr">=&nbsp;&nbsp;&nbsp;&nbsp;</td><td>Self relation</td>	
 		</tr>
 		<tr>
-		<td class="verthdr">0</td><td>No qualified voters</td>	
+		<td class="verthdr">&hellip;</td><td>No qualified voters</td>	
 		</tr>
 		<tr>
-		<td class="verthdr">1</td><td>Dominates</td>	
+		<td class="verthdr">^</td><td>Dominates</td>	
 		</tr>
 		<tr>
-		<td class="verthdr">2</td><td>Dominated</td>	
+		<td class="verthdr"><</td><td>Dominated</td>	
 		</tr>
 		</tbody>
 		</table>
