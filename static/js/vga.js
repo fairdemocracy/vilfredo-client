@@ -2215,8 +2215,18 @@ function QuestionViewModel()
 	self.created;
 	self.proposal_relations;
 	self.domination_map = ko.observable();
+	self.pareto_map = ko.observable();
 	self.algorithm = ko.observable(ALGORITHM_VERSION);
 	
+	
+	self.fetchParetoMap = function(generation, algorithm) {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/pareto_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Pareto Map data returned...');
+			self.pareto_map(data.pareto_map);
+			self.algorithm(algorithm);
+		});
+	}
 	
 	self.fetchDominationMap = function(generation, algorithm) {
 		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	

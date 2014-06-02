@@ -260,12 +260,10 @@
 		<!-- Graphs end -->
 		
 		
-	
-		<div id="domination_table">
-		
 		<!-- 
 		domination_table start
 		-->
+		<div id="domination_table">
 		<div class="page-header">
 			<h1>
 				Domination Table - Algorithm <span data-bind="text: algorithm"></span>
@@ -325,6 +323,44 @@
 		domination_table end
 		-->
 		
+		<!-- 
+		domination levels start
+		-->
+		<div id="domination_levels_table">
+		<div class="page-header">
+			<h1>
+				Domination Levels Table - Algorithm <span data-bind="text: algorithm"></span>
+			</h1>
+		</div>
+		
+		<br>
+		<div class="controls text-center">	
+			  <button data-bind="click: fetchParetoMap(generation_id, 1)" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: fetchParetoMap(generation_id, 2)" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+		</div>
+		<br>
+			
+			<table class="table" width="647">
+			<thead>
+			<tr>
+			<th>PID</th>
+			<th>Dominates</th>
+			<th>Dominated</th>
+			</thead>
+			<tbody>
+			<!-- ko foreach: pareto_map -->
+			<tr>
+				<td class="verthdr" data-bind="text: id"></td>
+				<td data-bind="text: levels.dominated"></td>
+				<td data-bind="text: levels.dominates"></td>
+			</tr>
+			<!-- /ko -->
+			</tbody>
+			</table>
+		</div>
+		<!-- 
+		domination_table end
+		-->
 		
 		
 		<!-- 
@@ -795,7 +831,8 @@
 			}
 			
 			console.log("generation_id = " + generation_id);
-			questionViewModel.fetchDominationMap(generation_id, 2);
+			questionViewModel.fetchDominationMap(generation_id, 1);
+			questionViewModel.fetchParetoMap(generation_id, 1);
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
@@ -876,6 +913,8 @@
 		ko.applyBindings(voteMapViewModel, $('#votemapwindow')[0]);
 		
 		ko.applyBindings(questionViewModel, $('#domination_table')[0]);
+		ko.applyBindings(questionViewModel, $('#domination_levels_table')[0]);
+		
 		
 
 		$('#vote3waywindow').on('hidden.bs.modal', function () {
