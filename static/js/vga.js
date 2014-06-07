@@ -2216,15 +2216,17 @@ function QuestionViewModel()
 	self.proposal_relations;
 	self.domination_map = ko.observable();
 	self.pareto_map = ko.observable();
-	self.algorithm = ko.observable(ALGORITHM_VERSION);
+	self.dom_algorithm = ko.observable(ALGORITHM_VERSION);
+	self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
+	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	
 	
-	self.fetchParetoMap = function(generation, algorithm) {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/pareto_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+	self.fetchLevelsMap = function(generation, algorithm) {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Pareto Map data returned...');
-			self.pareto_map(data.pareto_map);
-			self.algorithm(algorithm);
+			self.pareto_map(data.levels_map);
+			self.levels_table_algorithm(algorithm);
 		});
 	}
 	
@@ -2233,7 +2235,7 @@ function QuestionViewModel()
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Domination Map data returned...');
 			self.domination_map(data.domination_map);
-			self.algorithm(algorithm);
+			self.dom_table_algorithm(algorithm);
 		});
 	}
 	

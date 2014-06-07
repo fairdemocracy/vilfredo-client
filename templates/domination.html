@@ -266,7 +266,7 @@
 		<div id="domination_table">
 		<div class="page-header">
 			<h1>
-				Domination Table - Algorithm <span data-bind="text: algorithm"></span>
+				Domination Table - Algorithm <span data-bind="text: dom_table_algorithm"></span>
 			</h1>
 		</div>
 		
@@ -306,7 +306,10 @@
 		</tr>
 		<tbody>
 		<tr>
-		<td class="verthdr">=&nbsp;&nbsp;&nbsp;&nbsp;</td><td>Self relation</td>	
+		<td class="verthdr">=&nbsp;&nbsp;&nbsp;&nbsp;</td><td>Same proposal</td>	
+		</tr>
+		<tr>
+		<td class="verthdr">&approx;</td><td>Same supporters</td>	
 		</tr>
 		<tr>
 		<td class="verthdr">&hellip;</td><td>No qualified voters</td>	
@@ -329,14 +332,14 @@
 		<div id="domination_levels_table">
 		<div class="page-header">
 			<h1>
-				Levels Table - Algorithm <span data-bind="text: algorithm"></span>
+				Levels Table - Algorithm <span data-bind="text: levels_table_algorithm"></span>
 			</h1>
 		</div>
 		
 		<br>
 		<div class="controls text-center">	
-			  <button data-bind="click: fetchParetoMap(generation_id, 1)" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
-			  <button data-bind="click: fetchParetoMap(generation_id, 2)" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+			  <button data-bind="click: fetchLevelsMap(generation_id, 1)" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: fetchLevelsMap(generation_id, 2)" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
 		<br>
 			
@@ -832,7 +835,7 @@
 			
 			console.log("generation_id = " + generation_id);
 			questionViewModel.fetchDominationMap(generation_id, 1);
-			questionViewModel.fetchParetoMap(generation_id, 1);
+			questionViewModel.fetchLevelsMap(generation_id, 1);
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
