@@ -2215,17 +2215,36 @@ function QuestionViewModel()
 	self.created;
 	self.proposal_relations;
 	self.domination_map = ko.observable();
-	self.pareto_map = ko.observable();
+	self.levels_map = ko.observable();
 	self.dom_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	
+	self.selected_generation = ko.observable(generation_id);
+	
+	self.allGenerations = ko.computed(function() {
+        allgen = new Array();
+        gen = 1;
+        while (gen <= self.generation()) {
+            allgen.push(gen);
+            gen = gen + 1;
+        }
+        return allgen;
+    });
+    
+    self.fetchTables = function(generation_id) {
+        console.log("fetchTables turned off");
+        return;
+        self.selected_generation(generation_id)
+        self.fetchDominationMap(generation_id, self.dom_table_algorithm);
+		self.fetchLevelsMap(generation_id, self.levels_table_algorithm);
+    }
 	
 	self.fetchLevelsMap = function(generation, algorithm) {
 		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Pareto Map data returned...');
-			self.pareto_map(data.levels_map);
+			self.levels_map(data.levels_map);
 			self.levels_table_algorithm(algorithm);
 		});
 	}

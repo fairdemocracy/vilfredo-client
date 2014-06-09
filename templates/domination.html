@@ -260,20 +260,24 @@
 		<!-- Graphs end -->
 		
 		
+		
+		
 		<!-- 
 		domination_table start
 		-->
 		<div id="domination_table">
+		
+		
+			
 		<div class="page-header">
 			<h1>
 				Domination Table - Algorithm <span data-bind="text: dom_table_algorithm"></span>
 			</h1>
 		</div>
-		
 		<br>
 		<div class="controls text-center">	
-			  <button data-bind="click: fetchDominationMap(generation_id, 1)" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
-			  <button data-bind="click: fetchDominationMap(generation_id, 2)" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+			  <button data-bind="click: function(){ fetchDominationMap(generation_id, 1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: function(){ fetchDominationMap(generation_id, 2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
 		<br>
 			
@@ -338,8 +342,8 @@
 		
 		<br>
 		<div class="controls text-center">	
-			  <button data-bind="click: fetchLevelsMap(generation_id, 1)" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
-			  <button data-bind="click: fetchLevelsMap(generation_id, 2)" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+			  <button data-bind="click: function(){ fetchLevelsMap(generation_id, 1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: function(){ fetchLevelsMap(generation_id, 2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
 		<br>
 			
@@ -349,13 +353,15 @@
 			<th>PID</th>
 			<th>Dominates</th>
 			<th>Dominated</th>
+			<th>PF Dominated</th>
 			</thead>
 			<tbody>
-			<!-- ko foreach: pareto_map -->
+			<!-- ko foreach: levels_map -->
 			<tr>
 				<td class="verthdr" data-bind="text: id"></td>
 				<td data-bind="text: levels.dominated"></td>
 				<td data-bind="text: levels.dominates"></td>
+				<td data-bind="html: levels.pf_dominated"></td>
 			</tr>
 			<!-- /ko -->
 			</tbody>
@@ -917,6 +923,7 @@
 		
 		ko.applyBindings(questionViewModel, $('#domination_table')[0]);
 		ko.applyBindings(questionViewModel, $('#domination_levels_table')[0]);
+		//ko.applyBindings(questionViewModel, $('#generation_selector')[0]);
 		
 		
 
