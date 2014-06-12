@@ -267,17 +267,38 @@
 		-->
 		<div id="domination_table">
 		
-		
-			
+		<div id="generation_selector">
 		<div class="page-header">
 			<h1>
-				Domination Table - Algorithm <span data-bind="text: dom_table_algorithm"></span>
+				Analysing Generation <span data-bind="text: selected_generation"></span>
 			</h1>
 		</div>
 		<br>
 		<div class="controls text-center">	
-			  <button data-bind="click: function(){ fetchDominationMap(generation_id, 1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
-			  <button data-bind="click: function(){ fetchDominationMap(generation_id, 2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+		<h3>Select from available generations below to select the generation for both tables.</h3>
+		<h4>Then select the algorithm for each one.</h4>
+		<!-- ko foreach: allGenerations -->
+		<button rel="tooltip" data-bind="visible: $parent.hasConfusedVotes($data), text: $data, click: function(){ $parent.fetchTables($data); }, attr: {title: $parent.alternateVotes($data)}" type="button" class="btn btn-md btn-info"></button>
+		<!-- /ko -->
+		</div>
+		</div>
+		<!-- 
+		generation_selector end
+		-->
+		
+		<br>
+		<br>
+		
+		<div class="page-header">
+			<h1>
+				Domination Table - Generation  <span data-bind="text: selected_generation"></span> Algorithm <span data-bind="text: dom_table_algorithm"></span>
+			</h1>
+			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
+		</div>
+		<br>
+		<div class="controls text-center">	
+			  <button data-bind="click: function(){ fetchDomMap(1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: function(){ fetchDomMap(2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
 		<br>
 			
@@ -285,15 +306,15 @@
 			<thead>
 			<tr>
 			<th>PID</th>
-			<!-- ko foreach: domination_map -->
+			<!-- ko foreach: domination_map_array -->
 			<th data-bind="text: id"></th>
 			<!-- /ko -->
 			</tr>
 			</thead>
 			<tbody>
-			<!-- ko foreach: domination_map -->
+			<!-- ko foreach: domination_map_array -->
 			<tr>
-				<td class="verthdr" data-bind="text: id"></td>
+				<td rel="tooltip" class="verthdr" data-bind="text: id, attr: {title: $root.proposalVoting(id)}" title="Here are this proposals votes"></td>
 				<!-- ko foreach: dominations -->
 				<td data-bind="html: $data"></td>
 				<!-- /ko -->
@@ -302,6 +323,9 @@
 			</tbody>
 			</table>
 		</div>
+		<!-- 
+		domination_table end
+		-->
 		
 		<table>
 		<thead>
@@ -336,7 +360,7 @@
 		<div id="domination_levels_table">
 		<div class="page-header">
 			<h1>
-				Levels Table - Algorithm <span data-bind="text: levels_table_algorithm"></span>
+				Levels Table - Generation  <span data-bind="text: selected_generation"></span> Algorithm <span data-bind="text: levels_table_algorithm"></span>
 			</h1>
 		</div>
 		
@@ -833,6 +857,7 @@
 		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion()).done(function( user_resp, quest_resp )
 		{
 			console.log('User and question loaded...');
+			questionViewModel.fetchVotingMap();
 			fetchGraphs(quest_resp[0].question);
 			if (currentUserViewModel.isLoggedIn())
 			{
@@ -840,7 +865,7 @@
 			}
 			
 			console.log("generation_id = " + generation_id);
-			questionViewModel.fetchDominationMap(generation_id, 1);
+			questionViewModel.fetchDomMap(generation_id, 1);
 			questionViewModel.fetchLevelsMap(generation_id, 1);
 			
 			if (questionViewModel.phase() == 'writing')
@@ -953,6 +978,12 @@
 			content: 'hello world',
 			title: 'Add your vote',
 			content: '<div class="poptriangle"></div>'
+		});
+		
+		$('body').tooltip({
+		    selector: '[rel=tooltip]',
+			html: true,
+			container: 'body'
 		});
 		
 		$('body').on('show.bs.popover', function () {

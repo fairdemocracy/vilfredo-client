@@ -56,6 +56,18 @@ function getKeys(object)
     return keys;
 }
 
+function arrayDiff(arr1, arr2)
+{
+    diff = [];
+    jQuery.grep(arr2, function(el) {
+        if (jQuery.inArray(el, arr1) == -1) 
+        {
+            diff.push(el);
+        }
+    });
+    return diff;
+}
+
 function getQuerySegment(variable)
 {
     //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
@@ -2214,13 +2226,70 @@ function QuestionViewModel()
 	self.mapy = ko.observable();
 	self.created;
 	self.proposal_relations;
-	self.domination_map = ko.observable();
-	self.levels_map = ko.observable();
-	self.dom_algorithm = ko.observable(ALGORITHM_VERSION);
-	self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
-	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	
+	self.domination_map_array = ko.observableArray();
+	//self.domination_map = ko.observable();
+	self.levels_map = ko.observable();
+	self.voting_map = ko.observable();
+	
+	self.dom_algorithm = ko.observable(ALGORITHM_VERSION);
+    self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
+	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.selected_generation = ko.observable(generation_id);
+	
+	self.hasConfusedVotes = function(generation_id) {
+	    if (typeof(self.voting_map()) == 'undefined') return;
+	    return self.voting_map()[generation_id]['confused_count'] + self.voting_map()[generation_id]['oppose_count'];
+    }
+    
+    self.alternateVotes = function(generation_id) {
+	    if (typeof(self.voting_map()) == 'undefined' || typeof(generation_id)  == 'undefined') return;
+	    return 'Generation ' + generation_id + ' has ' + self.voting_map()[generation_id]['confused_count'] + ' confused and ' + self.voting_map()[generation_id]['oppose_count'] + ' opposed votes';
+    }
+    
+    self.proposalVoting = function(pid) {
+	    if (typeof(self.voting_map()) == 'undefined' || typeof(self.selected_generation()) == 'undefined' || typeof(pid) == 'undefined') 
+	    {
+	        return 'no data available';
+        }
+	    
+	    console.log('selected_generation = ' + self.selected_generation());
+	    console.log('pid = ' + pid);
+	    votes = self.voting_map()[self.selected_generation()]['proposals'][pid]['votes'];
+	    
+	    title = '<strong>Proposal ' + pid + ':</strong><br><br> Endorsed by [' + votes['endorse'] + ']<br>';
+	    title = title + 'Opposed by [' + votes['oppose'] + ']<br>';
+	    title = title + 'Not understood by [' + votes['confused'] + ']';
+	    return title;
+    }
+    
+    self.compareProposalVotes = function(pid1, pid2)
+    {
+        if (typeof(self.voting_map()) == 'undefined' || typeof(pid1) == 'undefined' || typeof(pid2) == 'undefined') 
+	    {
+	        return 'no data available';
+        }
+        
+        pid1_votes = self.voting_map()[self.selected_generation()]['proposals'][pid1]['votes'];
+        pid2_votes = self.voting_map()[self.selected_generation()]['proposals'][pid2]['votes'];
+        
+        pid1_endorse_diff = arrayDiff(pid1['endorse'], pid2['endorse']);
+        pid1_oppose_diff = arrayDiff(pid1['oppose'], pid2['oppose']);
+        pid1_confused_diff = arrayDiff(pid1['confused'], pid2['confused']);
+
+        pid2_endorse_diff = arrayDiff(pid2['endorse'], pid1['endorse']);
+        pid2_oppose_diff = arrayDiff(pid2['oppose'], pid1['oppose']);
+        pid2_confused_diff = arrayDiff(pid2['confused'], pid1['confused']);
+        
+        title = '<strong>Proposal ' + pid + ':</strong><br><br> Endorsed by [' + votes['endorse'] + ']<br>';
+	    title = title + 'Opposed by [' + votes['oppose'] + ']<br>';
+	    title = title + 'Not understood by [' + votes['confused'] + ']';
+	    
+	    title = "<table><tr><th></th><th>Endorsed</th><th>Opposed</th><th>Confused</th></tr>";
+	    
+	    return title;
+    }
+    
 	
 	self.allGenerations = ko.computed(function() {
         allgen = new Array();
@@ -2233,12 +2302,21 @@ function QuestionViewModel()
     });
     
     self.fetchTables = function(generation_id) {
-        console.log("fetchTables turned off");
-        return;
-        self.selected_generation(generation_id)
-        self.fetchDominationMap(generation_id, self.dom_table_algorithm);
-		self.fetchLevelsMap(generation_id, self.levels_table_algorithm);
+        //console.log("fetchTables turned off");
+        //return;
+        self.domination_map_array.removeAll();
+        self.selected_generation(generation_id);
+        self.fetchDominationMap(generation_id, self.dom_table_algorithm());
+		self.fetchLevelsMap(generation_id, self.levels_table_algorithm());
     }
+    
+    self.fetchVotingMap = function() {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/voting_map';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Voting Map data returned...');
+			self.voting_map(data.voting_map);
+		});
+	}
 	
 	self.fetchLevelsMap = function(generation, algorithm) {
 		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
@@ -2249,12 +2327,20 @@ function QuestionViewModel()
 		});
 	}
 	
+	self.fetchDomMap = function(algorithm) {
+	    self.domination_map_array.removeAll();
+        self.fetchDominationMap(self.selected_generation(), algorithm);
+    }
+	
 	self.fetchDominationMap = function(generation, algorithm) {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Domination Map data returned...');
-			self.domination_map(data.domination_map);
+			//self.domination_map(data.domination_map);
 			self.dom_table_algorithm(algorithm);
+			for (var i = 0; i < data.domination_map.length; i++) {
+			    self.domination_map_array.push(data.domination_map[i]);
+		    }
 		});
 	}
 	
