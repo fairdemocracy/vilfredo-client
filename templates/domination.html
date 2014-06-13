@@ -278,7 +278,7 @@
 		<h3>Select from available generations below to select the generation for both tables.</h3>
 		<h4>Then select the algorithm for each one.</h4>
 		<!-- ko foreach: allGenerations -->
-		<button rel="tooltip" data-bind="visible: $parent.hasConfusedVotes($data), text: $data, click: function(){ $parent.fetchTables($data); }, attr: {title: $parent.alternateVotes($data)}" type="button" class="btn btn-md btn-info"></button>
+		<button rel="tooltip" data-bind="visible: $parent.hasConfusedVotes($data), text: $data, click: function(){ $parent.fetchTablesForSelectedGeneration($data); }, attr: {title: $parent.alternateVotes($data)}" type="button" class="btn btn-md btn-info"></button>
 		<!-- /ko -->
 		</div>
 		</div>
@@ -297,8 +297,8 @@
 		</div>
 		<br>
 		<div class="controls text-center">	
-			  <button data-bind="click: function(){ fetchDomMap(1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
-			  <button data-bind="click: function(){ fetchDomMap(2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+			  <button data-bind="click: function(){ fetchDominationMap(1); }" id="simplelevels" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: function(){ fetchDominationMap(2); }" id="complexlevels" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
 		<br>
 			
@@ -366,8 +366,8 @@
 		
 		<br>
 		<div class="controls text-center">	
-			  <button data-bind="click: function(){ fetchLevelsMap(generation_id, 1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
-			  <button data-bind="click: function(){ fetchLevelsMap(generation_id, 2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
+			  <button data-bind="click: function(){ fetchLevelsMap(1); }" id="simpledom" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: function(){ fetchLevelsMap(2); }" id="complexdom" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
 		<br>
 			
@@ -854,19 +854,21 @@
 	{
 		console.log('initPage called...');
 		$('.question-view, .voting-graphs, .current-proposals').show();
-		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion()).done(function( user_resp, quest_resp )
+		$.when(currentUserViewModel.loadUser(), 
+			   questionViewModel.fetchQuestion(), 
+			   questionViewModel.fetchVotingMap()).done(function( user_resp, quest_resp )
 		{
 			console.log('User and question loaded...');
-			questionViewModel.fetchVotingMap();
 			fetchGraphs(quest_resp[0].question);
 			if (currentUserViewModel.isLoggedIn())
 			{
 				resetGraphsForUser();
 			}
 			
+			// Generate Tables
 			console.log("generation_id = " + generation_id);
-			questionViewModel.fetchDomMap(generation_id, 1);
-			questionViewModel.fetchLevelsMap(generation_id, 1);
+			questionViewModel.fetchDominationMap(1);
+			questionViewModel.fetchLevelsMap(1);
 			
 			if (questionViewModel.phase() == 'writing')
 		    {

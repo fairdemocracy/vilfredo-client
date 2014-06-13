@@ -2227,12 +2227,11 @@ function QuestionViewModel()
 	self.created;
 	self.proposal_relations;
 	
-	self.domination_map_array = ko.observableArray();
+	self.domination_map_array = ko.observableArray([]);
 	//self.domination_map = ko.observable();
 	self.levels_map = ko.observable();
 	self.voting_map = ko.observable();
 	
-	self.dom_algorithm = ko.observable(ALGORITHM_VERSION);
     self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.selected_generation = ko.observable(generation_id);
@@ -2248,9 +2247,9 @@ function QuestionViewModel()
     }
     
     self.proposalVoting = function(pid) {
-	    if (typeof(self.voting_map()) == 'undefined' || typeof(self.selected_generation()) == 'undefined' || typeof(pid) == 'undefined') 
+	    if (typeof(self.voting_map()) == 'undefined' || typeof(self.selected_generation()) == 'undefined' || typeof(pid) == 'undefined' || typeof(self.voting_map()[self.selected_generation()]['proposals'][pid].votes) == 'undefined' ) 
 	    {
-	        return 'no data available';
+	        return 'no data available for proposal ' + pid + ' in generation ' + self.selected_generation();
         }
 	    
 	    console.log('selected_generation = ' + self.selected_generation());
@@ -2263,7 +2262,96 @@ function QuestionViewModel()
 	    return title;
     }
     
-    self.compareProposalVotes = function(pid1, pid2)
+	
+	self.allGenerations = ko.computed(function() {
+        allgen = new Array();
+        gen = 1;
+        while (gen <= self.generation()) {
+            allgen.push(gen);
+            gen = gen + 1;
+        }
+        return allgen;
+    });
+    
+    // Fetch voting map for all generaion of the question
+    //
+    self.fetchVotingMap = function() {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/voting_map';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Voting Map data returned...');
+			self.voting_map(data.voting_map);
+		});
+	}
+    
+    self.fetchTablesForSelectedGeneration = function(generation_id) {
+        // Set the current generation for tables
+        self.selected_generation(generation_id);
+
+        self.domination_map_array([]);
+        self.fetchDominationMap(self.dom_table_algorithm());
+		self.fetchLevelsMap(self.levels_table_algorithm());
+    }
+    
+    self.fetchTables = function(generation_id) {
+        self.domination_map_array([]);
+        self.selected_generation(generation_id);
+        
+        self.fetchDominationMap(self.dom_table_algorithm());
+		self.fetchLevelsMap(self.levels_table_algorithm());
+    }
+
+	
+	self.fetchLevelsMap = function(algorithm) {
+		// Set the algorithm for the levels table
+		self.levels_table_algorithm(algorithm);
+		generation = self.selected_generation();
+		self.levels_map();
+		
+		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Pareto Map data returned...');
+			self.levels_map(data.levels_map);
+		});
+	}
+	
+	self.fetchDomMap = function(algorithm) {
+	    // self.domination_map_array.removeAll();
+	    console.log("fetchDomMap: using generation: " + self.selected_generation());
+	    //alert('Parameter algorithm = ' + algorithm);
+	    //alert(self.dom_table_algorithm());
+	    console.log("fetchDomMap: using algorithm: " + self.dom_table_algorithm());
+        self.fetchDominationMap(self.selected_generation(), algorithm);
+    }
+	
+	self.fetchDominationMap = function(algorithm) {
+		// Set the current domination table algorithm
+		self.dom_table_algorithm(algorithm);
+		
+		// Reset the domination map
+		self.domination_map_array([]);
+		generation = self.selected_generation();
+		
+		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Domination Map data returned...');
+			//self.domination_map(data.domination_map);
+			for (var i = 0; i < data.domination_map.length; i++) {
+			    self.domination_map_array.push(data.domination_map[i]);
+		    }
+		    //alert(self.dom_table_algorithm());
+		});
+	}
+	
+	self.fetchProposalRelations = function(generation, algorithm) {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/proposal_relations?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Proposal Relation data returned...');
+			console.log(data.proposal_relations);
+			self.proposal_relations = data.proposal_relations;
+		});
+	}
+	
+	self.compareProposalVotes = function(pid1, pid2)
     {
         if (typeof(self.voting_map()) == 'undefined' || typeof(pid1) == 'undefined' || typeof(pid2) == 'undefined') 
 	    {
@@ -2289,69 +2377,6 @@ function QuestionViewModel()
 	    
 	    return title;
     }
-    
-	
-	self.allGenerations = ko.computed(function() {
-        allgen = new Array();
-        gen = 1;
-        while (gen <= self.generation()) {
-            allgen.push(gen);
-            gen = gen + 1;
-        }
-        return allgen;
-    });
-    
-    self.fetchTables = function(generation_id) {
-        //console.log("fetchTables turned off");
-        //return;
-        self.domination_map_array.removeAll();
-        self.selected_generation(generation_id);
-        self.fetchDominationMap(generation_id, self.dom_table_algorithm());
-		self.fetchLevelsMap(generation_id, self.levels_table_algorithm());
-    }
-    
-    self.fetchVotingMap = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/voting_map';	
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Voting Map data returned...');
-			self.voting_map(data.voting_map);
-		});
-	}
-	
-	self.fetchLevelsMap = function(generation, algorithm) {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Pareto Map data returned...');
-			self.levels_map(data.levels_map);
-			self.levels_table_algorithm(algorithm);
-		});
-	}
-	
-	self.fetchDomMap = function(algorithm) {
-	    self.domination_map_array.removeAll();
-        self.fetchDominationMap(self.selected_generation(), algorithm);
-    }
-	
-	self.fetchDominationMap = function(generation, algorithm) {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Domination Map data returned...');
-			//self.domination_map(data.domination_map);
-			self.dom_table_algorithm(algorithm);
-			for (var i = 0; i < data.domination_map.length; i++) {
-			    self.domination_map_array.push(data.domination_map[i]);
-		    }
-		});
-	}
-	
-	self.fetchProposalRelations = function(generation, algorithm) {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/proposal_relations?' + 'generation=' + generation + '&algorithm=' + algorithm;	
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Proposal Relation data returned...');
-			console.log(data.proposal_relations);
-			self.proposal_relations = data.proposal_relations;
-		});
-	}
 	
 	self.canMoveOn = ko.computed(function() {
 	    var currentdate = new Date();
@@ -2419,11 +2444,6 @@ function QuestionViewModel()
     		self.created = parseInt(data.question.created);
     		self.mapx = parseFloat(data.question.mapx);
     		self.mapy = parseFloat(data.question.mapy);
-    		
-    		/*
-    		$(".question-info").each(function(){
-			    ko.applyBindings(questionViewModel, $(this)[0]);
-			});*/
 	    });
     }
 }
