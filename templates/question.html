@@ -150,6 +150,48 @@
 		</div>
 		<!-- question-view end -->
 		
+		
+		<!-- Participation table start -->
+		<div id="participationtable">
+			
+		<div class="page-header">
+			<h1>
+				Participation Table
+			</h1>
+			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
+		</div>
+			
+		<table class="table" width="647">
+		<thead>
+		<tr>
+		<th>User</th>
+		<th>Proposals Evaluated</th>
+		<th>Key Player?</th>
+		<th>Generations Participated</th>
+		</tr>
+		<tr>
+		<th></th>
+		<th data-bind="text: num_proposals"></th>
+		<th data-bind="text: proposalsViewModel.key_players().length"></th>
+		<th data-bind="text: generation"></th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- ko foreach: participation_table -->
+		<tr>
+			<td data-bind="text: username"></td>
+			<td data-bind="text: $parent.proposalsEvaluatedText(evaluations), css: $parent.proposalsEvaluatedClass(evaluations)"></td>
+			<td data-bind="text: key_player, css: $parent.keyPlayerClass(key_player)"></td>
+			<td data-bind="text: past_generations, css: $parent.generationsParticipatedClass(past_generations)"></td>
+		</tr>
+		<!-- /ko -->
+		</tbody>
+		</table>
+		</div>
+		<!-- Participation table end -->
+		
+		<br><br>
+		
 		<div id="keyplayer_info">
 		<!-- ko if: key_players().length --> <!-- 0 -->
 		<div class="keyplayers">
@@ -726,6 +768,8 @@
 		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion()).done(function( user_resp, quest_resp )
 		{
 			console.log('User and question loaded...');
+			
+			questionViewModel.fetchParticipationTable();
 			fetchGraphs(quest_resp[0].question);
 			if (currentUserViewModel.isLoggedIn())
 			{
@@ -798,6 +842,8 @@
 		    ko.applyBindings(proposalsViewModel, $(this)[0]);
 		});
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
+		
+		ko.applyBindings(questionViewModel, $('#participationtable')[0]);
 		
 		ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
 				

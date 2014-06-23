@@ -5936,6 +5936,19 @@ td.verthdr {
   font-weight: bold;
   cursor: pointer;
 }
+td.red {
+  background-color: #FF0000;
+  color: white;
+}
+td.amber {
+  background-color: #FFBF00;
+}
+td.green {
+  background-color: #66CD00;
+}
+#participationtable th {
+  background-color: #D3D3D3;
+}
 .alglink {
   display: none;
 }

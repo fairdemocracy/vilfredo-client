@@ -2227,6 +2227,11 @@ function QuestionViewModel()
 	self.created;
 	self.proposal_relations;
 	
+	self.key_players = ko.observableArray();
+	
+	self.participation_table = ko.observable();
+	self.num_proposals = ko.observable();
+	
 	self.domination_map_array = ko.observableArray([]);
 	//self.domination_map = ko.observable();
 	self.levels_map = ko.observable();
@@ -2235,6 +2240,37 @@ function QuestionViewModel()
     self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.selected_generation = ko.observable(generation_id);
+	
+	
+	self.fetchParticipationTable = function() {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/participation_table';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('participation table data returned...');
+			self.participation_table(data.participation_table);
+			self.num_proposals(data.num_proposals)
+		});
+	}
+	// 
+    // Participation Table colors and text
+    //
+    self.proposalsEvaluatedClass = function(evaluations) {
+        if (evaluations == 0) return 'red';
+        else if (evaluations == self.num_proposals()) return 'green';
+        else return 'amber';
+    }
+    self.keyPlayerClass = function(key_player) {
+        if (key_player) return 'red';
+        else return 'green';
+    }
+    self.generationsParticipatedClass = function(generations) {
+        if (generations == self.generation()) return 'amber';
+        else if (generations == 0) return 'green';
+        else return '';
+    }
+	self.proposalsEvaluatedText = function(evaluations) {
+        return evaluations + '/' + self.num_proposals();
+    }
+    
 	
 	self.hasConfusedVotes = function(generation_id) {
 	    if (typeof(self.voting_map()) == 'undefined') return;
