@@ -1416,9 +1416,9 @@ function ViewProposalViewModel()
 	
 	self.openvotemap = function(proposal)
 	{
-		if (question.phase != 'voting') return;
-		var index = proposalsViewModel.getProposalIndex(proposal.id());
 		console.log("ViewProposalViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
+		if (questionViewModel.phase() != 'voting') return;
+		var index = proposalsViewModel.getProposalIndex(proposal.id());
 		voteMapViewModel.proposal_index(index);
 		voteMapViewModel.proposal_id(proposal.id());
 		voteMapViewModel.endorse_type(proposal.endorse_type());
