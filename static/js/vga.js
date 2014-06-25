@@ -413,7 +413,7 @@ function createVoteMap(svg)
     	var cx = e.pageX - posX - radius;
         var posY = $(triangle).offset().top;
         var cy = e.pageY - posY - radius;
-        console.log("Mouse at " + cx + ", " + cy);
+        //console.log("Mouse at " + cx + ", " + cy);
         // green #4A7023, red #CD2626, blue #009ACD
         
         /*
@@ -1906,6 +1906,8 @@ function ProposalsViewModel()
 				*/
 				// reset key players
 				self.fetchKeyPlayers();
+				// reset participation table
+				questionViewModel.fetchParticipationTable();
 			}
 			else
 			{
