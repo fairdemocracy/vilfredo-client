@@ -47,6 +47,10 @@ td.green {
 	background-color: #D3D3D3;
 }
 
+#inputAgainstComment, #inputForComment,
+#inputQuestionComment, .inputAnswerComment {
+	width: 85%;
+}
 
 
 .alglink {
@@ -307,17 +311,19 @@ td.green {
 
 #propdetails, #showcomments, #showquestions {
 	height: 300px;
-	min-height: 300px;
+	/*min-height: 300px;*/
 	margin-bottom: 5px;
+	/*background-color: grey;*/
 }
 
-.comments {
-	height: 100%;
-	overflow-y: auto;
+#showcomments .comments {
+	height: 270px;
+	overflow: scroll;
+	/*background-color: yellow;*/
 }
 
 #showquestions .comments {
-	height: 90%;
+	/*height: 90%;*/
 }
 
 .qabox {
@@ -502,7 +508,7 @@ a.plain {
 
 .proposal-blurb, .question-blurb {
 	height: 120px;
-	overflow-y: auto;
+	overflow-y: scroll;
 }
 
 .proposal-footer {

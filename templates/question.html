@@ -179,7 +179,7 @@
 		<tbody>
 		<!-- ko foreach: participation_table -->
 		<tr>
-			<td data-bind="text: username"></td>
+			<td class="verthdr" data-bind="text: username"></td>
 			<td data-bind="text: $parent.proposalsEvaluatedText(evaluations), css: $parent.proposalsEvaluatedClass(evaluations)"></td>
 			<td data-bind="text: key_player, css: $parent.keyPlayerClass(key_player)"></td>
 			<td data-bind="text: past_generations, css: $parent.generationsParticipatedClass(past_generations)"></td>
@@ -478,12 +478,8 @@
 			<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
 			<a data-bind="click: showProposalQuestions"><span class="glyphicon glyphicon-question-sign"></span> Questions</a>
 			<!-- ko if: questionViewModel.phase() == 'voting' -->
-			&nbsp;&nbsp;&nbsp;
-			<a title="Add a point for or against" data-bind="click: beginNewComment.bind($data, 'comment')"><span class="glyphicon glyphicon-plus-sign"></span> Add Comment</a>
 			<!-- /ko -->
 			<!-- ko if: $data.author_id() != currentUserViewModel.userid() && questionViewModel.phase() == 'voting' -->
-			&nbsp;&nbsp;&nbsp;
-			<a title="Ask the author of this proposal a question" data-bind="click: beginNewComment.bind($data, 'question')"><span class="glyphicon glyphicon-question-sign"></span> Ask Question</a>
 			<!-- /ko -->
 			</div> <!-- controls -->
 	      </div><!-- modal-header -->
@@ -511,8 +507,7 @@
 							<label id='comment-label' for="inputComment" class="col-sm-2 control-label">Comment</label>
 							<div class="col-sm-10">
 								<span class="errormsg" data-bind="validationMessage: comment"></span>
-								<textarea data-bind="value: comment" id="inputComment" class="form-control" rows="6" placeholder="Comment Text">
-								</textarea>
+								<textarea data-bind="value: comment" id="inputComment" class="form-control" rows="6" placeholder="Comment Text"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
@@ -542,7 +537,11 @@
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
+					<textarea id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
+					<button id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</div>
+					<!-- for comments end -->
+				
 				</div>
 				<div class="col-md-6">
 					<h4>Points Against</h4>
@@ -557,6 +556,8 @@
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
+					<textarea id="inputAgainstComment" class="form-control" rows="2" placeholder="Point Against"></textarea>
+					<button id="inputAgainstCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</div>
 				</div>
 			</div> 
@@ -591,21 +592,35 @@
 							</div>
 							<!-- /ko -->
 							
+							
 							<!-- ko ifnot: $parent.getAnswerObject(id) -->
+							
+							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id -->
+							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment" class="form-control" rows="3" placeholder="Answer Question"></textarea>
+							<button data-bind="click: function() { $root.addcommentanswer(id()) }" type="button" class="btn btn-default btn-xs">answer</button>
+							<!-- /ko -->
+							
+							<!-- ko ifnot: $root.proposal.author_id() == currentUserViewModel.user.id -->
 							<div class="comment no-answer">
-								<span>No answer yet</span>
-								<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id -->
-								<div class="select_comment">
-								<button type="button" data-bind="click: $root.beginAnswer.bind($data)" class="btn btn-default btn-xs">answer</button>
-								</div>
-								<!-- /ko -->
+							<span>No answer yet</span>
 							</div>
 							<!-- /ko -->
+							
+							<!-- /ko -->
+							
 						</div>
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
+					<div class="qabox row">
+					<div class="col-md-6">
+					<textarea id="inputQuestionComment" class="form-control" rows="2" placeholder="Question"></textarea>
+					<button id="inputQuestionCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</div>
+					<div class="col-md-6"></div>
+					</div>
 				</div>
+				<!-- question and answers end -->
 			</div>
 			</div>
 		  </div><!-- modal-body -->
@@ -874,11 +889,128 @@
 			viewProposalViewModel.displayProposalContent();
 		});
 		
+		
+		//
+		// comment boxes
+		//
+		$('#inputForComment').on('click', function (e) {
+			$(this).data('clicked', true);
+			e.stopPropagation();
+		});
+		$('#inputAgainstComment').on('click', function (e) {
+			$(this).data('clicked', true);
+			e.stopPropagation();
+		});
+		
+		$('#inputForCommentBtn').on('click', function (e) {
+			var inputFor = $('#inputForComment');
+			//if ($(inputFor).data('clicked'))
+			//{
+				var comment = $.trim($(inputFor).val());
+				console.log(comment);
+				//
+				if ( comment != '' )
+				{					
+					viewProposalViewModel.addComment({
+		                comment: comment,
+		                comment_type: 'for',
+						reply_to: 0
+		        	});
+				}
+				//
+				$(inputFor).data('clicked', false);
+				$(inputFor).val('');
+			//}
+		});
+		$('#inputAgainstCommentBtn').on('click', function (e) {
+			var inputAgainst = $('#inputAgainstComment');
+			//if ($(inputAgainst).data('clicked'))
+			//{
+				var comment = $.trim($(inputAgainst).val());
+				console.log(comment);
+				//
+				if ( comment != '' )
+				{					
+					viewProposalViewModel.addComment({
+		                comment: comment,
+		                comment_type: 'against',
+						reply_to: 0
+		        	});
+				}
+				//
+				$(inputAgainst).data('clicked', false);
+				$(inputAgainst).val('');
+			//}
+		});
+		
+		$('#inputQuestionCommentBtn').on('click', function (e) {
+			var inputQuestion = $('#inputQuestionComment');
+			var comment = $.trim($(inputQuestion).val());
+			console.log(comment);
+			//
+			if ( comment != '' )
+			{
+				viewProposalViewModel.addComment({
+	                comment: comment,
+	                comment_type: 'question',
+					reply_to: 0
+	        	});
+			}
+			//
+			$(inputQuestion).data('clicked', false);
+			$(inputQuestion).val('');
+		});
+		
+		
+		
+		/*
+		$('html').click(function() {
+			// Check for text in inputFor
+			var inputFor = $('#inputForComment');
+			if ($(inputFor).data('clicked'))
+			{
+				var comment = $.trim($(inputFor).val());
+				console.log(comment);
+				//
+				if ( comment != '' )
+				{					
+					viewProposalViewModel.addComment({
+		                comment: comment,
+		                comment_type: 'for',
+						reply_to: 0
+		        	});
+				}
+				//
+				$(inputFor).data('clicked', false);
+				$(inputFor).val('');
+			}
+			// Check for text in inputAgainst
+			var inputAgainst = $('#inputAgainstComment');
+			if ($(inputAgainst).data('clicked'))
+			{
+				var comment = $.trim($(inputAgainst).val());
+				console.log(comment);
+				//
+				if ( comment != '' )
+				{
+					viewProposalViewModel.addComment({
+		                comment: comment,
+		                comment_type: 'against',
+						reply_to: 0
+		        	});
+				}
+				//
+				$(inputAgainst).data('clicked', false);
+				$(inputAgainst).val('');
+			}
+		});
+		*/
+		
+		
 		$('.home').attr('href', VILFREDO_URL);
 		
 		
 		$('.navbar-brand').attr('href', VILFREDO_URL);
-		
 		
 		
 		$('body').popover({

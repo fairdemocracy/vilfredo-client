@@ -1092,7 +1092,8 @@ function NewCommentViewModel()
           panel.slideDown(400);
         }
 	}
-	self.add = function()
+	
+	self.add = function() // eating
 	{
 		console.log("NewCommentViewModel.add() called ...");		
 		var reply_to = $('.newcommentpanel #reply_to').attr('value');
@@ -1113,6 +1114,7 @@ function NewCommentViewModel()
             });
 		}
 	}
+	
 }
 
 function ViewProposalViewModel()
@@ -1126,6 +1128,25 @@ function ViewProposalViewModel()
 	self.comments = ko.observableArray();
 	self.author_id = ko.observable();
 	self.index;
+	
+	
+	self.addcommentanswer = function(comment_id)
+		{
+			console.log("addcommentanswer called with id " + comment_id);
+			var answer = $.trim($('.inputAnswerComment').filter(function() {
+				return $(this).data("commentid") == comment_id;
+			}).val());
+			console.log(answer);
+			if ( answer != '' )
+			{
+				viewProposalViewModel.addComment({
+	                comment: answer,
+	                comment_type: 'answer',
+					reply_to: comment_id
+	        	});
+			}
+		}
+	
 	
 	self.getCommentCount = function()
 	{
@@ -1190,6 +1211,28 @@ function ViewProposalViewModel()
         else
             return true;
     };
+    
+    self.addNewComment = function(comment, type, reply_to) // eating
+	{
+		console.log("ViewProposalViewModel.addComment() called ...");	
+		var reply_to = $('.newcommentpanel #reply_to').attr('value');
+		var new_comment_type = $('.newcommentpanel #new_comment_type').attr('value');
+		if (new_comment_type == 'answer' || new_comment_type == 'question')
+		{
+			viewProposalViewModel.addComment({
+                comment: self.comment(),
+                comment_type: new_comment_type,
+				reply_to: reply_to
+        	});
+		}
+		else 
+		{
+            viewProposalViewModel.addComment({
+                comment: self.comment(),
+                comment_type: self.comment_type()
+            });
+		}
+	}
 	
 	self.clearComments = function()
 	{
@@ -1324,7 +1367,7 @@ function ViewProposalViewModel()
 		});
 	}
 	
-	self.addComment = function(comment)
+	self.addComment = function(comment) // eating
 	{
 		console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';
@@ -1334,7 +1377,7 @@ function ViewProposalViewModel()
 			
 			if (jqXHR.status == 201)
 			{
-				newCommentViewModel().showNewCommentPanel();
+				//newCommentViewModel().showNewCommentPanel();
 				console.log('Updating comments list for propsalal' + self.proposal.id());
 				self.comments.push({
 		      		id: ko.observable(data.comment.id),
@@ -1349,10 +1392,12 @@ function ViewProposalViewModel()
 			else
 			{
 				console.log('addcomment: There was an problem adding the comment. Status ' + jqXHR.status);
+				/*
 				$('.newcommentpanel .alert')
 				.html(data.message)
 				.setAlertClass('danger')
 				.fadeIn();
+				*/
 			}
 		}).fail(function(jqXHR) 
 		{
