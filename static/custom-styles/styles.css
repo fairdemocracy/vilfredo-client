@@ -6057,6 +6057,9 @@ td.green {
   color: white;
   cursor: pointer;
 }
+.partial2full {
+  color: blue;
+}
 .keyplayer {
   margin: 10px auto;
   background-color: #E0EEEE;
