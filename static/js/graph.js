@@ -138,6 +138,7 @@ function setTriangleSize(svg, width, height)
 // *************
 function loadSingleGraph(graph)
 {
+    clearGraphs();
     $('.graphcontainer').hide();
     $('.voting-graphs .controls').hide();
     $('.singlegraph').show();

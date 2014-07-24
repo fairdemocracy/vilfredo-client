@@ -240,6 +240,27 @@
 		</div>
 
 		
+		<div id="generation_selector">
+		<div class="page-header">
+			<h1>
+				Analysing Generation <span data-bind="text: selected_generation"></span>
+			</h1>
+		</div>
+		<br>
+		<div class="controls text-center">	
+		<h3>Select from available generations below to select the generation for both tables.</h3>
+		<h4>Then select the algorithm for each one.</h4>
+		<!-- ko foreach: allGenerations -->
+		<button rel="tooltip" data-bind="visible: $parent.hasConfusedVotes($data), text: $data, click: function(){ $parent.fetchTablesForSelectedGeneration($data); }, attr: {title: $parent.alternateVotes($data)}" type="button" class="btn btn-md btn-info"></button>
+		<!-- /ko -->
+		</div>
+		</div>
+		<!-- 
+		generation_selector end
+		-->
+		
+		
+		
 		<!-- Graphs -->
 		<div class="voting-graphs">
 		<br>
@@ -267,24 +288,7 @@
 		-->
 		<div id="domination_table">
 		
-		<div id="generation_selector">
-		<div class="page-header">
-			<h1>
-				Analysing Generation <span data-bind="text: selected_generation"></span>
-			</h1>
-		</div>
-		<br>
-		<div class="controls text-center">	
-		<h3>Select from available generations below to select the generation for both tables.</h3>
-		<h4>Then select the algorithm for each one.</h4>
-		<!-- ko foreach: allGenerations -->
-		<button rel="tooltip" data-bind="visible: $parent.hasConfusedVotes($data), text: $data, click: function(){ $parent.fetchTablesForSelectedGeneration($data); }, attr: {title: $parent.alternateVotes($data)}" type="button" class="btn btn-md btn-info"></button>
-		<!-- /ko -->
-		</div>
-		</div>
-		<!-- 
-		generation_selector end
-		-->
+		
 		
 		<br>
 		<br>
@@ -331,23 +335,23 @@
 		<table>
 		<thead>
 		<tr>
-		<th colspan="2">Key</th>	
+		<th colspan="2">Key</th>
 		</tr>
 		<tbody>
 		<tr>
-		<td class="verthdr">&equiv;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>Same proposal</td>	
+		<td class="verthdr">&equiv;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>Same proposal</td>
 		</tr>
 		<tr>
-		<td class="verthdr">&approx;</td><td>Same supporters</td>	
+		<td class="verthdr">&approx;</td><td>Same supporters</td>
 		</tr>
 		<tr>
-		<td class="verthdr">&hellip;</td><td>No qualified voters</td>	
+		<td class="verthdr">&hellip;</td><td>No qualified voters</td>
 		</tr>
 		<tr>
-		<td class="verthdr">^</td><td>Dominates</td>	
+		<td class="verthdr">^</td><td>Dominates</td>
 		</tr>
 		<tr>
-		<td class="verthdr"><</td><td>Dominated</td>	
+		<td class="verthdr"><</td><td>Dominated</td>
 		</tr>
 		<tr>
 		<td class="verthdr">&uHar;</td><td>Dominates (Partial)</td>	
@@ -356,10 +360,10 @@
 		<td class="verthdr">&lHar;</td><td>Dominated (Partial)</td>	
 		</tr>
 		<tr>
-		<td class="verthdr partial2full">&uHar;</td><td>Dominates (Partial=>Full)</td>	
+		<td class="verthdr partial2full">&uHar;</td><td>Dominates (Partial=>Full)</td>
 		</tr>
 		<tr>
-		<td class="verthdr partial2full">&lHar;</td><td>Dominated (Partial=>Full)</td>	
+		<td class="verthdr partial2full">&lHar;</td><td>Dominated (Partial=>Full)</td>
 		</tr>
 		</tbody>
 		</table>
@@ -861,7 +865,7 @@
 	</body>
 	<script type="text/javascript">
 	
-	var generation = getQuerySegment('gen');
+	// var generation = getQuerySegment('gen');
 	
 	function initPage()
 	{
@@ -872,11 +876,17 @@
 			   questionViewModel.fetchVotingMap()).done(function( user_resp, quest_resp )
 		{
 			console.log('User and question loaded...');
+			
+			questionViewModel.selected_algorithm(2)
+			fetchGenerationGraph(questionViewModel.selected_generation(), questionViewModel.selected_algorithm())
+	
+			/*
 			fetchGraphs(quest_resp[0].question);
 			if (currentUserViewModel.isLoggedIn())
 			{
 				resetGraphsForUser();
 			}
+			*/
 			
 			// Generate Tables
 			console.log("generation_id = " + generation_id);
@@ -963,8 +973,7 @@
 		
 		ko.applyBindings(questionViewModel, $('#domination_table')[0]);
 		ko.applyBindings(questionViewModel, $('#domination_levels_table')[0]);
-		//ko.applyBindings(questionViewModel, $('#generation_selector')[0]);
-		
+		ko.applyBindings(questionViewModel, $('#generation_selector')[0]);
 		
 
 		$('#vote3waywindow').on('hidden.bs.modal', function () {

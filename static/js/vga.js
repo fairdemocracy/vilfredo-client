@@ -23,7 +23,7 @@ if (!question_id) {
 }
 console.log(question_id);
 
-var generation_id = getQuerySegment('gen');
+var generation_id = parseInt(getQuerySegment('gen'));
 
 var room = getQuerySegment('room');
 console.log(room);
@@ -2284,9 +2284,12 @@ function QuestionViewModel()
 	self.levels_map = ko.observable();
 	self.voting_map = ko.observable();
 	
+    
     self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
+	
 	self.selected_generation = ko.observable(generation_id);
+	self.selected_algorithm = ko.observable(ALGORITHM_VERSION);
 	
 	
 	self.fetchParticipationTable = function() {
@@ -2330,7 +2333,12 @@ function QuestionViewModel()
     }
     
     self.proposalVoting = function(pid) {
-	    if (typeof(self.voting_map()) == 'undefined' || typeof(self.selected_generation()) == 'undefined' || typeof(pid) == 'undefined' || typeof(self.voting_map()[self.selected_generation()]['proposals'][pid].votes) == 'undefined' ) 
+	    if (
+	        typeof(self.voting_map()) == 'undefined' || 
+	        typeof(self.selected_generation()) == 'undefined' || 
+	        typeof(pid) == 'undefined' || 
+	        typeof(self.voting_map()[self.selected_generation()]['proposals'][pid]) == 'undefined' ||
+	        typeof(self.voting_map()[self.selected_generation()]['proposals'][pid].votes) == 'undefined' ) 
 	    {
 	        return 'no data available for proposal ' + pid + ' in generation ' + self.selected_generation();
         }
@@ -2338,7 +2346,7 @@ function QuestionViewModel()
 	    console.log('selected_generation = ' + self.selected_generation());
 	    console.log('pid = ' + pid);
 	    votes = self.voting_map()[self.selected_generation()]['proposals'][pid]['votes'];
-	    
+
 	    title = '<strong>Proposal ' + pid + ':</strong><br><br> Endorsed by [' + votes['endorse'] + ']<br>';
 	    title = title + 'Opposed by [' + votes['oppose'] + ']<br>';
 	    title = title + 'Not understood by [' + votes['confused'] + ']';
@@ -2370,6 +2378,9 @@ function QuestionViewModel()
         // Set the current generation for tables
         self.selected_generation(generation_id);
 
+        // Fetch graph
+        fetchGenerationGraph(self.selected_generation(), self.selected_algorithm())
+        
         self.domination_map_array([]);
         self.fetchDominationMap(self.dom_table_algorithm());
 		self.fetchLevelsMap(self.levels_table_algorithm());
@@ -2528,7 +2539,25 @@ function QuestionViewModel()
     		self.mapx = parseFloat(data.question.mapx);
     		self.mapy = parseFloat(data.question.mapy);
 	    });
+	    
+	    //
+  		// Set selected generation to current generation if not already set
+  		//
+  		if (typeof(generation_id == 'undefined'))
+  		{
+  		    generation_id = parseInt(data.question.generation);
+  		}
     }
+}
+
+function fetchGraph2(map_type, generation, algorithm)
+{
+	var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type + '&algorithm=' + algorithm;
+	
+	return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+	    console.log('fetchGraph2 data returned...');
+		console.log(data);
+	});
 }
 
 function fetchGraph(map_type, generation)
@@ -2544,7 +2573,6 @@ function fetchGraph(map_type, generation)
 function fetchGraphs()
 {
     console.log("fetchGraphs called...")
-    //generation = parseInt(question['generation']);
     generation = questionViewModel.generation();
     phase = questionViewModel.phase();
     if (phase == 'writing' && generation > 1)
@@ -2581,6 +2609,24 @@ function fetchWritingGraphs(generation)
 	}).fail(function(jqXHR) 
 	{
 		console.log('fetchWritingGraphs: There was an error fetching the graphs. Error ' + jqXHR.status);
+    });
+}
+
+function fetchGenerationGraph(generation, algorithm)
+{
+    console.log("fetchGenerationGraph called...");
+    console.log("Fetching GenerationGraph for genration " + generation_id);
+    $.when(fetchGraph2('all', generation, algorithm)).done(function( all )
+	{
+	    $('.voting-graphs').show();
+	    // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
+		// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
+		//console.log( "Generation graph URL = " + all[0]['url'] );
+		gengraph = all['url'];
+		loadSingleGraph(gengraph);
+	}).fail(function(jqXHR) 
+	{
+		console.log('fetchGenerationGraph: There was an error fetching the graph. Error ' + jqXHR.status);
     });
 }
 
