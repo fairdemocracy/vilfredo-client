@@ -451,8 +451,8 @@ function setProposalModals(svg)
         {
             var pid = parseInt($(element).text());
             var box = children.get(index - 1);
-            $(box).attr('fill', 'lightblue')
-            .click(function(event){
+            //$(box).attr('fill', 'lightblue') Forgot why I coloured these !?!
+            $(box).click(function(event){
                 console.log("setProposalModals: pid ==> " + pid);
                 proposalsViewModel.showProposalNode(pid);
             });

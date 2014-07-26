@@ -243,13 +243,12 @@
 		<div id="generation_selector">
 		<div class="page-header">
 			<h1>
-				Analysing Generation <span data-bind="text: selected_generation"></span>
+				Analysing Generation <span data-bind="text: selected_generation"></span> Algorithm <span data-bind="text: selected_algorithm"></span>
 			</h1>
 		</div>
 		<br>
 		<div class="controls text-center">	
-		<h3>Select from available generations below to select the generation for both tables.</h3>
-		<h4>Then select the algorithm for each one.</h4>
+		<h3>Select from available generations below.</h3>
 		<!-- ko foreach: allGenerations -->
 		<button rel="tooltip" data-bind="visible: $parent.hasConfusedVotes($data), text: $data, click: function(){ $parent.fetchTablesForSelectedGeneration($data); }, attr: {title: $parent.alternateVotes($data)}" type="button" class="btn btn-md btn-info"></button>
 		<!-- /ko -->
@@ -259,6 +258,13 @@
 		generation_selector end
 		-->
 		
+		<br>
+		<div id="algorithm_selector" class="controls text-center">
+			<h3>Select the algorithm to use.</h3>
+			  <button data-bind="click: function(){ fetchTablesForSelectedAlgorithm(1); }" id="simplelevels" type="button" class="btn btn-md btn-info">Simple</button>
+			  <button data-bind="click: function(){ fetchTablesForSelectedAlgorithm(2); }" id="complexlevels" type="button" class="btn btn-md btn-info">Complex</button>
+		</div>
+		<br>
 		
 		
 		<!-- Graphs -->
@@ -300,7 +306,7 @@
 			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
 		</div>
 		<br>
-		<div class="controls text-center">	
+		<div class="controls text-center">
 			  <button data-bind="click: function(){ fetchDominationMap(1); }" id="simplelevels" type="button" class="btn btn-md btn-info">Simple</button>
 			  <button data-bind="click: function(){ fetchDominationMap(2); }" id="complexlevels" type="button" class="btn btn-md btn-info">Complex</button>
 		</div>
@@ -877,8 +883,8 @@
 		{
 			console.log('User and question loaded...');
 			
-			questionViewModel.selected_algorithm(2)
-			fetchGenerationGraph(questionViewModel.selected_generation(), questionViewModel.selected_algorithm())
+			questionViewModel.selected_algorithm(1);
+			fetchGenerationGraph(questionViewModel.selected_generation(), questionViewModel.selected_algorithm());
 	
 			/*
 			fetchGraphs(quest_resp[0].question);
@@ -890,8 +896,8 @@
 			
 			// Generate Tables
 			console.log("generation_id = " + generation_id);
-			questionViewModel.fetchDominationMap(1);
-			questionViewModel.fetchLevelsMap(1);
+			questionViewModel.fetchDominationMap(questionViewModel.selected_algorithm());
+			questionViewModel.fetchLevelsMap(questionViewModel.selected_algorithm());
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
@@ -973,7 +979,9 @@
 		
 		ko.applyBindings(questionViewModel, $('#domination_table')[0]);
 		ko.applyBindings(questionViewModel, $('#domination_levels_table')[0]);
+		
 		ko.applyBindings(questionViewModel, $('#generation_selector')[0]);
+		ko.applyBindings(questionViewModel, $('#algorithm_selector')[0]);
 		
 
 		$('#vote3waywindow').on('hidden.bs.modal', function () {

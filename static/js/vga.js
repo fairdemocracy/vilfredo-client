@@ -2374,6 +2374,18 @@ function QuestionViewModel()
 		});
 	}
     
+    self.fetchTablesForSelectedAlgorithm = function(algorithm) {
+        // Set the current generation for tables
+        self.selected_algorithm(algorithm);
+
+        // Fetch graph
+        fetchGenerationGraph(self.selected_generation(), self.selected_algorithm())
+        
+        self.domination_map_array([]);
+        self.fetchDominationMap(self.selected_algorithm());
+		self.fetchLevelsMap(self.selected_algorithm());
+    }
+    
     self.fetchTablesForSelectedGeneration = function(generation_id) {
         // Set the current generation for tables
         self.selected_generation(generation_id);
@@ -2382,8 +2394,8 @@ function QuestionViewModel()
         fetchGenerationGraph(self.selected_generation(), self.selected_algorithm())
         
         self.domination_map_array([]);
-        self.fetchDominationMap(self.dom_table_algorithm());
-		self.fetchLevelsMap(self.levels_table_algorithm());
+        self.fetchDominationMap(self.selected_algorithm());
+		self.fetchLevelsMap(self.selected_algorithm());
     }
     
     self.fetchTables = function(generation_id) {
