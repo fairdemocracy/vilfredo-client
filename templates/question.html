@@ -192,6 +192,13 @@
 		
 		<br><br>
 		
+		<h2>Results</h2>
+		<div id="resultstriangle">	
+		</div>
+		<!-- resultstriangle table end -->
+		
+		<br><br>
+		
 		<div id="keyplayer_info">
 		<!-- ko if: key_players().length --> <!-- 0 -->
 		<div class="keyplayers">
@@ -780,7 +787,7 @@
 	{
 		console.log('initPage called...');
 		$('.question-view, .voting-graphs, .current-proposals').show();
-		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion()).done(function( user_resp, quest_resp )
+		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion(), questionViewModel.fetchVotingResults()).done(function( user_resp, quest_resp )
 		{
 			console.log('User and question loaded...');
 			
@@ -805,6 +812,8 @@
 			var qid = questionViewModel.id();
 			var gid = questionViewModel.generation();
 			$('.alglink').attr('href', VILFREDO_URL + '/domination/' + qid + '/gen/' + gid);
+			
+			$('#resultstriangle').svg({onLoad: createResultsMap});
 		
 		});
 	}
@@ -838,7 +847,7 @@
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
-			$('#modalvotesmap').svg({onLoad: createVoteMap});
+			$('#modalvotesmap').svg({onLoad: createVoteMap}); // jazz
 		})
 		
 		$('#votemapwindow').on('hide.bs.modal', function() {

@@ -246,6 +246,82 @@ function voteHandler(e)
 	//proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index);
 }
 
+function createResultsMap(svg) // jazz
+{
+	console.log('createVotesMap called...');
+
+	container_width = $(svg._container).innerWidth();
+	console.log('container_width = ' + container_width);
+    container_height = 0.7 * container_width;
+    console.log('container_height = ' + container_height);
+    
+    var max_x = container_width;
+    var max_y = container_height;
+    var mid_x = container_width/2;
+    var mid_y = container_height/2;
+    
+    resetSize(svg, container_width, container_height); 
+    
+	var path = svg.createPath();
+    var triangle = svg.path(
+        path.move(0, 0)
+        .line( container_width/2, container_height, true )
+        .line( container_width/2, -container_height, true )
+        .close(),
+        {
+            fill: 'white',
+            stroke: '#CDCDCD',
+            strokeWidth: 2,
+            id: 'map'
+        }
+    );
+
+    var threshold_x = container_width*questionViewModel.mapx;
+    var threshold_y = container_height*questionViewModel.mapy;
+    // Add current threshold point - debugging
+    
+    // Add threshold marker
+    var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
+    
+    var Lx = plotThresholdEndpoint(0, 0, mid_x, max_y, threshold_y);
+    console.log("Left point at " + Lx + ", " + threshold_y);
+    
+    var Rx = plotThresholdEndpoint(max_x, 0, mid_x, max_y, threshold_y);
+    console.log("Right point at " + Rx + ", " + threshold_y);
+    // #CDCDCD
+    var marker_left = svg.line(Lx, threshold_y, Rx, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
+
+    var g = svg.group({id : 'votes'});
+    var radius = 10;
+    
+    var threshold_x = container_width*questionViewModel.mapx;
+    var threshold_y = container_height*questionViewModel.mapy;
+    console.log("Threshold at " + threshold_x + ", " + threshold_y);
+    
+    jQuery.each(questionViewModel.results, function(pid, coords) {
+        if (!coords['median'])
+        {
+            return;
+        }
+        
+        cx = container_width * coords['median'].medx;
+        cy = container_height * coords['median'].medy;
+        console.log("Draw result vote at (" + cx + ", " + cy +")");
+        
+        fill_color = '#BEBEBE';
+        
+        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
+        $(vote).data('pid', pid);
+        
+        // Add error triangle if defined
+        if (coords['e_error'])
+        {
+            
+        }
+    });
+}
+
+
 function createVoteMap(svg)
 {
 	
@@ -2291,6 +2367,16 @@ function QuestionViewModel()
 	self.selected_generation = ko.observable(generation_id);
 	self.selected_algorithm = ko.observable(ALGORITHM_VERSION);
 	
+	self.results;
+	
+	
+	self.fetchVotingResults = function() {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/results';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Question results returned...');
+			self.results = data.results;
+		});
+	}
 	
 	self.fetchParticipationTable = function() {
 		var URI = VILFREDO_API + '/questions/' + question_id + '/participation_table';	

@@ -6031,6 +6031,12 @@ td.green {
   padding: 0;
   background-color: #CDCDCD;
 }
+#resultstriangle {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #CDCDCD;
+}
 .votesmap {
   width: 70%;
   height: 500px;
