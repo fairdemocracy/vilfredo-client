@@ -316,7 +316,22 @@ function createResultsMap(svg) // jazz
         // Add error triangle if defined
         if (coords['e_error'])
         {
+            console.log('Adding error triangle for proposal ' + pid);
+            var e_error_cx = container_width * coords['e_error']['mapx'];
+            var e_error_cy = container_height * coords['e_error']['mapy'];
+            var o_error_cx = container_width * coords['o_error']['mapx'];
+            var o_error_cy = container_height * coords['o_error']['mapy'];
+            var c_error_cx = container_width * coords['c_error']['mapx'];
+            var c_error_cy = container_height * coords['c_error']['mapy'];
             
+            var path = svg.createPath();
+            svg.path(
+                path.move(e_error_cx, e_error_cy)
+                .line( o_error_cx, o_error_cy )
+                .line( c_error_cx, c_error_cy )
+                .close(),
+                {fill: 'none', stroke: '#CDCDCD', strokeWidth: 1}
+            ); 
         }
     });
 }
