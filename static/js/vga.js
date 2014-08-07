@@ -310,7 +310,7 @@ function createResultsMap(svg) // jazz
         
         fill_color = '#BEBEBE';
         
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
+        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer', title: 'Proposal ' + pid});
         $(vote).data('pid', pid);
         
         // Add error triangle if defined
