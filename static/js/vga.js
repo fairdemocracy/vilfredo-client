@@ -31,6 +31,8 @@ console.log(room);
 //var room = $.url().param('room') ? $.url().param('room') : '';
 //var room = getQuerySegment('room');
 
+var DEFAULT_MAP_TYPE = 'all';
+
 var currentUserViewModel;
 var proposalsViewModel;
 var questionViewModel;
@@ -314,6 +316,7 @@ function createResultsMap(svg) // jazz
         $(vote).data('pid', pid);
         
         // Add error triangle if defined
+        /*
         if (coords['e_error'])
         {
             console.log('Adding error triangle for proposal ' + pid);
@@ -332,7 +335,8 @@ function createResultsMap(svg) // jazz
                 .close(),
                 {fill: 'none', stroke: '#CDCDCD', strokeWidth: 1}
             ); 
-        }
+        }*/
+        
     });
 }
 
@@ -2665,6 +2669,10 @@ function QuestionViewModel()
 
 function fetchGraph2(map_type, generation, algorithm)
 {
+	generation = generation !== undefined ? generation : questionViewModel.generation();
+	map_type = map_type !== undefined ? map_type : DEFAULT_MAP_TYPE;
+	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	
 	var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type + '&algorithm=' + algorithm;
 	
 	return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
@@ -2673,35 +2681,42 @@ function fetchGraph2(map_type, generation, algorithm)
 	});
 }
 
-function fetchGraph(map_type, generation)
+function fetchGraph(map_type, generation, algorithm)
 {
-	var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type + '&algorithm=' + ALGORITHM_VERSION;
+	generation = generation !== undefined ? generation : questionViewModel.generation();
+	map_type = map_type !== undefined ? map_type : DEFAULT_MAP_TYPE;
+	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
 	
+	var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type + '&algorithm=' + algorithm;
+
 	return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 	    console.log('fetchGraph data returned...');
 		console.log(data);
 	});
 }
 
-function fetchGraphs()
+function fetchGraphs(algorithm, generation)
 {
     console.log("fetchGraphs called...")
-    generation = questionViewModel.generation();
+    generation = generation !== undefined ? generation : questionViewModel.generation();
+    algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
     phase = questionViewModel.phase();
-    if (phase == 'writing' && generation > 1)
+    if (phase == 'writing' && generation > 1 && generation == questionViewModel.generation())
     {
-        fetchWritingGraphs(generation);
+        fetchWritingGraph(generation, algorithm);
     }
     else
     {
-        fetchVotingGraphs();
+        fetchVotingGraphs(generation, algorithm);
     }
 }
 
-function fetchWritingGraphs(generation)
+function fetchWritingGraph(generation, algorithm)
 {
 	console.log("fetchWritingGraphs called...")
-	$.when(fetchGraph('pareto', generation-1)).done(function( graph_resp )
+	generation = generation !== undefined ? generation : questionViewModel.generation();
+	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	$.when(fetchGraph('pareto', generation-1, algorithm)).done(function( graph_resp )
 	{
 		//if (typeof graph_resp[2].status !== 'undefined' && graph_resp[2].status == 204)
 		if (false)
@@ -2725,17 +2740,24 @@ function fetchWritingGraphs(generation)
     });
 }
 
-function fetchGenerationGraph(generation, algorithm)
+function fetchGenerationGraph(generation, algorithm) // jazz
 {
-    console.log("fetchGenerationGraph called...");
-    console.log("Fetching GenerationGraph for genration " + generation_id);
-    $.when(fetchGraph2('all', generation, algorithm)).done(function( all )
+	console.log("fetchGenerationGraph called...");
+	console.log("Fetching GenerationGraph called with algorithm " + algorithm);
+	generation = generation !== undefined ? generation : questionViewModel.generation();
+	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	console.log("Fetching GenerationGraph for genration " + generation + ' using alg ' + algorithm);
+    
+    console.log("Fetching GenerationGraph for genration " + generation);
+    //$.when(fetchGraph2('all', generation, algorithm)).done(function( all )
+    $.when(fetchGraph('all', generation, algorithm)).done(function( all )
 	{
 	    $('.voting-graphs').show();
 	    // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
 		// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
 		//console.log( "Generation graph URL = " + all[0]['url'] );
 		gengraph = all['url'];
+		console.log("Loading gengraph " + gengraph);
 		loadSingleGraph(gengraph);
 	}).fail(function(jqXHR) 
 	{
@@ -2743,11 +2765,37 @@ function fetchGenerationGraph(generation, algorithm)
     });
 }
 
-function fetchVotingGraphs()
+function fetchVotingGraph(generation, algorithm)
 {
-	console.log("fetchGraphs called...")
-	generation = questionViewModel.generation();
-	$.when(fetchGraph('all', generation), fetchGraph('pareto', generation)).done(function( all, pareto )
+	console.log("fetchVotingGraphs called...");
+	generation = generation !== undefined ? generation : questionViewModel.generation();
+	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	
+	$.when(fetchGraph('all', generation, algorithm)).done(function( all )
+	{
+	    $('.voting-graphs').show();
+	    // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
+		// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
+		votesgraph = all['url'];
+		console.log("Loading votesgraph " + votesgraph);
+		loadSingleGraph(votesgraph);
+	}).fail(function(jqXHR) 
+	{
+		console.log('fetchVotingGraph: There was an error fetching the graphs. Error ' + jqXHR.status);
+    });
+}
+function fetchVotingGraphs(generation, algorithm)
+{
+	console.log("fetchVotingGraphs called...");
+	generation = generation !== undefined ? generation : questionViewModel.generation();
+	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	
+	if (algorithm > 1)
+	{
+	    return fetchVotingGraph(generation, algorithm);
+	}
+	
+	$.when(fetchGraph('all', generation, algorithm), fetchGraph('pareto', generation, algorithm)).done(function( all, pareto )
 	{
 		if (all[2].status == 204)
 		{
@@ -2767,11 +2815,9 @@ function fetchVotingGraphs()
 		}
 	}).fail(function(jqXHR) 
 	{
-		console.log('fetchGraphs: There was an error fetching the graphs. Error ' + jqXHR.status);
+		console.log('fetchVotingGraphs: There was an error fetching the graphs. Error ' + jqXHR.status);
     });
 }
-
-
 
 var ajaxRequest = function(uri, method, data) {
 	console.log('ajaxRequest: request made... ' + uri);
@@ -2825,75 +2871,6 @@ var ajaxRequest_xd = function(uri, method) {
      return $.ajax(request);
    }
   
-/*  
-$(function() {
-	currentUserViewModel = new CurrentUserViewModel();
-	proposalsViewModel = new ProposalsViewModel();
-    loginViewModel = new LoginViewModel();
-	addProposalViewModel = new AddProposalViewModel();
-	threeWayVoteViewModel = new ThreeWayVoteViewModel();
-	viewProposalViewModel = new ViewProposalViewModel();
-	newCommentViewModel = new NewCommentViewModel();
-	
-	initPage();
-
-	ko.applyBindings(loginViewModel, $('#login')[0]);
-	$(".proposals").each(function(){
-	    ko.applyBindings(proposalsViewModel, $(this)[0]);
-	});
-	ko.applyBindings(viewProposalViewModel, $('#viewproposal #propdetails')[0]);
-	//ko.applyBindings(viewProposalViewModel, $('#viewproposal #proposalcomments')[0]);
-	ko.applyBindings(viewProposalViewModel, $('#viewproposal #showcomments')[0]);
-	ko.applyBindings(viewProposalViewModel, $('#viewproposal #showquestions')[0]);
-	ko.applyBindings(viewProposalViewModel, $('#viewproposal .vpheader')[0]);
-	ko.applyBindings(newCommentViewModel, $('.newcommentpanel')[0]);
-	ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
-
-	//$('.triangle').svg({onLoad: drawVotingTriangle});
-	$('.triangle').hide();
-	//$('.showtriangle').svg({onLoad: drawVotingTriangle});
-	ko.applyBindings(threeWayVoteViewModel, $('#vote3waywindow')[0]);
-	
-	$('.votenow').on( "click", function(e) {
-    	var posX = $(this).offset().left,
-        posY = $(this).offset().top;
-    	console.log((e.pageX - posX) + ' , ' + (e.pageY - posY));
-	});
-
-	$('#vote3waywindow').on('hidden.bs.modal', function () {
-			console.log('vote3waywindow hidden...');
-		$(this).find('.show3waytriangle').svg('destroy');
-	});
-	
-	$('#viewproposal').on('hidden.bs.modal', function () {
-			console.log('viewproposal hidden...');
-		viewProposalViewModel.reset();
-	});	
-	$('#viewproposal').on('shown.bs.modal', function () {
-		viewProposalViewModel.displayProposalContent();
-	});
-	
-	
-	$('body').popover({
-	    selector: '[rel="popover"]',
-		trigger: 'hover',
-		html: true,
-		placement: 'top',
-		content: 'hello world',
-		title: 'Add your vote',
-		content: '<div class="poptriangle"></div>'
-	});
-	
-	$('body').on('show.bs.popover', function () {
-			console.log('popover displayed...');
-	});
-	$('body').on('hidden.bs.popover', function () {
-			console.log('popover hidden...');
-	});	
-	
-});	
-*/
-
 var enterShow = function() {
     console.log('enterShow')
 	$(this).popover('show');

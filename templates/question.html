@@ -787,13 +787,17 @@
 	{
 		console.log('initPage called...');
 		$('.question-view, .voting-graphs, .current-proposals').show();
-		$.when(currentUserViewModel.loadUser(), questionViewModel.fetchQuestion(), questionViewModel.fetchVotingResults()).done(function( user_resp, quest_resp )
+		$.when(currentUserViewModel.loadUser(), 
+			   questionViewModel.fetchQuestion(), 
+			   questionViewModel.fetchVotingResults()).done(function( user_resp, quest_resp )
 		{
 			console.log('User and question loaded...');
 			
+			questionViewModel.selected_algorithm(1);
 			questionViewModel.fetchParticipationTable();
 			
-			fetchGraphs(quest_resp[0].question);
+			fetchGraphs(questionViewModel.selected_algorithm());
+			
 			if (currentUserViewModel.isLoggedIn())
 			{
 				resetGraphsForUser();
