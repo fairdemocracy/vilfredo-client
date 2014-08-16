@@ -198,8 +198,8 @@
 		<!-- resultstriangle table end -->
 		
 		<br><br>
-		
-		<div id="keyplayer_info">
+				
+		<div id="keyplayer_info" data-bind="visible: questionViewModel.selected_algorithm() == 1">
 		<!-- ko if: key_players().length --> <!-- 0 -->
 		<div class="keyplayers">
 			<h2>Key Players</h2>
