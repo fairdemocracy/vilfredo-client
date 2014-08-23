@@ -789,7 +789,7 @@
 		$('.question-view, .voting-graphs, .current-proposals').show();
 		$.when(currentUserViewModel.loadUser(), 
 			   questionViewModel.fetchQuestion(), 
-			   questionViewModel.fetchVotingResults()).done(function( user_resp, quest_resp )
+			   questionViewModel.fetchVotingResults()).done(function()
 		{
 			console.log('User and question loaded...');
 			
@@ -805,19 +805,29 @@
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
-				proposalsViewModel.fetchInheritedProposals();
-				proposalsViewModel.fetchProposals({user_only: true});
+				//proposalsViewModel.fetchInheritedProposals();
+				//proposalsViewModel.fetchProposals({user_only: true});
+				$.when(proposalsViewModel.fetchInheritedProposals(), 
+			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
+			    {
+					$('#resultstriangle').svg({onLoad: createResultsMap});
+				});
+
 		    }
 		    else
 		    {
-		        proposalsViewModel.fetchProposals();
+		        //proposalsViewModel.fetchProposals();
+				$.when(proposalsViewModel.fetchProposals()).done(function()
+			    {
+					$('#resultstriangle').svg({onLoad: createResultsMap});
+				});
 		    }
 		
 			var qid = questionViewModel.id();
 			var gid = questionViewModel.generation();
 			$('.alglink').attr('href', VILFREDO_URL + '/domination/' + qid + '/gen/' + gid);
 			
-			$('#resultstriangle').svg({onLoad: createResultsMap});
+			//$('#resultstriangle').svg({onLoad: createResultsMap});
 		
 		});
 	}

@@ -314,6 +314,12 @@ function showProposalVotes(svg, threshold, voters)
 }
 
 
+function redoResultsMap()
+{
+    svg = $('#resultstriangle').svg('get');
+    createResultsMap(svg);
+}
+
 
 function createResultsMap(svg) // jazz
 {
@@ -394,11 +400,43 @@ function createResultsMap(svg) // jazz
         
         fill_color = '#BEBEBE';
         
-        med = svg.circle(g, cx, cy, radius+1, {class: 'med', fill: fill_color, cursor: 'pointer', title: 'Proposal ' + pid});
+        med_fill = '#BEBEBE';
+        med_selected_fill_color = '#7e7e7e';
+        
+        // var title ='Proposal ' + pid;
+        var title; 
+        var prop = proposalsViewModel.getProposal(pid);
+        if (prop)
+        {
+             title = prop.title();
+        }
+        else
+        {
+            title = 'Proposal ID ' + pid
+        }
+        
+        med = svg.circle(g, cx, cy, radius+1, {class: 'med', fill: med_fill, cursor: 'pointer', title: title});
         $(med).data('pid', pid);
+        
+        // Display proposal ID
+        var txtx, texty;
+        txtx = cx;
+        if (cy < 30)
+        {
+            txty = cy + 25;
+        }
+        else
+        {
+            txty = cy - 20;
+        }
+        svg.text(g, txtx, txty, pid); 
+        
         $(med).on( "click", function(e) {
             console.log('click on median...');
-            //alert('Median clicked - PID ' + $(this).data('pid'));
+            //alert('Median clicked - PID ' + $(this).data('pid')); // huh
+            $('.med').attr('fill', med_fill);
+            
+            $(this).attr('fill', med_selected_fill_color);
             showProposalVotes(svg, threshold, coords['voters']);
             /*
             var evt = new jQuery.Event("click");
@@ -434,7 +472,6 @@ function createResultsMap(svg) // jazz
 
 function createVoteMap(svg)
 {
-	
 	console.log('createVotesMap called...');
 	
 	container_width = $(svg._container).innerWidth();
@@ -1841,6 +1878,18 @@ function ProposalsViewModel()
 	// Writing phase only
 	self.inherited_proposals = ko.observableArray();
 	
+	self.getProposal = function(pid) // huh
+    {
+		var match = ko.utils.arrayFirst(self.proposals(), function (proposal)
+        {
+			return proposal.id() === parseInt(pid);
+        });
+        if (!match)
+            return false;
+        else
+            return match;
+    };
+	
 	self.getUserKeyPlayerInfo = function() //donow
     {
         var match = ko.utils.arrayFirst(self.key_players(), function (key_player)
@@ -2094,6 +2143,7 @@ function ProposalsViewModel()
 				self.fetchKeyPlayers();
 				// reset participation table
 				questionViewModel.fetchParticipationTable();
+				redoResultsMap();
 			}
 			else
 			{
@@ -2189,7 +2239,7 @@ function ProposalsViewModel()
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
 		proposalsURI = proposalsURI + '?inherited_only=true';
 
-		ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
+		return ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Proposals data returned...');
 			console.log(data);
 			self.proposals([]);
@@ -2228,7 +2278,7 @@ function ProposalsViewModel()
 	        proposals_list = self.inherited_proposals;
 	    }
 	    */
-		ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
+		return ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Proposals data returned...');
 			console.log(data);
 			self.proposals([]);
