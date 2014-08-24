@@ -189,7 +189,7 @@ function setVote(proposal)
 	
 	max_x = $(svg._container).innerWidth();
 	console.log('container_width = ' + max_x);
-    max_y = 0.7 * container_width;
+    max_y = 0.7 * max_x;
     console.log('container_height = ' + max_y);
 
 	cx = max_x * proposal.mapx;
@@ -250,8 +250,8 @@ function voteHandler(e)
 
 function showProposalVotes(svg, threshold, voters)
 {    
-    container_width = $(svg._container).innerWidth();
-    container_height = 0.7 * container_width;
+    var container_width = $(svg._container).innerWidth();
+    var container_height = 0.7 * container_width;
     
     $('#allvotes').remove();
     
@@ -325,9 +325,9 @@ function createResultsMap(svg) // jazz
 {
 	console.log('createVotesMap called...');
 
-	container_width = $(svg._container).innerWidth();
+	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
-    container_height = 0.7 * container_width;
+    var container_height = 0.7 * container_width;
     console.log('container_height = ' + container_height);
     
     var max_x = container_width;
@@ -474,9 +474,9 @@ function createVoteMap(svg)
 {
 	console.log('createVotesMap called...');
 	
-	container_width = $(svg._container).innerWidth();
+	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
-    container_height = 0.7 * container_width;
+    var container_height = 0.7 * container_width;
     console.log('container_height = ' + container_height);
     
     
