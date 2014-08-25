@@ -316,14 +316,18 @@ function showProposalVotes(svg, threshold, voters)
 
 function redoResultsMap()
 {
-    svg = $('#resultstriangle').svg('get');
-    createResultsMap(svg);
+    console.log('redoResultsMap called...');
+    $.when(questionViewModel.fetchVotingResults()).done(function()
+    {
+	    svg = $('#resultstriangle').svg('get');
+        createResultsMap(svg);
+    });
 }
 
 
 function createResultsMap(svg) // jazz
 {
-	console.log('createVotesMap called...');
+	console.log('createResultsMap called...');
 
 	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
@@ -372,10 +376,11 @@ function createResultsMap(svg) // jazz
     var g = svg.group({id : 'votes'});
     var radius = 10;
     
+    /*
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
     console.log("Threshold at " + threshold_x + ", " + threshold_y);
-    
+    */
     /*
     {1L: 
     { 'median': {'medx': 0.631388, 'medy': 0.598698},
@@ -396,6 +401,7 @@ function createResultsMap(svg) // jazz
         
         cx = container_width * coords['median'].medx;
         cy = container_height * coords['median'].medy;
+        
         console.log("Draw result vote at (" + cx + ", " + cy +")");
         
         fill_color = '#BEBEBE';
@@ -406,6 +412,9 @@ function createResultsMap(svg) // jazz
         // var title ='Proposal ' + pid;
         var title; 
         var prop = proposalsViewModel.getProposal(pid);
+        
+        //title = 'Coords (' + cx + ', ' + cy + ')';
+        
         if (prop)
         {
              title = prop.title();
