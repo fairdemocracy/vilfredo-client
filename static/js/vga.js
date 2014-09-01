@@ -488,19 +488,6 @@ function createVoteMap(svg)
     var container_height = 0.7 * container_width;
     console.log('container_height = ' + container_height);
     
-    
-    /*
-    //var viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    var window_height = $(window).height();
-    console.log('Setting votemapwindow to window height ' + window_height);
-    $('#votemapwindow .modal-dialog').css('height', 800);
-    
-    var container_height = $(svg._container).innerHeight();
-    console.log('container_height = ' + container_height);
-	var container_width = container_height / 0.7;
-	console.log('container_width = ' + container_width);
-	*/
-    
     var max_x = container_width;
     var max_y = container_height;
     var mid_x = container_width/2;
@@ -560,7 +547,6 @@ function createVoteMap(svg)
 
     // Add current votes to votemap
     ko.utils.arrayForEach(proposalsViewModel.proposals(), function(proposal) {
-        
         if (!proposal.mapx || !proposal.mapy)
         {
             return;
@@ -622,21 +608,49 @@ function createVoteMap(svg)
     });
     
     
-    //$(triangle).bind( "click", voteHandler);
-    
+    /*
+    Record vote on votemap
+    */
+    //$(triangle).bind( "click", voteHandler); chrome
     $(triangle).on( "click", function(e) {
-    	console.log('vote recorded...');
-    	var posX = $(triangle).offset().left;
-    	var cx = e.pageX - posX - radius;
+    	console.log('Recording vote...');
+    	var posX = $(this).offset().left;
+    	var posY = $(this).offset().top;
+        console.log("posX, posY = (" + posX + ", " + posY + ")");
+    	
+    	var cx, cy;
+    	if (typeof $.browser.webkit == 'undefined')
+    	{
+    	    cx = e.pageX - posX - radius;
+    	    cy = e.pageY - posY - radius;
+    	}
+    	else
+    	{
+    	    cx = e.pageX - posX;
+    	    cy = e.pageY - posY;
+    	}
+    	
+    	//var cx = e.pageX - posX - radius;
     	//var cx = e.pageX - posX;
-        var posY = $(triangle).offset().top;
-        var cy = e.pageY - posY - radius;
+    	
+        
+        //var cy = e.pageY - posY - radius;
         //var cy = e.pageY - posY;
-    	//svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+        
+        console.log("pageX, pageY = (" + e.pageX + ", " + e.pageY + ")");
+        
+        console.log("cx = " + e.pageX + " - " + posX + " - " + radius);
+        console.log("cy = " + e.pageY + " - " + posY + " - " + radius);
+        
+        
+        console.log("Vote to be added at " + cx + ", " + cy);
+        
     	// Endorse with normalised vote coordinates
     	var n_cx = cx / max_x;
     	var n_cy = cy / max_y;
-    	console.log("Vote to be added at " + cx + ", " + cy);
+    	
+    	//svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+    	
     	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
 	});
 	
