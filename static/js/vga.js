@@ -260,7 +260,9 @@ function showProposalVotes(med, svg, threshold, voters)
     
     var g = svg.group({id : 'allvotes'});
     var radius = 10;
-    fill_color;
+    var fill_color;
+    
+    var med_selected_fill_color = '#7e7e7e';
         
     //svg.circle(g, threshold.mapx, threshold.mapx, radius+1, {fill: 'yellow', title: 'THRESHOLD ' + threshold.mapx + ', ' +  threshold.mapy});
     
@@ -315,6 +317,7 @@ function showProposalVotes(med, svg, threshold, voters)
         }
         svg.text(g, txtx, txty, coords.username); 
     });
+    svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), radius+1, {class: 'allvotes', fill: med_selected_fill_color, cursor: 'pointer', title: 'User ' + userid});
 }
 
 
@@ -447,9 +450,9 @@ function createResultsMap(svg) // jazz
         $(med).on( "click", function(e) {
             console.log('click on median...');
             //alert('Median clicked - PID ' + $(this).data('pid')); // huh
-            $('.med').attr('fill', med_fill);
+            //$('.med').attr('fill', med_fill);
+            //$(this).attr('fill', med_selected_fill_color);
             
-            $(this).attr('fill', med_selected_fill_color);
             showProposalVotes(this, svg, threshold, coords['voters']);
             /*
             var evt = new jQuery.Event("click");
