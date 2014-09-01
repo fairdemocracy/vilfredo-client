@@ -248,7 +248,7 @@ function voteHandler(e)
 	//proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index);
 }
 
-function showProposalVotes(svg, threshold, voters)
+function showProposalVotes(med, svg, threshold, voters)
 {    
     var container_width = $(svg._container).innerWidth();
     var container_height = 0.7 * container_width;
@@ -288,8 +288,12 @@ function showProposalVotes(svg, threshold, voters)
             fill_color = 'green';
         }
         
+        // Draw line to connect vote with median
+        svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {strokeWidth: 1, stroke: fill_color});
+        
         vote = svg.circle(g, cx, cy, radius+1, {class: 'allvotes', fill: fill_color, cursor: 'pointer', title: 'User ' + userid});
         $(vote).data('userid', userid);
+        
         
         // Display username
         var txtx, texty;
@@ -446,7 +450,7 @@ function createResultsMap(svg) // jazz
             $('.med').attr('fill', med_fill);
             
             $(this).attr('fill', med_selected_fill_color);
-            showProposalVotes(svg, threshold, coords['voters']);
+            showProposalVotes(this, svg, threshold, coords['voters']);
             /*
             var evt = new jQuery.Event("click");
             evt.pageX = e.pageX;
