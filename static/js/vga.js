@@ -248,12 +248,111 @@ function voteHandler(e)
 	//proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index);
 }
 
+
+function showUserVotes(clicked, svg, userid, threshold)
+{
+    $('#allvotes').remove();
+    
+    var g = svg.group({id : 'alluservotes'});
+    var radius = 10;
+    var fill_color;
+    
+    var votex = parseInt($(clicked).attr('cx'));
+    var votey = parseInt($(clicked).attr('cy'));
+    
+    // Display username
+    var txtx, texty;
+    if (votex < 30)
+    {
+        txtx = votex + 25;
+    }
+    else
+    {
+        txtx = votex - 20;
+    }
+    if (votey < 30)
+    {
+        txty = votey + 25;
+    }
+    else
+    {
+        txty = votey - 20;
+    }
+    //svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username);
+    var username = questionViewModel.results[parseInt($(med).data('pid'))].voters[parseInt(userid)].username; 
+    var label = "All " + username + "'s votes";
+    svg.text(g, txtx, txty, label);
+    
+    var med_selected_fill_color = '#7e7e7e';
+    
+    var container_width = $(svg._container).innerWidth();
+    var container_height = 0.7 * container_width;
+
+    jQuery.each(questionViewModel.results, function(pid, coords) {
+        medx = container_width * coords['median']['medx'];
+        medy = container_height * coords['median']['medy'];
+        
+        cx = container_width * coords['voters'][parseInt(userid)]['mapx'];
+        cy = container_height * coords['voters'][parseInt(userid)]['mapy'];
+        
+        // Set fill colour
+        if (cy > threshold.mapy)
+        {
+            fill_color = 'blue';
+        }
+        else if (cx < threshold.mapx)
+        {
+            fill_color = 'red';
+        }
+        else
+        {
+            fill_color = 'green';
+        }
+        
+        // Draw line to connect vote with median
+        svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
+        
+        vote = svg.circle(g, cx, cy, radius+1, {class: 'alluservotes', fill: fill_color, cursor: 'pointer', title: 'User ' + userid});
+        $(vote).data('userid', userid);
+        
+        var med = svg.circle(g, medx, medy, radius+1, {fill: med_selected_fill_color, cursor: 'pointer', title: 'User ' + userid})
+        $(med).on( "click", function(e) {
+            showProposalVotes(this, svg, threshold, coords['voters']);
+        });
+        
+        /*
+        var votex = parseInt($(vote).attr('cx'));
+        var votey = parseInt($(vote).attr('cy'));
+        
+        // Display username
+        var txtx, texty;
+        if (votex < 30)
+        {
+            txtx = votex + 25;
+        }
+        else
+        {
+            txtx = votex - 20;
+        }
+        if (votey < 30)
+        {
+            txty = votey + 25;
+        }
+        else
+        {
+            txty = votey - 20;
+        }
+        svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username); 
+        */
+    });
+}
+
 function showProposalVotes(med, svg, threshold, voters)
 {    
     var container_width = $(svg._container).innerWidth();
     var container_height = 0.7 * container_width;
     
-    $('#allvotes').remove();
+    $('#allvotes,#alluservotes').remove();
     
     //threshold = {'mapx': container_width * questionViewModel.mapx, 'mapy': container_height * questionViewModel.mapy}
     console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
@@ -295,6 +394,12 @@ function showProposalVotes(med, svg, threshold, voters)
         
         vote = svg.circle(g, cx, cy, radius+1, {class: 'allvotes', fill: fill_color, cursor: 'pointer', title: 'User ' + userid});
         $(vote).data('userid', userid);
+        $(vote).data('pid', $(med).attr('pid'));
+        
+        $(vote).on( "click", function(e) {
+            console.log('click on user vote...');
+            showUserVotes(this, svg, userid, threshold);
+        });
         
         
         // Display username
@@ -329,13 +434,12 @@ function redoResultsMap()
 	    svg = $('#resultstriangle').svg('get');
         createResultsMap(svg);
     });
-}
+} 
 
 
 function createResultsMap(svg) // jazz
 {
 	console.log('createResultsMap called...');
-
 	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
     var container_height = 0.7 * container_width;
@@ -365,9 +469,7 @@ function createResultsMap(svg) // jazz
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
     // Add current threshold point - debugging
-    
     var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
-    
     
     // Add threshold marker
     var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
@@ -382,23 +484,6 @@ function createResultsMap(svg) // jazz
 
     var g = svg.group({id : 'votes'});
     var radius = 10;
-    
-    /*
-    var threshold_x = container_width*questionViewModel.mapx;
-    var threshold_y = container_height*questionViewModel.mapy;
-    console.log("Threshold at " + threshold_x + ", " + threshold_y);
-    */
-    /*
-    {1L: 
-    { 'median': {'medx': 0.631388, 'medy': 0.598698},
-      'voters': {
-       1L: {'mapx': 0.65, 'mapy': 0.16},
-       2L: {'mapx': 0.497361, 'mapy': 0.598698},
-       3L: {'mapx': 0.75, 'mapy': 0.46},
-       4L: {'mapx': 0.631388, 'mapy': 0.634726},
-       5L: {'mapx': 0.428218, 'mapy': 0.710889}}
-      },
-    */
     
     jQuery.each(questionViewModel.results, function(pid, coords) {
         if (!coords['median'])
@@ -446,20 +531,10 @@ function createResultsMap(svg) // jazz
             txty = cy - 20;
         }
         svg.text(g, txtx, txty, pid); 
-        
+
         $(med).on( "click", function(e) {
             console.log('click on median...');
-            //alert('Median clicked - PID ' + $(this).data('pid')); // huh
-            //$('.med').attr('fill', med_fill);
-            //$(this).attr('fill', med_selected_fill_color);
-            
             showProposalVotes(this, svg, threshold, coords['voters']);
-            /*
-            var evt = new jQuery.Event("click");
-            evt.pageX = e.pageX;
-            evt.pageY = e.pageY;
-            */
-            //$(this).parent().siblings('#map').trigger(e);
         });
         
         // Add error triangle if defined
