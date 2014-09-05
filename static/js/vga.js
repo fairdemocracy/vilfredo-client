@@ -2238,7 +2238,7 @@ function ProposalsViewModel()
 					    || prev_endorsement_type == 'notvoted')) )
 				{
 					console.log('Refreshing graphs after vote...');
-					fetchVotingGraphs();
+					fetchVotingGraphs(); // chaos
 				}
 				
 				// Update vote coordinates and endorsement type
@@ -3024,7 +3024,7 @@ function fetchGenerationGraph(generation, algorithm) // jazz
 
 function fetchVotingGraph(generation, algorithm)
 {
-	console.log("fetchVotingGraphs called...");
+	console.log("fetchVotingGraph called...");
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
 	
@@ -3045,7 +3045,7 @@ function fetchVotingGraphs(generation, algorithm)
 {
 	console.log("fetchVotingGraphs called...");
 	generation = generation !== undefined ? generation : questionViewModel.generation();
-	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	algorithm = algorithm !== undefined ? algorithm : questionViewModel.selected_algorithm();
 	
 	if (algorithm > 1)
 	{
