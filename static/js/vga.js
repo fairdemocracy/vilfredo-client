@@ -314,6 +314,19 @@ function showUserVotes(clicked, svg, userid, threshold)
         
         vote = svg.circle(g, cx, cy, radius+1, {class: 'alluservotes', fill: fill_color, cursor: 'pointer', title: 'User ' + userid});
         $(vote).data('userid', userid);
+        $(vote).data('pid', pid);
+        
+        $(vote).on( "click", function(e) {
+            var pid = parseInt($(this).data('pid'));           
+            var med = $('.med').filter(function() {
+                return parseInt($(this).data('pid')) === pid;
+            });
+
+            if (med)
+            {
+                showProposalVotes(med, svg, threshold, coords['voters']);
+            }
+        });
         
         var med = svg.circle(g, medx, medy, radius+1, {fill: med_selected_fill_color, cursor: 'pointer', title: 'User ' + userid})
         $(med).on( "click", function(e) {
@@ -624,8 +637,6 @@ function createVoteMap(svg)
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
     console.log("Threshold at " + threshold_x + ", " + threshold_y);
-    
-    
 
     // Add current votes to votemap
     ko.utils.arrayForEach(proposalsViewModel.proposals(), function(proposal) {
