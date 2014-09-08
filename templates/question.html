@@ -827,9 +827,13 @@
 			var qid = questionViewModel.id();
 			var gid = questionViewModel.generation();
 			$('.alglink').attr('href', VILFREDO_URL + '/domination/' + qid + '/gen/' + gid);
-			
-			//$('#resultstriangle').svg({onLoad: createResultsMap});
-		
+				
+			//
+			$( window ).resize(function() {
+				console.log('window resized');
+				redoResultsMap();
+			});
+			//
 		});
 	}
 	

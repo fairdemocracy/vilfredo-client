@@ -253,7 +253,7 @@ function showUserVotes(clicked, svg, userid, threshold)
 {
     $('#allvotes').remove();
     
-    var g = svg.group({id : 'alluservotes'});
+    var g = svg.group(resultsmap, 'alluservotes');
     var radius = 10;
     var fill_color;
     
@@ -370,7 +370,7 @@ function showProposalVotes(med, svg, threshold, voters)
     //threshold = {'mapx': container_width * questionViewModel.mapx, 'mapy': container_height * questionViewModel.mapy}
     console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
     
-    var g = svg.group({id : 'allvotes'});
+    var g = svg.group(resultsmap, 'allvotes');
     var radius = 10;
     var fill_color;
     
@@ -438,12 +438,14 @@ function showProposalVotes(med, svg, threshold, voters)
     svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), radius+1, {class: 'allvotes', fill: med_selected_fill_color, cursor: 'pointer', title: 'User ' + userid});
 }
 
-
+// jazz
 function redoResultsMap()
 {
     console.log('redoResultsMap called...');
     $.when(questionViewModel.fetchVotingResults()).done(function()
     {
+	    //var results = $('#resultstriangle');
+	    $('#resultsmap').remove();
 	    svg = $('#resultstriangle').svg('get');
         createResultsMap(svg);
     });
@@ -463,10 +465,12 @@ function createResultsMap(svg) // jazz
     var mid_x = container_width/2;
     var mid_y = container_height/2;
     
+    var resultsmap = svg.group('resultsmap');
+    
     resetSize(svg, container_width, container_height); 
     
 	var path = svg.createPath();
-    var triangle = svg.path(
+    var triangle = svg.path(resultsmap,
         path.move(0, 0)
         .line( container_width/2, container_height, true )
         .line( container_width/2, -container_height, true )
@@ -485,7 +489,7 @@ function createResultsMap(svg) // jazz
     var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
     
     // Add threshold marker
-    var marker_top = svg.line(threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
+    var marker_top = svg.line(resultsmap, threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
     
     var Lx = plotThresholdEndpoint(0, 0, mid_x, max_y, threshold_y);
     console.log("Left point at " + Lx + ", " + threshold_y);
@@ -493,9 +497,9 @@ function createResultsMap(svg) // jazz
     var Rx = plotThresholdEndpoint(max_x, 0, mid_x, max_y, threshold_y);
     console.log("Right point at " + Rx + ", " + threshold_y);
     // #CDCDCD
-    var marker_left = svg.line(Lx, threshold_y, Rx, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
+    var marker_left = svg.line(resultsmap, Lx, threshold_y, Rx, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
 
-    var g = svg.group({id : 'votes'});
+    var g = svg.group(resultsmap, 'votes');
     var radius = 10;
     
     jQuery.each(questionViewModel.results, function(pid, coords) {
@@ -631,7 +635,7 @@ function createVoteMap(svg)
         $(this).parent().siblings('#map').trigger(e);
     });*/
 
-    var g = svg.group({id : 'votes'});
+    var g = svg.group(resultsmap, 'votes');
     var radius = 10;
     
     var threshold_x = container_width*questionViewModel.mapx;
@@ -816,7 +820,7 @@ function initCVTriangleLarge(jqsvg)
 	//svg.configure({width: panelwidth, height: panelheight}, true);
 
 	//jqsvg = $('#cvtriangle').svg('get');
-	var votemap = $('.votemap', jqsvg.root()).get(0);
+	var votemap = $('.votemap', jqsvg.root()).get(0); //jazz
 	var pointer = $('.pointer', jqsvg.root()).get(0);
 
 	$(pointer).on( "click", function(e) {
