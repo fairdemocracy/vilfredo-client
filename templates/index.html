@@ -132,7 +132,13 @@
 	
 		<h1>Active Questions</h1>
 		
-		<div class="all-questions">
+		<div class="notloggedin">
+			<div data-bind="visible: questionsViewModel.questions().length == 0">	
+				<h3>You must log in or register to use Vilfredo.</h3>
+			</div>
+		</div>
+		
+		<div data-bind="visible: questionsViewModel.questions().length" class="all-questions">
 		<div class="row">
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
@@ -437,11 +443,15 @@
 		console.log('initPage called...');
 		$('.current-questions').show();
 		
-		$.when(currentUserViewModel.loadUser()).then()
+		$.when(currentUserViewModel.loadUser()).then(function()
 		{
 			console.log('loadUser completed...');
-			questionsViewModel.fetchQuestions();
-		}	
+			if (currentUserViewModel.isLoggedIn())
+			{
+				console.log("User logged in: call fetchQuestions");
+				questionsViewModel.fetchQuestions();
+			}
+		});
 	}
 	
 	$(function() {
@@ -470,6 +480,8 @@
 		ko.applyBindings(loginViewModel, $('#login')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
+		
+		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
 		
 		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
 		

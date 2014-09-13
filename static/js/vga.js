@@ -1024,9 +1024,18 @@ function CurrentUserViewModel()
 		self.authToken = '';
 		self.user = false;
 		self.userid(0);
-		$.cookie('vgaclient', null, { path: '/' }); // fix
-		proposalsViewModel.fetchProposals();
-		resetGraphsAfterLogout();
+		$.cookie('vgaclient', null, { path: '/' });
+		//proposalsViewModel.fetchProposals();
+		//resetGraphsAfterLogout();
+		if (typeof(questionsViewModel) != 'undefined')
+		{
+		    questionsViewModel.questions([]);
+		}
+		if (typeof(proposalsViewModel) != 'undefined')
+		{
+		    proposalsViewModel.clearData();
+		}
+		window.location.replace(VILFREDO_URL);
 	}
 	self.beginLogin = function() {
         $('#login').modal('show');
@@ -1090,7 +1099,7 @@ function CurrentUserViewModel()
 			if (self.remember)
 			{
 				console.log('Remember login = ' + self.remember + ': Storing token in cookie');
-				$.cookie('vgaclient', data.token, {expires: 3, path: '/'});
+				$.cookie('vgaclient', data.token, {expires: 365, path: '/'});
 			}
 			self.fetchCurrentUser();
 		}).fail(function(jqXHR) {
@@ -1112,6 +1121,12 @@ function CurrentUserViewModel()
 			console.log('fetchCurrentUser:: User ID set ==> ' + self.userid());
 			self.user = data.user;
 			self.username(data.user.username);
+			
+			if (typeof(questionsViewModel) != 'undefined')
+			{
+			    questionsViewModel.fetchQuestions();
+			}
+			
 			if (proposalsViewModel)
 			{
 			    if (questionViewModel.phase() == 'writing')
@@ -1306,6 +1321,7 @@ function LoginViewModel()
 		self.currentuser("");
 		self.username.isModified(false);
 		self.password.isModified(false);
+		window.location.replace('index.html');
 	}
 	self.clear = function()
 	{
@@ -1908,7 +1924,12 @@ function QuestionsViewModel()
         });
 	}
 	
+	/*
+	Fetch the questions which the user is permitted to see
+	*/
     self.fetchQuestions = function() {
+		if (currentUserViewModel.isLoggedOut()) return false;
+		console.log("Fetching questions...");
 		var url = VILFREDO_API + '/questions';
 		var room_query = (room) ? '?room=' + room : '';
 		ajaxRequest(url+room_query, 'GET').done(function(data, textStatus, jqXHR) {
@@ -1997,6 +2018,13 @@ function ProposalsViewModel()
 	self.key_players = ko.observableArray();
 	// Writing phase only
 	self.inherited_proposals = ko.observableArray();
+	
+	self.clearData = function()
+	{
+	    self.proposals([]);
+	    self.key_players([]);
+	    self.inherited_proposals([]);
+	}
 	
 	self.getProposal = function(pid) // huh
     {
