@@ -578,8 +578,10 @@ function createResultsMap(svg) // jazz
 }
 
 
-function createVoteMap(svg)
+function createVoteMap(svg) // shark
 {
+	//alert('createVoteMap called');
+	
 	console.log('createVotesMap called...');
 	
 	var container_width = $(svg._container).innerWidth();
@@ -635,19 +637,23 @@ function createVoteMap(svg)
         $(this).parent().siblings('#map').trigger(e);
     });*/
 
-    var g = svg.group(resultsmap, 'votes');
+    var g = svg.group('votes');
     var radius = 10;
     
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
-    console.log("Threshold at " + threshold_x + ", " + threshold_y);
 
     // Add current votes to votemap
     ko.utils.arrayForEach(proposalsViewModel.proposals(), function(proposal) {
+        
+        //alert('Looking at PID ' + proposal.id());
+        
         if (!proposal.mapx || !proposal.mapy)
         {
+            console.log('no map coords');
             return;
         }
+        
         
         cx = container_width * proposal.mapx;
         cy = container_height * proposal.mapy;
@@ -710,6 +716,9 @@ function createVoteMap(svg)
     */
     //$(triangle).bind( "click", voteHandler); chrome
     $(triangle).on( "click", function(e) {
+        
+        console.log('Voting triangle clicked!!!!!');
+        
     	console.log('Recording vote...');
     	var posX = $(this).offset().left;
     	var posY = $(this).offset().top;
@@ -734,7 +743,7 @@ function createVoteMap(svg)
         //var cy = e.pageY - posY - radius;
         //var cy = e.pageY - posY;
         
-        console.log("pageX, pageY = (" + e.pageX + ", " + e.pageY + ")");
+        //alert("pageX, pageY = (" + e.pageX + ", " + e.pageY + ")");
         
         console.log("cx = " + e.pageX + " - " + posX + " - " + radius);
         console.log("cy = " + e.pageY + " - " + posY + " - " + radius);
@@ -1798,8 +1807,9 @@ function ViewProposalViewModel()
 		self.fetchComments();
 	}
 	
-	self.init3WayTriangle = function(svg)
+	self.init3WayTriangle = function(svg) // shark
 	{
+		alert('ho ho ho');
 		console.log('ViewProposalViewModel.init3WayTriangle called **************');
 		var index = parseInt($(this).data('index'));
 		console.log("init3WayTriangle: setting with index " + index);
@@ -2236,13 +2246,14 @@ function ProposalsViewModel()
 	}
 	
 	// Add endorsement using normalised votemap coordinates
-	self.mapEndorseWithIndex = function(mapx, mapy, index)
+	self.mapEndorseWithIndex = function(mapx, mapy, index) // shark
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
 		{
 		    console.log("Not logged in");
 		    return;
 		}
+		
 		var proposal = self.proposals()[index];
 		console.log('mapEndorseWithIndex called with index ' + index + ' and coords ' + mapx + ', ' + mapy);
 		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
@@ -2510,9 +2521,9 @@ function initTriangle(svg)
 }
 
 
-function init3WayTriangle(svg) // here
+function init3WayTriangle(svg)
 {
-	
+	console.log('ha ha ha');
 	return;
 	
 	var index = parseInt($(this).data('index'));
