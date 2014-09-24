@@ -143,7 +143,7 @@
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
 					<span rel="tooltip" title="Please Register or Log In to Ask a Question" class="pointer">
-					<a data-bind="visible: currentUserViewModel.FisLoggedOut" class="btn btn-success btn-md" role="button" disabled>Ask a Question</a></span>
+					<a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-md" role="button" disabled>Ask a Question</a></span>
 					<a data-bind="click: beginNewQuestion, visible: currentUserViewModel.isLoggedIn" class="btn btn-success btn-md" role="button">Ask a Question</a>
                 </div>
                 <div class="panel-body">
@@ -264,6 +264,7 @@
 	      </div>
 	      <div class="modal-body">
 		<div class="message alert alert-danger"></div>
+		
 		<form autocomplete="off" class="form-horizontal" role="form"> 
 		<div class="form-group">
 		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>

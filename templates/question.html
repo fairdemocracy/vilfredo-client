@@ -127,6 +127,10 @@
 	<!-- navbar -->
 
 	<div class="container main">
+		
+		<div class="author_controls">
+		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary">Participants</button>
+		</div>
 
 		<div class="question-view">
 		<div class="page-header question-info">
@@ -135,16 +139,18 @@
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
 			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
 			<p>This question will be moved on automatically in <span data-bind="text: time_dhm(last_move_on()+maximum_time()-get_timestamp())"></span></p>
-			<!-- ko if: author_id() == currentUserViewModel.userid() && minimum_time_passed() -->
+			<!-- ko if: author_id() == currentUserViewModel.userid() && minimum_time_passed() && proposalsViewModel.proposals().length > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 		</div>
 		<div class="panel question-info">
 			<div class="well">
 				<span class="blurb" data-bind="html: blurb"></span>
-				<span data-bind="visible: phase() == 'writing'">
+				<br>
+				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
-				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Answer</a></span>	
+				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit an Answer</a>
+				</div>	
 			</div>
 		</div>
 		</div>
@@ -152,7 +158,7 @@
 		
 		
 		<!-- Participation table start -->
-		<div id="participationtable">
+		<div id="participationtable" data-bind="visible: questionViewModel.phase() == 'voting'">
 			
 		<div class="page-header">
 			<h1>
@@ -192,15 +198,16 @@
 		
 		<br><br>
 		
+		<div id="results_map" data-bind="visible: phase() == 'voting' || generation() > 1">
 		<h2>Results</h2>
 		<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
-		<div id="resultstriangle">	
-		</div>
+		<div id="resultstriangle"></div>
 		<!-- resultstriangle table end -->
+		</div>
 		
 		<br><br>
 				
-		<div id="keyplayer_info" data-bind="visible: questionViewModel.selected_algorithm() == 1">
+		<div id="keyplayer_info" data-bind="visible: questionViewModel.selected_algorithm() == 1 && questionViewModel.phase() == 'voting'">
 		<!-- ko if: key_players().length --> <!-- 0 -->
 		<div class="keyplayers">
 			<h2>Key Players</h2>
@@ -299,7 +306,7 @@
 
 		
 		<!-- Graphs -->
-		<div class="voting-graphs">
+		<div data-bind="visible: questionViewModel.phase() == 'voting' || questionViewModel.generation() > 1" class="voting-graphs">
 		<br>
 		<div class="controls text-center">	
 			  <button id="vgonly" type="button" class="btn btn-md btn-info">All Proposals</button>
@@ -378,9 +385,9 @@
 			<h3 data-bind="visible: proposals().length > 0">Below are the proposals you have created during the writing phase of this generation:</h3>
 		</div>
 		
-		<div data-bind="visible: proposals().length == 0 && questionViewModel.phase() == 'writing'" class="well highlight">
+		<div data-bind="visible: proposals().length == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">
 		<p>There are no proposals so far. Why not be the first to propose an answer?</p>
-		<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Answer</a>
+		<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit an Answer</a>
 		</div>
 		
 		<div class="proposal_list row">
@@ -684,6 +691,103 @@
 	  </div><!-- modal-dialog -->
 	</div><!-- modal -->
 	
+	
+	<!-- Add users -->
+	<div id="add_users" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Invite Users</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="alert alert-danger"></div>			
+			<form class="form-horizontal" role="form" autocomplete="off">
+				
+			<div class="form-group">
+				<select size=1 data-bind="
+    				options: questionPermissions,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: selectedPermissions">
+				</select>
+			</div>	
+			
+			
+			<!-- ko foreach: users -->	
+			<div class="form-group">
+				<div data-bind="text: username" class="col-sm-4"></div>
+				<div class="col-sm-1">
+					<input data-bind="checked: selected" type="checkbox">
+				</div>	
+			</div>
+			<!-- /ko -->
+			
+			<!-- Buttons -->
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+			      <button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Done</button>
+				<button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add Users</button>
+			    </div>
+			</div>
+			</form>		
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- add_users modal -->
+	
+	<!-- Participants -->
+	<div id="participants" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Participants</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="alert alert-danger"></div>			
+			<form class="form-horizontal" role="form" autocomplete="off">
+			<!-- ko foreach: permissions -->
+			<div class="form-group">
+				<div data-bind="text: username" class="col-sm-4"></div>
+				<div class="col-sm-6">
+					<!-- ko if: questionViewModel.author_id() == user_id -->
+					Author
+					<!-- /ko -->
+					<!-- ko ifnot: questionViewModel.author_id() == user_id -->
+					<select size=1 data-bind="
+    				options: $parent.questionPermissions,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: permissions">
+					</select>
+					<!-- /ko -->
+				</div>
+				<div class="col-sm-2">
+					<!-- ko if: questionViewModel.author_id() == user_id -->
+					
+					<!-- /ko -->
+					<!-- ko ifnot: questionViewModel.author_id() == user_id -->
+					<a href="#" data-bind="click: $parent.remove_permissions">Remove</a>
+					<!-- /ko -->
+				</div>
+			</div>
+			<!-- /ko -->
+			<!-- Buttons -->
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Done</button>
+				  <button data-bind="click: update_permissions(), enable: false" type="button" class="btn btn-primary">Save</button>
+				  <button data-bind="click: reset_permissions(), enable: true" type="button" class="btn btn-default">Undo</button>
+				<button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add</button>
+			    </div>
+			</div>
+			</form>		
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- modal -->
+	
 	<!-- Login Modal -->
 	<div id="login" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="LoginBox" aria-hidden="true">
 		<div class="modal-dialog">
@@ -787,7 +891,7 @@
 	function initPage()
 	{
 		console.log('initPage called...');
-		$('.question-view, .voting-graphs, .current-proposals').show();
+		$('.question-view, .current-proposals').show();
 		$.when(currentUserViewModel.loadUser(), 
 			   questionViewModel.fetchQuestion(), 
 			   questionViewModel.fetchVotingResults()).done(function()
@@ -852,15 +956,16 @@
 		threeWayVoteViewModel = new ThreeWayVoteViewModel();
 		viewProposalViewModel = new ViewProposalViewModel();
 		questionViewModel = new QuestionViewModel();
+		permissionsViewModel = new PermissionsViewModel();
+		inviteUsersViewModel = new InviteUsersViewModel();
 		
 		initPage();
 		
 		$('#viewproposal').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
-			if (questionViewModel.phase() == 'voting')
+			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
-				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
-										   onLoad: init3WayTriangle});
+				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
 			}
 		})
 		
@@ -880,6 +985,8 @@
 		$(".question-info").each(function(){
 		    ko.applyBindings(questionViewModel, $(this)[0]);
 		});
+		
+		ko.applyBindings(questionViewModel, $('.author_controls')[0]);
 	
 		ko.applyBindings(loginViewModel, $('#login')[0]);
 		$(".proposals").each(function(){
@@ -888,6 +995,16 @@
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
 		
 		ko.applyBindings(questionViewModel, $('#participationtable')[0]);
+		ko.applyBindings(questionViewModel, $('#results_map')[0]);
+		
+		
+		
+		
+		ko.applyBindings(permissionsViewModel, $('#participants')[0]); //shark
+		ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]); //shark
+		
+		
+		
 		
 		ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
 				

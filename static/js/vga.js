@@ -45,6 +45,7 @@ var userid = false;
 var votesgraph;
 var pfvotesgraph;
 var triangle;
+var permissionsViewModel;
 
 function getKeys(object)
 {
@@ -848,12 +849,13 @@ function initCVTriangleLarge(jqsvg)
     	jqsvg.circle(pt.x, pt.y, 5, {class: 'vote', fill: 'yellow', stroke: 'white', strokeWidth: 0, cursor: 'pointer'});
 	});
 	
+	/*
 	$(votemap).on( "mouseout", function(e) {
     	console.log('mouse out...');
     	return;
     	var jqsvg = $('#cvtriangle').svg('get');
     	var pointer = $('.pointer', jqsvg.root()).remove();
-	});
+	});*/
 	
 	$(votemap).on( "mousemove", function(e) {
     	console.log('mouse move...');
@@ -923,7 +925,10 @@ showCVTriangle = function()
 	$('#votenowwindow .showtriangle').svg({loadURL: STATIC_FILES + '/images/voting_triangle.svg', onLoad: initCVTriangle});
 }
 
-
+var QuestPermissions = function(desc, value) {
+    this.desc = desc;
+    this.perm = perm;
+};
 
 var TimePeriod = function(label, seconds) {
     this.period = label;
@@ -1107,7 +1112,7 @@ function CurrentUserViewModel()
 			console.log(data);
 			if (self.remember)
 			{
-				console.log('Remember login = ' + self.remember + ': Storing token in cookie');
+				console.log('Remember login: Storing token in cookie');
 				$.cookie('vgaclient', data.token, {expires: 365, path: '/'});
 			}
 			self.fetchCurrentUser();
@@ -1120,7 +1125,6 @@ function CurrentUserViewModel()
 	}
 	self.fetchCurrentUser = function()
 	{
-		//var URI = 'http://0.0.0.0:8080/api/v1/currentuser';
 		var URI = VILFREDO_API + '/currentuser';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) 
 		{
@@ -1159,35 +1163,6 @@ function CurrentUserViewModel()
 	}
 }
 
-/*
-<option value="60">1  <?= $VGA_CONTENT['time_minute_txt'] ?></option>
-<option value="120">2  <?= $VGA_CONTENT['time_minutes_txt'] ?></option>
-<option value="300">5  <?= $VGA_CONTENT['time_minutes_txt'] ?></option>
-<option value="3600">1 <?= $VGA_CONTENT['time_hour_txt'] ?></option>
-<option value="7200">2 <?= $VGA_CONTENT['time_hours_txt'] ?></option>
-<option value="10800">3 <?= $VGA_CONTENT['time_hours_txt'] ?></option>
-<option value="21600">6 <?= $VGA_CONTENT['time_hours_txt'] ?></option>
-<option value="43200">12 <?= $VGA_CONTENT['time_hours_txt'] ?></option>
-<option value="64800">18 <?= $VGA_CONTENT['time_hours_txt'] ?></option>
-<option value="86400" selected="yes" >1 <?= $VGA_CONTENT['time_day_txt'] ?></option>
-<option value="172800">2 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="259200">3 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="302400"><?= $VGA_CONTENT['time_halfweek_txt'] ?></option>
-<option value="345600">4 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="432000">5 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="518400">6 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="604800">1 <?= $VGA_CONTENT['time_week_txt'] ?></option>
-<option value="864000">10 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="907200"><?= $VGA_CONTENT['time_weekandahalf_txt'] ?> </option>
-<option value="1209600">2 <?= $VGA_CONTENT['time_weeks_txt'] ?></option>
-<option value="1296000">15 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="1728000">20 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-<option value="1814400">3 <?= $VGA_CONTENT['time_weeks_txt'] ?></option>
-<option value="2419200">4 <?= $VGA_CONTENT['time_weeks_txt'] ?></option>
-<option value="2592000">30 <?= $VGA_CONTENT['time_days_txt'] ?> / 1 month</option>
-<option value="2678400">31 <?= $VGA_CONTENT['time_days_txt'] ?></option>
-*/
-
 function NewQuestionViewModel() 
 {
     var self = this;
@@ -1213,8 +1188,8 @@ function NewQuestionViewModel()
         self.blurb('');
         self.title.isModified(false);
         self.blurb.isModified(false);
-        self.minimum_time({});
-        self.maximum_time({});
+        self.minimum_time(self.availableTimePeriods()[2]);
+        self.maximum_time(self.availableTimePeriods()[3]);
         $('#addquestion .alert').css('display', 'none').html('');
     }
     self.close = function()
@@ -1806,10 +1781,9 @@ function ViewProposalViewModel()
 		self.comments([]);
 		self.fetchComments();
 	}
-	
-	self.init3WayTriangle = function(svg) // shark
+	/*
+	self.init3WayTriangle = function(svg) 
 	{
-		alert('ho ho ho');
 		console.log('ViewProposalViewModel.init3WayTriangle called **************');
 		var index = parseInt($(this).data('index'));
 		console.log("init3WayTriangle: setting with index " + index);
@@ -1825,7 +1799,7 @@ function ViewProposalViewModel()
         	console.log("I do not understand proposal with index " + index);
 			proposalsViewModel.endorseWithIndex('confused', index);
 		});
-	}
+	}*/
 	
 	self.loadTriangle = function()
 	{
@@ -2359,8 +2333,8 @@ function ProposalsViewModel()
 		console.log('show3WayTriangle called...');
 		$('#vote3waywindow').modal('show');		
 		$('#vote3waywindow .show3waytriangle').svg(
-		    {loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
-			onLoad: init3WayTriangle});	
+		    {loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'})}); //,
+		//	onLoad: init3WayTriangle});	
 	}
 	
 	self.showTriangle = function()
@@ -2457,7 +2431,7 @@ function ProposalsViewModel()
 		  		});
 			}
 			
-			if (questionViewModel.phase() == 'voting')
+			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
 				$('.voting').each(function(){
 					var index = $(this).parents('.panel').siblings('.index')[0].value;
@@ -2467,8 +2441,8 @@ function ProposalsViewModel()
 					//console.log('check if pid added ==> ' + $(this).data('pid'));
 					console.log('Load triangle into proposal box');
 					//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
-					$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg',
-								 onLoad: init3WayTriangle});
+					$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg'});//,
+					//			 onLoad: init3WayTriangle});
 				});
 				self.fetchKeyPlayers();
 			}
@@ -2520,10 +2494,10 @@ function initTriangle(svg)
 	});
 }
 
-
+/*
 function init3WayTriangle(svg)
 {
-	console.log('ha ha ha');
+	console.log('init3WayTriangle function called');
 	return;
 	
 	var index = parseInt($(this).data('index'));
@@ -2540,7 +2514,7 @@ function init3WayTriangle(svg)
     	//console.log("I do not understand proposal " + index);
 		proposalsViewModel.endorseWithIndex('confused', index);
 	});
-}
+}*/
 
 function drawVotingTriangle(svg)
 {
@@ -2650,6 +2624,140 @@ var questionViewModel = function(data) {
 	};
 }*/
 
+function InviteUsersViewModel() // shark
+{
+    var self = this;
+    // Update subscribers after 50 microseconds 
+    self.users = ko.observableArray([]).extend({ rateLimit: 50 });
+    
+    self.questionPermissions = ko.observable([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.selectedPermissions = 7;
+
+	self.fetch_non_participants = function() 
+	{
+		self.users([]);
+		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Not invited list returned...');
+			for (var i = 0; i < data.not_invited.length; i++) {
+				self.users.push({
+		      		user_id: data.not_invited[i].user_id,
+					username: data.not_invited[i].username,
+		      		selected: ko.observable(false)
+		  		});
+			}
+		});
+	}
+	
+	self.add_users = function()
+	{
+	    console.log("add_users called...");
+	    var invite_user_ids = new Array();
+	    ko.utils.arrayForEach(self.users(), function(user) 
+	    {
+            if (user.selected()) 
+            {
+                invite_user_ids.push(user.user_id);
+            }
+        });
+        console.log('Selected Users = [' + invite_user_ids + ']');
+        var URI = VILFREDO_API + '/questions/' + question_id + '/invitations';
+        var invite_users = {'invite_user_ids': invite_user_ids, 'permissions': self.selectedPermissions};
+		return ajaxRequest(URI, 'POST', invite_users).done(function(data, textStatus, jqXHR) {
+		    console.log('Users added to list of participants...');
+		    // Remove the added users from the list of uninvited users
+			self.users.remove(function(user) { return user.selected(); });
+		});
+	}
+	self.open_add_users = function() 
+	{
+	    console.log("open_permissions.open called...");
+	    self.permissions(questionViewModel.permissions());
+	    $('#participants').modal('show');
+	}
+	self.close_add_users = function() 
+	{
+	    console.log("close_permissions called...");
+	    $('#add_users').modal('hide');
+	    permissionsViewModel.fetchParticipantPermissions();
+	    $('#participants').modal('show');
+	}
+}
+function PermissionsViewModel() // shark
+{
+    var self = this;
+    self.permissions = ko.observableArray([]);
+    self.permissions2 = ko.observableArray([]);
+    
+    self.questionPermissions = ko.observable([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.selectedPermissions = 7;
+
+	self.fetchParticipantPermissions = function() // jaws
+	{
+		self.permissions([]); // haha
+		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Question results returned...');
+			//self.permissions(data.permissions);
+			for (var i = 0; i < data.permissions.length; i++) {
+				self.permissions.push({
+		      		user_id: data.permissions[i].user_id,
+					username: data.permissions[i].username,
+					permissions: data.permissions[i].permissions
+		  		});
+			}
+		});
+	}
+	self.open_permissions = function() 
+	{
+	    console.log("open_permissions.open called...");
+	    //self.permissions(questionViewModel.permissions());
+	    self.fetchParticipantPermissions();
+	    $('#participants').modal('show');
+	}
+	
+	self.add_users = function()
+	{
+	    console.log("add_users called...");
+	    inviteUsersViewModel.fetch_non_participants();
+	    $('#participants').modal('hide');
+	    $('#add_users').modal('show');
+	}
+	self.update_permissions = function()
+	{
+	    console.log("update_permissions called...");
+	    questionViewModel.updatePermissions(self.permissions);
+	}
+	self.close_permissions = function() 
+	{
+	    console.log("close_permissions called...");
+	    $('#participants').modal('hide');
+	}
+	self.reset_permissions = function() 
+	{
+	    console.log("reset_permissions called...");
+	    self.permissions(questionViewModel.permissions());
+	}
+	self.remove_permissions = function() 
+	{
+	    // remove permissions for user - in other words exclude him completely from the question
+	    console.log("remove_permissions called for user " + this.user_id);
+	    self.permissions.remove(this);
+	}
+}
+
 function QuestionViewModel()
 {
 	var self = this;
@@ -2668,6 +2776,10 @@ function QuestionViewModel()
 	self.mapy = ko.observable();
 	self.created;
 	self.proposal_relations;
+	self.can_vote = false;
+	self.can_propose = false;
+	self.can_propose_ob = ko.observable(false);
+	self.can_not_propose = false;
 	
 	self.key_players = ko.observableArray();
 	
@@ -2686,7 +2798,69 @@ function QuestionViewModel()
 	self.selected_generation = ko.observable(generation_id);
 	self.selected_algorithm = ko.observable(ALGORITHM_VERSION);
 	
+	self.permissions = ko.observable([]);
+	
 	self.results;
+	
+	self.questionPermissions = ko.observableArray([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.defaultPermissions = 7;
+	
+	self.permissionTitles = function(val)
+	{
+	    switch(parseInt(val))
+        {
+        case 1:
+            return 'Read';
+            break;
+        case 3:
+            return 'Vote';
+            break;
+        case 5:
+            return 'Propose';
+            break;
+        case 7:
+            return 'Propose, Vote';
+            break;
+        default:
+            return '-';
+        }
+	}
+	
+	// shark
+	self.updatePermissions = function()
+	{
+	    console.log("updatePermissions called...");
+	}
+	self.closePermissions = function() 
+	{
+	    console.log("closePermissions called...");
+	    $('#participants').modal('hide');
+	}
+	self.resetPermissions = function() 
+	{
+	    console.log("resetPermissions called...");
+	}
+	self.removePermissions = function() 
+	{
+	    // remove permissions for user
+	    console.log("Remove permisions for user " + this.user_id);
+	    self.permissions.remove(this);
+	}
+	
+	self.fetchParticipantPermissions_off = function() 
+	{
+		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';	
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Question results returned...');
+			self.permissions(data.permissions);
+		});
+	}
 	
 	// jazz
 	self.fetchVotingResults = function() {
@@ -2917,6 +3091,12 @@ function QuestionViewModel()
         return (get_timestamp() - self.last_move_on()) > self.maximum_time();
 	}
 	
+	self.userPermissions = function() // shark
+	{
+	    alert('here');
+	    permissionsViewModel.open();
+	}
+	
 	self.moveOn = function()
 	{
 	    console.log('moveOn called...');
@@ -2955,6 +3135,11 @@ function QuestionViewModel()
     		self.created = parseInt(data.question.created);
     		self.mapx = parseFloat(data.question.mapx);
     		self.mapy = parseFloat(data.question.mapy);
+    		self.can_vote = data.question.can_vote;
+    		self.can_propose = data.question.can_propose;
+    		self.can_propose_ob(data.question.can_propose);
+    		// User permissions will be set if user is question author
+    		self.permissions(data.question.user_permissions)
 	    });
 	    
 	    //
@@ -3005,7 +3190,7 @@ function fetchGraphs(algorithm, generation)
     {
         fetchWritingGraph(generation, algorithm);
     }
-    else
+    else if (phase == 'voting')
     {
         fetchVotingGraphs(generation, algorithm);
     }
