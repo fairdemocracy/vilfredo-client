@@ -1166,8 +1166,8 @@ function CurrentUserViewModel()
 function NewQuestionViewModel() 
 {
     var self = this;
-    self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:2 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 1000, minLength:10 });
+    self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:1 });
+    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength:1 });
 
     self.availableTimePeriods = ko.observableArray([
        new TimePeriod("1 second", 1),
@@ -1342,9 +1342,9 @@ function ThreeWayVoteViewModel()
 function AddProposalViewModel() 
 {
     var self = this;
-    self.title = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
-    self.abstract = ko.observable('').extend({ maxLength: 1000, minLength:10 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 1000, minLength:10 });
+    self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:1 });
+    self.abstract = ko.observable('').extend({ maxLength: 5000 });
+    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength:1 });
 
     self.addProposal = function() { //now
         $('#addproposal .alert').text('').fadeOut(100);
