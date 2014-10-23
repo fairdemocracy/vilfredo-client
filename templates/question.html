@@ -474,7 +474,7 @@
 	      </div>
 	      <div class="modal-body">
 			<div id="modalvotesmap"></div>
-		  </div><!-- /.modal-body -->
+		</div><!-- /.modal-body -->
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
@@ -713,7 +713,6 @@
 				</select>
 			</div>	
 			
-			
 			<!-- ko foreach: users -->	
 			<div class="form-group">
 				<div data-bind="text: username" class="col-sm-4"></div>
@@ -730,6 +729,28 @@
 				<button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add Users</button>
 			    </div>
 			</div>
+			
+			
+			<div class="form-group">
+				<select size=1 data-bind="
+    				options: questionEmailPermissions,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: selectedPermissions">
+				</select>
+			</div>
+			
+			<div class="form-group">
+				<input data-bind="value: user_emails" type="text" class="form-control input-md" id="inputEmails" placeholder="Add email addresses of people you would like to invite, seperated by commas">
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+			      <button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Done</button>
+				<button data-bind="click: invite_by_email.bind(), enable: true" type="button" class="btn btn-default">Add Users</button>
+			    </div>
+			</div>
+			
 			</form>		
 		</div><!-- /.modal-body -->
 	    </div><!-- modal-content -->
@@ -745,31 +766,45 @@
 	        <h4 class="modal-title">Participants</h4>
 	      </div>
 	      <div class="modal-body">
-			<div class="alert alert-danger"></div>			
+			<div class="alert alert-danger"></div>
+			
+			
 			<form class="form-horizontal" role="form" autocomplete="off">
+				
+			<div class="form-group">
+				<div class="col-sm-4">
+				
+			</div>
+			<div class="col-sm-3">
+				Propose
+			</div>
+			<div class="col-sm-3">
+				Vote
+			</div>
+			<div class="col-sm-2">
+				Author
+			</div>
+			</div>
+				
 			<!-- ko foreach: permissions -->
 			<div class="form-group">
 				<div data-bind="text: username" class="col-sm-4"></div>
-				<div class="col-sm-6">
-					<!-- ko if: questionViewModel.author_id() == user_id -->
-					Author
-					<!-- /ko -->
-					<!-- ko ifnot: questionViewModel.author_id() == user_id -->
-					<select size=1 data-bind="
-    				options: $parent.questionPermissions,
-				    optionsText: 'name',
-				    optionsValue: 'id',
-					value: permissions">
-					</select>
-					<!-- /ko -->
+				<div class="col-sm-3">
+					<!-- Can Propose -->					
+					<div data-bind="if: $parent.userPerms($data, Q_PROPOSE)">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<!-- Can Vote -->
+					<div data-bind="if: $parent.userPerms($data, Q_VOTE)">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
 				</div>
 				<div class="col-sm-2">
-					<!-- ko if: questionViewModel.author_id() == user_id -->
-					
-					<!-- /ko -->
-					<!-- ko ifnot: questionViewModel.author_id() == user_id -->
-					<a href="#" data-bind="click: $parent.remove_permissions">Remove</a>
-					<!-- /ko -->
+					<div data-bind="if: questionViewModel.author_id() == user_id">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
 				</div>
 			</div>
 			<!-- /ko -->
@@ -777,9 +812,7 @@
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Done</button>
-				  <button data-bind="click: update_permissions(), enable: false" type="button" class="btn btn-primary">Save</button>
-				  <button data-bind="click: reset_permissions(), enable: true" type="button" class="btn btn-default">Undo</button>
-				<button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add</button>
+				  <button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add</button>
 			    </div>
 			</div>
 			</form>		
@@ -1000,12 +1033,8 @@
 		ko.applyBindings(questionViewModel, $('#results_map')[0]);
 		
 		
-		
-		
 		ko.applyBindings(permissionsViewModel, $('#participants')[0]); //shark
 		ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]); //shark
-		
-		
 		
 		
 		ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
