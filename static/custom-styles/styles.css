@@ -6031,6 +6031,37 @@ td.green {
   padding: 0;
   background-color: #CDCDCD;
 }
+#modalvotesmapcontainer {
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  padding-bottom: 15px;
+  background-color: #CDCDCD;
+  position: relative;
+}
+#modalvotesmapcontainer .right {
+  float: right;
+  color: green;
+}
+#modalvotesmapcontainer .left {
+  color: red;
+}
+#modalvotesmapcontainer .middle {
+  position: absolute;
+  top: 5px;
+  right: 43%;
+  color: yellow;
+}
+#modalvotesmapcontainer .foot {
+  position: absolute;
+  bottom: 0;
+  right: 40%;
+  color: blue;
+}
+#modalvotesmapcontainer .label {
+  font-size: 1.em;
+  font-weight: bold;
+}
 #resultstriangle {
   width: 100%;
   margin: 0;
