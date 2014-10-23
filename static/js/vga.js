@@ -1110,11 +1110,8 @@ function CurrentUserViewModel()
 			loginViewModel().close();
 			console.log('CurrentUserViewModel.getAuthToken:: Authtoken returned...');
 			console.log(data);
-			if (self.remember)
-			{
-				console.log('Remember login: Storing token in cookie');
+			// Always remember login - for now
 				$.cookie('vgaclient', data.token, {expires: 365, path: '/'});
-			}
 			self.fetchCurrentUser();
 		}).fail(function(jqXHR) {
            if (jqXHR.status == 403)
