@@ -133,10 +133,14 @@
 		<h1>Active Questions</h1>
 		
 		<div class="notloggedin">
-			<div data-bind="visible: questionsViewModel.questions().length == 0">	
+			<div data-bind="visible: currentUserViewModel.isLoggedOut">	
 				<h3>You must log in or register to use Vilfredo.</h3>
 			</div>
+			<div data-bind="visible: currentUserViewModel.isLoggedIn && questionsViewModel.questions().length == 0">
+				<h3>You are not currently participating in any questions.</h3>
+			</div>
 		</div>
+		
 		
 		<div data-bind="visible: questionsViewModel.questions().length" class="all-questions">
 		<div class="row">
