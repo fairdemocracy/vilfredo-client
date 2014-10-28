@@ -2823,6 +2823,7 @@ function QuestionViewModel()
 	self.maximum_time = ko.observable();
 	self.mapx = ko.observable();
 	self.mapy = ko.observable();
+	self.proposal_count = ko.observable();
 	self.created;
 	self.proposal_relations;
 	self.can_vote = false;
@@ -3188,7 +3189,8 @@ function QuestionViewModel()
     		self.can_propose = data.question.can_propose;
     		self.can_propose_ob(data.question.can_propose);
     		// User permissions will be set if user is question author
-    		self.permissions(data.question.user_permissions)
+    		self.permissions(data.question.user_permissions);
+    		self.proposal_count(parseInt(data.question.proposal_count))
 	    });
 	    
 	    //
