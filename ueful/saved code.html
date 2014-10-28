@@ -1,0 +1,36 @@
+
+
+
+<div class="page-header">
+			<h1>
+				Participation Table
+			</h1>
+			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
+		</div>
+			
+		<table class="table" width="647">
+		<thead>
+		<tr>
+		<th>User</th>
+		<th>Proposals Evaluated</th>
+		<th>Key Player?</th>
+		<th>Generations Participated</th>
+		</tr>
+		<tr>
+		<th></th>
+		<th data-bind="text: num_proposals"></th>
+		<th data-bind="text: proposalsViewModel.key_players().length"></th>
+		<th data-bind="text: generation"></th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- ko foreach: participation_table -->
+		<tr>
+			<td class="verthdr" data-bind="text: username"></td>
+			<td data-bind="text: $parent.proposalsEvaluatedText(evaluations), css: $parent.proposalsEvaluatedClass(evaluations)"></td>
+			<td data-bind="text: key_player, css: $parent.keyPlayerClass(key_player)"></td>
+			<td data-bind="text: past_generations, css: $parent.generationsParticipatedClass(past_generations)"></td>
+		</tr>
+		<!-- /ko -->
+		</tbody>
+		</table>
