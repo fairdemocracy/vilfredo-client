@@ -56,6 +56,10 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.css') }}">
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
+		
 		{{ flask_util_js.js }}
     </head>
     <body>
@@ -90,10 +94,10 @@
 						<a href="#contact">Contact</a>
 					</li>
 					<li data-bind="visible: isLoggedOut"> 
-						<a data-toggle="modal" data-target="#login" href="#login">Login</a>
+						<a data-bind="click: openLoginBox" href="#login">Login</a>
 					</li>
 					<li data-bind="visible: isLoggedOut"> 
-						<a data-toggle="modal" data-target="#register" href="#register">Register</a>
+						<a data-bind="click: openRegisterBox" href="#register">Register</a>
 					</li>
 					<!-- Account dropdown begin -->
 					<li data-bind="visible: userid" class="userdata dropdown">
@@ -123,7 +127,8 @@
 		<div class="jumbotron intro">
 		  <h1>Welcome to Vilfredo</h1>
 		  <p>...</p>
-		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> <a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-lg" role="button" data-toggle="modal" data-target="#register" href="#register">Register</a></p>
+		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> 
+			<a data-bind="visible: currentUserViewModel.isLoggedOut, click: openRegisterBox" class="btn btn-success btn-lg" role="button" href="#register">Register</a></p>
 		</div>
 		
 		<!-- <div class="votesmap"></div> -->
@@ -467,6 +472,12 @@
 		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
+		
+		$.cookieBar({
+			fixed: true, bottom: true, 
+			forceShow: false, zindex: '1040', 
+			effect: 'slide', autoEnable: false
+		});
 		
 		initPage();
 		

@@ -1040,15 +1040,32 @@ jQuery.fn.extend({
     }
 });
 
-function add_page_alert(alert, text)
+function add_page_alert(alert, text, class_id) // herring
 {
-    var alertbox = '<div class="main alert alert-'+ alert +' alert-dismissable">';
+    if (typeof(class_id) == 'undefined')
+    {
+        class_id = '';
+    }
+    else
+    {
+        // Do not add alert box if one with this class already displayed
+        if ($('.'+class_id).length)
+        {
+            return;
+        }
+    }
+    
+    var alertbox = '<div class="main alert alert-'+ alert +' alert-dismissable ' + class_id + '">';
 	alertbox = alertbox + '	<span class="flash">' + alert_flash[alert] + '</span> <span class="text">';
 	alertbox = alertbox + text + '</span>';
 	alertbox = alertbox +  '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button></div>';
 	
 	$('.container.main').prepend(alertbox);
 	$('.alert.main').fadeIn();
+}
+function clear_page_alerts()
+{
+    $('.alert.main').fadeOut().remove();
 }
 
 function time_dhm(timestamp)
@@ -1080,6 +1097,19 @@ function CurrentUserViewModel()
         console.log('isLoggedOut...' + this.userid());
 		return this.userid() == 0;
     }, this);
+    
+    self.openLoginBox = function() // herring
+    {
+        console.log("Calling loginViewModel.open()...");
+        loginViewModel().open();
+    }
+    
+    self.openRegisterBox = function() // herring
+    {
+        console.log("Calling loginViewModel.open()...");
+        registerViewModel().open();
+    }
+    
 
     // cat
 	self.login = function(username, password, remember) {
@@ -1294,9 +1324,28 @@ function RegisterViewModel()
         $('#register').modal('show');
     }
     
+    self.open = function() // herring
+	{
+		console.log("RegisterViewModel.open() called...")
+		if(jQuery.cookieBar('cookies') == false)
+        {
+        	add_page_alert('info', 'You must accept cookies to log in and use this site.', 'cookie_alert');
+        	return;
+        }
+
+		$('#register .message').text('').hide();
+		self.username('');
+		self.password('');
+		self.email('');
+		self.username.isModified(false);
+		self.password.isModified(false);
+		self.email.isModified(false);
+		$('#register').modal('show');
+	}
+    
     self.register = function() {
 		$('#register .message').text('').fadeOut(100);
-		if (self.username() == '' || self.password() == '' || self.password() == '')
+		if (self.username() == '' || self.password() == '' || self.email() == '')
 		{
 			$('#register .message').text('You have not completed all the required fields.')
 			.addClass('alert-danger')
@@ -1368,6 +1417,22 @@ function LoginViewModel()
 		self.username.isModified(false);
 		self.password.isModified(false);
 		self.remember(false);
+	}
+	self.open = function() // herring
+	{
+		console.log("LoginViewModel.open() called...")
+		if(jQuery.cookieBar('cookies') == false)
+        {
+        	add_page_alert('info', 'You must accept cookies to log in and use this site.', 'cookie_alert');
+        	return;
+        }
+
+		$('#login .message').text('').hide();
+		self.username('');
+		self.password('');
+		self.username.isModified(false);
+		self.password.isModified(false);
+		$('#login').modal('show');
 	}
 	self.close = function()
 	{
