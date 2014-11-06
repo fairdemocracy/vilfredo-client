@@ -93,27 +93,29 @@
 					<li>
 						<a href="#contact">Contact</a>
 					</li>
-					<li data-bind="visible: isLoggedOut"> 
-						<a data-bind="click: openLoginBox" href="#login">Login</a>
+					<li data-bind="visible: isLoggedOut"> 	
+					   <a class="btn btn-primary btn-lg navbutton" role="button" data-toggle="modal" data-target="#login" href="#login">Login</a>
 					</li>
-					<li data-bind="visible: isLoggedOut"> 
-						<a data-bind="click: openRegisterBox" href="#register">Register</a>
+					
+					<li data-bind="visible: isLoggedOut"> 	
+					   <a class="btn btn-info btn-lg navbutton" role="button" data-toggle="modal" data-target="#register" href="#register">Register</a>
 					</li>
-					<!-- Account dropdown begin -->
-					<li data-bind="visible: userid" class="userdata dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span data-bind="text: username" id="currentuser"></span><b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li class="dropdown-header">Account
-							</li>
-							<li>
-								<a href="#">My Details</a>
-							</li>
-							<li>
-								<a href="#">Change Password</a>
-							</li>
-							<li>
-								<a data-bind="click: logout" href="#">Logout</a>
-							</li>
+						<!-- Account dropdown begin -->
+						<li data-bind="visible: userid" class="userdata dropdown">
+						
+						<div class="btn-group">
+						  <button type="button" class="btn btn-success dropdown-toggle navbutton" data-toggle="dropdown">
+						    <span data-bind="text: username" id="currentuser"></span> <span class="caret"></span>
+						  </button>
+						  <ul class="dropdown-menu" role="menu">
+						    <li><a href="#">My Details</a></li>
+						    <li><a href="#">Change Password</a></li>
+						    <li class="divider"></li>
+						    <li><a data-bind="click: logout"  href="#">Logout</a></li>
+						  </ul>
+						</div>
+						</li>
+						
 						</ul>
 					</li><!-- Account dropdown end -->
 				</ul>
@@ -127,8 +129,7 @@
 		<div class="jumbotron intro">
 		  <h1>Welcome to Vilfredo</h1>
 		  <p>...</p>
-		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> 
-			<a data-bind="visible: currentUserViewModel.isLoggedOut, click: openRegisterBox" class="btn btn-success btn-lg" role="button" href="#register">Register</a></p>
+		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> </p>
 		</div>
 		
 		<!-- <div class="votesmap"></div> -->
