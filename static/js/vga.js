@@ -1410,14 +1410,6 @@ function LoginViewModel()
 		self.password.isModified(false);
 		window.location.replace('index.html');
 	}
-	self.clear = function()
-	{
-		self.username(''); 
-		self.password('');
-		self.username.isModified(false);
-		self.password.isModified(false);
-		self.remember(false);
-	}
 	self.open = function() // herring
 	{
 		console.log("LoginViewModel.open() called...")
@@ -1430,18 +1422,26 @@ function LoginViewModel()
 		$('#login .message').text('').hide();
 		self.username('');
 		self.password('');
+		//self.username.isModified(false);
+		//self.password.isModified(false);
+		$('#login').modal('show');
+	}
+	self.clear = function()
+	{
+		console.log("LoginViewModel clear called...");
+		self.username(''); 
+		self.password('');
 		self.username.isModified(false);
 		self.password.isModified(false);
-		$('#login').modal('show');
 	}
 	self.close = function()
 	{
+		console.log("LoginViewModel close called...");
 		$('#login .message').text('').hide();
 		self.username('');
 		self.password('');
 		self.username.isModified(false);
 		self.password.isModified(false);
-		self.remember(false);
 		$('#login').modal('hide');
 	}
 }
