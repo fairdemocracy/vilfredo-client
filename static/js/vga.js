@@ -2758,7 +2758,7 @@ function InviteUsersViewModel() // shark
 	
 	self.add_users = function()
 	{
-	    console.log("add_users called...");
+	    console.log("InviteUsersViewModel.add_users called...");
 	    var invite_user_ids = new Array();
 	    ko.utils.arrayForEach(self.users(), function(user) 
 	    {
@@ -2844,7 +2844,7 @@ function PermissionsViewModel() // shark
 	
 	self.add_users = function()
 	{
-	    console.log("add_users called...");
+	    console.log("PermissionsViewModel.add_users called...");
 	    inviteUsersViewModel.fetch_associated_users();
 	    $('#participants').modal('hide');
 	    $('#add_users').modal('show');
