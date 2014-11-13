@@ -671,9 +671,14 @@
 	        <h4 class="modal-title">Invite Users</h4>
 	      </div>
 	      <div class="modal-body">
-			<div class="alert alert-danger"></div>			
+			<div class="alert alert-danger"></div>
 			<form class="form-horizontal" role="form" autocomplete="off">
-				
+			
+			<div>
+				Invite users you have already interacted with on Vilfredo.
+			</div>
+			<br/>
+			
 			<div class="form-group">
 				<select size=1 data-bind="
     				options: questionPermissions,
@@ -700,6 +705,10 @@
 			    </div>
 			</div>
 			
+			<div>
+				Invite users by email.
+			</div>
+			<br/>
 			
 			<div class="form-group">
 				<select size=1 data-bind="
@@ -717,7 +726,7 @@
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 			      <button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Done</button>
-				<button data-bind="click: invite_by_email.bind(), enable: true" type="button" class="btn btn-default">Add Users</button>
+				<button data-bind="click: invite_by_email.bind(), enable: true" type="button" class="btn btn-default">Email Invitations</button>
 			    </div>
 			</div>
 			

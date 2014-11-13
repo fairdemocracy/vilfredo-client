@@ -203,9 +203,9 @@ function setVote(proposal) // eel
 	var svg = $(votemap).svg('get');
 	
 	max_x = $(svg._container).innerWidth();
-	console.log('container_width = ' + max_x);
+	//console.log('container_width = ' + max_x);
     max_y = 0.7 * max_x;
-    console.log('container_height = ' + max_y);
+    //console.log('container_height = ' + max_y);
 
 	cx = max_x * proposal.mapx;
 	cy = max_y * proposal.mapy;
