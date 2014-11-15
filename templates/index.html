@@ -74,17 +74,6 @@
 					<li class="active">
 						<a class="home" href="">Home</a>
 					</li>
-					<li data-bind="visible: isLoggedIn" class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">My Activity<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li>
-								<a href="#">My Questions</a>
-							</li>
-							<li>
-								<a href="#">Key Player</a>
-							</li>
-						</ul>
-					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li>
@@ -110,10 +99,18 @@
 						  <ul class="dropdown-menu" role="menu">
 						    <li><a href="#">My Details</a></li>
 						    <li><a href="#">Change Password</a></li>
+							<li><a href="#">My Questions</a></li>
+							<li><a class="alglink" href="#">Algorithms</a></li>
 						    <li class="divider"></li>
 						    <li><a data-bind="click: logout"  href="#">Logout</a></li>
 						  </ul>
 						</div>
+						</li>
+						
+						<li data-bind="visible: userid" class="userdata">
+							<button data-bind="click: logout" type="button" class="btn btn-default navbutton navlogout">
+						     Logout
+						  </button>
 						</li>
 						
 						</ul>

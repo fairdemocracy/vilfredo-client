@@ -6689,8 +6689,11 @@ a {
 .navbutton {
   color: #FFFFFF !important;
   margin-top: 5px;
-  margin-left: 5px;
+  margin-right: 10px;
   font-weight: bold;
+}
+.navlogout {
+  background-color: black;
 }
 .clearfix:before,
 .clearfix:after {
