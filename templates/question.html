@@ -1051,6 +1051,17 @@
 		});
 		
 		
+		$('#addproposal').on('hide.bs.modal', function(e) {
+			$(this).find(".form-control").val('').trigger("setcharcount");
+			addProposalViewModel().clear();
+			$(this).find("button").removeAttr('disabled');
+		});
+		
+		$('#viewproposal').on('hide.bs.modal', function(e) {
+			$(this).find("textarea").val('');
+		});
+		
+		
 		//
 		// comment boxes
 		//

@@ -1265,6 +1265,11 @@ function NewQuestionViewModel()
     self.minimum_time = ko.observable(self.availableTimePeriods()[2]);
     self.maximum_time = ko.observable(self.availableTimePeriods()[3]);
     
+    self.clear = function()
+    {
+        self.resetform();
+    }
+    
     self.resetform = function()
     {
 		console.log("NewQuestionViewModel.resetform() called ...");
@@ -1301,6 +1306,11 @@ function RegisterViewModel()
     self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
     self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
     self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:2, email: true });
+    
+    self.clear = function()
+    {
+        self.reset();
+    }
     
     self.reset = function()
     {
@@ -1481,12 +1491,13 @@ function AddProposalViewModel()
     }
     self.clear = function()
 	{
-		self.title(''); 
-		self.abstract('');
-		self.blurb('');
+		//self.title(''); 
+		//self.abstract('');
+		//self.blurb('');
 		self.title.isModified(false);
 		self.abstract.isModified(false);
 		self.blurb.isModified(false);
+		$("#addproposal .form-control").trigger( "setcharcount" );
 	}
 	self.close = function()
 	{

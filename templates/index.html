@@ -490,9 +490,11 @@
 		})
 		
 		
-		$('#login').on('show.bs.modal', function(e) {
-			console.log('login modal shown...');
+		$('#login').on('hide.bs.modal', function(e) {
 			loginViewModel().clear();
+		})
+		$('#register').on('hide.bs.modal', function(e) {
+			registerViewModel().clear();
 		})
 	
 		
@@ -533,6 +535,12 @@
 		$('body').on('hidden.bs.popover', function() {
   			console.log('popover hidden...');
 		});	
+		
+		$('#addquestion').on('hide.bs.modal', function(e) {
+			$(this).find(".form-control").val('').trigger("setcharcount");
+			newQuestionViewModel().clear();
+			$(this).find("button").removeAttr('disabled');
+		})
 		
 		$('body').tooltip({
 		    selector: '[rel=tooltip]',
