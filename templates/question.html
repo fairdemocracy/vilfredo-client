@@ -345,12 +345,10 @@
 		
 		<div data-bind="visible: questionViewModel.proposal_count == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">
 		<p>There are no proposals so far. Why not be the first to propose an answer?</p>
-		<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit an Answer</a>
 		</div>
 		
 		<div data-bind="visible: proposals().length == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">
 		<p>You have not written any proposals so far. If you think you have a possible solution, why not propose an answer?</p>
-		<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit an Answer</a>
 		</div>
 		
 		<div class="proposal_list row">
