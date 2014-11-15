@@ -159,13 +159,13 @@
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
-					<img src="{{ url_for('static', filename='images/germinating.jpg') }}" height=42 /> 
+					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					<!-- ko if: $root.minimum_time_passed($data) -->
-					<img rel="tooltip" src="{{ url_for('static', filename='images/clock.jpg') }}" height=42 title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<span rel="tooltip" class="glyphicon glyphicon-time questicon" aria-hidden="true" title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'></span>
 					<!-- /ko -->
 					<!-- ko if: $root.maximum_time_passed($data) -->
-					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<span rel="tooltip" class="glyphicon glyphicon-exclamation-sign questicon" aria-hidden="true" title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'></span>
 					<!-- /ko -->
 					</div>
 					<!-- /ko -->
@@ -177,7 +177,7 @@
 		<div class="row">
 			<div class="col-md-6 icons writing panel">
 				<div class="panel-heading">
-                  <h2 class="panel-title"><img src="{{ url_for('static', filename='images/writing.jpg') }}" height=42 /> Propose an Answer to a Question</h2>
+                  <h2 class="panel-title"><span class="glyphicon glyphicon-edit questhdricon" aria-hidden="true"></span> Propose an Answer to a Question</h2>
                 </div>
                 <div class="panel-body">
 				<div class="">
@@ -186,13 +186,13 @@
 					
 					<div class="item">
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
-					<img src="{{ url_for('static', filename='images/tree.jpg') }}" height=42 /> 
+					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					<!-- ko if: $root.minimum_time_passed($data) -->
-					<img rel="tooltip" src="{{ url_for('static', filename='images/clock.jpg') }}" height=42 title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<span rel="tooltip" class="glyphicon glyphicon-time questicon" aria-hidden="true" title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'></span>
 					<!-- /ko -->
 					<!-- ko if: $root.maximum_time_passed($data) -->
-					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<span rel="tooltip" class="glyphicon glyphicon-exclamation-sign questicon" aria-hidden="true" title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'></span>
 					<!-- /ko -->
 					</div>
 					
@@ -203,7 +203,7 @@
 			</div>
 			<div class="col-md-6 icons voting panel">
 				<div class="panel-heading">
-                  <h4 class="panel-title"><img src="{{ url_for('static', filename='images/endorsing.jpg') }}" height=42 /> Vote all the Answers you Agree On</h4>
+                  <h4 class="panel-title"><span class="glyphicon glyphicon-check questhdricon" aria-hidden="true"></span> Vote all the Answers you Agree On</h4>
                 </div>
                 <div class="panel-body">
 				<div class="">
@@ -211,13 +211,13 @@
 					<!-- ko if: phase() == "voting" -->
 					<div class="item">
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
-					<img src="{{ url_for('static', filename='images/flowers.jpg') }}" height=42 /> 
+					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					<!-- ko if: $root.minimum_time_passed($data) -->
-					<img rel="tooltip" src="{{ url_for('static', filename='images/clock.jpg') }}" height=42 title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<span rel="tooltip" class="glyphicon glyphicon-time questicon" aria-hidden="true" title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'></span>
 					<!-- /ko -->
 					<!-- ko if: $root.maximum_time_passed($data) -->
-					<img rel="tooltip" src="{{ url_for('static', filename='images/sveglia.gif') }}" height=42 title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'/>
+					<span rel="tooltip" class="glyphicon glyphicon-exclamation-sign questicon" aria-hidden="true" title='This question will soon be automatically moved on. If you still have not proposed your possible answers, please do so as soon as possible'></span>
 					<!-- /ko -->
 					</div>
 					<!-- /ko -->
@@ -229,7 +229,7 @@
 		<div class="row">
 			<div class="col-md-12 icons consensus panel">
 				<div class="panel-heading">
-                  <h2 class="panel-title"><img src="{{ url_for('static', filename='images/manyhands.jpg') }}" height=42 /> Questions Which have Reached a Consensus</h2>
+                  <h2 class="panel-title"><span class="glyphicon glyphicon-thumbs-up questhdricon" aria-hidden="true"></span> Questions Which have Reached a Consensus</h2>
                 </div>
                 <div class="panel-body">
 				<div class="">
@@ -238,7 +238,7 @@
 					
 					<div class="item">
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
-					<img src="{{ url_for('static', filename='images/tree.jpg') }}" height=42 /> 
+					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					
 					</div>
