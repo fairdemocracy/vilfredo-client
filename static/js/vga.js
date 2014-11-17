@@ -21,7 +21,9 @@ var question_id = getQuerySegment('question');
 if (!question_id) { 
     question_id = getQuerySegment('domination');
 }
-console.log(question_id);
+console.log('Question = ' + question_id);
+
+var pwdtoken = getQuerySegment('resetpwd');
 
 var generation_id = parseInt(getQuerySegment('gen'));
 
@@ -38,6 +40,7 @@ var proposalsViewModel;
 var questionViewModel;
 var viewProposalViewModel;
 var loginViewModel;
+var passwordResetViewModel;
 var addProposalViewModel;
 var newQuestionViewModel;
 var svggraph;
@@ -46,6 +49,7 @@ var votesgraph;
 var pfvotesgraph;
 var triangle;
 var permissionsViewModel;
+var newPasswordViewModel;
 
 var triangle_offset_x = 0;
 var triangle_offset_y = 0;
@@ -1305,7 +1309,7 @@ function RegisterViewModel()
     var self = this;
     self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
     self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
-    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:2, email: true });
+    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
     
     self.clear = function()
     {
@@ -1391,6 +1395,119 @@ function RegisterViewModel()
 			.fadeIn();
         });
     }
+}
+
+function NewPasswordViewModel()
+{
+    var self = this;
+    self.token = getQuerySegment('resetpwd');
+    self.password = ko.observable('').extend({
+        required: true,
+        minlength: 6,
+        message: "Password is required",
+        maxLength: 12
+    });
+    
+    self.confirmpassword = ko.observable('');
+    
+    self.setnewpassword = function()
+    {
+        if (self.checkEqual())
+        {
+            var URI = VILFREDO_API +'/reset_password';
+    		$.cookie('vgaclient', null, { path: '/' });
+    		var passwords = {'password': self.password() , 'password2': self.confirmpassword(), 'token': self.token};
+    		return ajaxRequestPR(URI, 'POST', passwords).done(function(data, textStatus, jqXHR) {
+    			// badger
+    			if (jqXHR.status != 201)
+			    {
+				    console.log(data.message);
+				    add_page_alert('danger', data.message);
+				}
+				else
+				{
+				    $.cookie('vgaclient', data.token, {expires: 365, path: '/'});
+    			    add_page_alert('success', 'Your password has been reset. Click here to continue <a class="home" href="">Home</a>');
+    			    $('.home').attr('href', VILFREDO_URL);
+    			    //$('#enter_password').fadeOut(400);
+    			    $('#enter_password').find('input').val('');
+				}
+    		
+    		}).fail(function(jqXHR) {
+               if (jqXHR.status == 403)
+    		    {
+    				console.log('Password reset failed.');
+    				add_page_alert('danger', 'Oops! Something went wrong.');
+    			}
+            });
+        }
+    }
+    
+    self.checkEqual = function()
+    {
+        if (self.password() != self.confirmpassword())
+        {
+            $('#confirmpwd').text('The passwords you enter must be the same');
+            self.confirmpassword('');
+            return false;
+        }
+        else
+        {
+            $('#confirmpwd').text('');
+            return true;
+        }
+    }
+}
+
+function PasswordResetViewModel() // wolf
+{
+    var self = this;
+    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
+    
+    self.open = function()
+	{
+	    console.log("LoginViewModel.reset_pwd called...");
+	    $('#login').modal('hide');
+	    $('#reset_pwd').modal('show');
+	}
+	self.close = function()
+	{
+	    self.done();
+	}
+	self.done = function()
+	{
+	    self.email('');
+	    self.email.isModified(false);
+	    $('#reset_pwd .alert').text('').fadeOut(100);
+	    $('#reset_pwd').modal('hide');
+	}
+	self.reset = function()
+	{
+		console.log("LoginViewModel.reset called...");
+
+		var URI = VILFREDO_API + '/request_password_reset';
+		ajaxRequest(URI, 'POST', {'email': self.email()}).done(function(data, textStatus, jqXHR) {
+			if (jqXHR.status == 201)
+			{
+	  		    self.done();
+	  		    add_page_alert('success', 'An email has been sent.', 'reset-email-sent');
+	  		}
+	  		else
+			{
+				console.log(jqXHR.status);
+				$('#reset_pwd .alert')
+				.text(data.error)
+				.setAlertClass('danger')
+				.fadeIn();
+			}
+		}).fail(function(jqXHR) {
+            console.log('pwd_reset: There was an error. Error ' + jqXHR.status);
+            $('#reset_pwd .alert')
+            .text(JSON.parse(jqXHR.responseText).message)
+            .setAlertClass('danger')
+            .fadeIn();
+        });
+	}
 }
 
 function LoginViewModel() 
@@ -2801,7 +2918,7 @@ function InviteUsersViewModel() // shark
 	    $('#participants').modal('show');
 	}
 }
-function PermissionsViewModel() // shark
+function PermissionsViewModel() // wolf
 {
     var self = this;
     self.permissions = ko.observableArray([]);
@@ -3429,6 +3546,23 @@ function fetchVotingGraphs(generation, algorithm)
 	{
 		console.log('fetchVotingGraphs: There was an error fetching the graphs. Error ' + jqXHR.status);
     });
+}
+
+var ajaxRequestPR = function(uri, method, data) {
+	console.log('ajaxRequest: request made... ' + uri);
+	var request = {
+		url: uri,
+        type: method,
+        contentType: "application/json",
+        accepts: "application/json",
+        cache: false,
+        dataType: 'json',
+        data: JSON.stringify(data),
+        error: function(jqXHR) {
+            console.log("ajax error " + jqXHR.status);
+        }
+     };
+     return $.ajax(request);
 }
 
 var ajaxRequest = function(uri, method, data) {

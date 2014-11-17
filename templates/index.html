@@ -387,6 +387,7 @@
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
 							 <button data-bind="click: dologin.bind($data)" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							<button data-bind="click: passwordResetViewModel().open.bind(), enable: true" type="button" class="btn btn-default">Forgotten Password</button>
 							</div>
 						</div>
 					</form>
@@ -394,6 +395,43 @@
 			</div><!-- modal-content -->
 		</div><!-- modal-dialog -->
 	</div><!-- login modal -->
+	
+	
+	
+	<!-- Login Modal shark -->
+	<div id="reset_pwd" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="ResetBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Reset Password
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="message alert alert-danger"></div>
+					<div class="intro">Enter the email you registered with and we will send you a link so you can create a new password.</div>
+					<form autocomplete="on" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: email"></span>
+								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Account Email Address">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+							 <button data-bind="click: reset.bind($data)" type="button" class="btn btn-primary">Send Request</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- login modal -->
+	
+	
 
 	
 	<!-- Register Modal -->
@@ -470,6 +508,7 @@
 		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
+		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
 		
 		$.cookieBar({
 			fixed: true, bottom: true, 
@@ -503,6 +542,8 @@
 		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
 		
 		ko.applyBindings(loginViewModel, $('#login')[0]);
+		
+		ko.applyBindings(passwordResetViewModel, $('#reset_pwd')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
 		

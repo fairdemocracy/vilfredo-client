@@ -6710,6 +6710,11 @@ a {
 .questhdricon {
   font-size: 2em;
 }
+.modal-body .intro {
+  padding: 0 15px;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
 .clearfix:before,
 .clearfix:after {
   content: " ";
