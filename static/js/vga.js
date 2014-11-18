@@ -1513,8 +1513,8 @@ function PasswordResetViewModel() // wolf
 function LoginViewModel() 
 {
     var self = this;
-    self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
-    self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
+    self.username = ko.observable('');
+    self.password = ko.observable('');
 	self.remember = ko.observable(false);
 
     self.dologin = function() {
@@ -1525,6 +1525,19 @@ function LoginViewModel()
 			return;
 		}
         currentUserViewModel.login(self.username(), self.password(), self.remember());
+    }
+    
+    self.logEnter = function(data, e)
+    {
+        if(e.which == 13)
+        {
+            self.dologin();
+            return true;
+        }
+        else
+        {
+            return true;
+        }
     }
     
 	self.logout = function()
