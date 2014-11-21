@@ -68,7 +68,7 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li class="active">
-						<a class="home" href="">Home</a>
+						<button data-bind="click: home" type="button" class="btn btn-primary btn-lg navbutton">Home</button>
 					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -103,7 +103,7 @@
 						</li>
 						
 						<li data-bind="visible: userid" class="userdata">
-							<button data-bind="click: logout" type="button" class="btn btn-default navbutton navlogout">
+							<button data-bind="click: logout" type="button" class="btn btn-default btn-lg navbutton navlogout">
 						     Logout
 						  </button>
 						</li>
@@ -833,9 +833,12 @@
 						</div>
 						-->
 						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
+							<div class="col-sm-offset-2 col-sm-6">
 							 <button data-bind="click: dologin.bind($data)" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
-							<button data-bind="click: passwordResetViewModel().open.bind(), enable: true" type="button" class="btn btn-default">Forgotten Password</button>
+							
+							</div>
+							<div class="col-sm-4">
+								<a class="pwdresetlink" href="">Forgotten Password?</a>
 							</div>
 						</div>
 					</form>

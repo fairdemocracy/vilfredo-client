@@ -1121,6 +1121,12 @@ function CurrentUserViewModel()
 		self.password = password;
 		self.getAuthToken();
     }
+    
+    self.home = function()
+    {
+        window.location.replace(VILFREDO_URL);
+    }
+    
 	self.logout = function()
 	{
 		console.log("User logged out...");
