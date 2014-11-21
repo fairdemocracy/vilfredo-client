@@ -1208,6 +1208,7 @@ function CurrentUserViewModel()
     		{
     		    window.location.replace(VILFREDO_URL);
     		}
+    		self.fetchCurrentUser();
 		}).fail(function(jqXHR) {
            if (jqXHR.status == 403)
 		    {
