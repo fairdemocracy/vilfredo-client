@@ -1203,7 +1203,11 @@ function CurrentUserViewModel()
 			console.log(data);
 			// Always remember login - for now
 			$.cookie('vgaclient', data.token, {expires: 365, path: '/'});
-			self.fetchCurrentUser();
+			// Make sure we're on the home page wgen we log in
+			if (window.location.pathname != '/')
+    		{
+    		    window.location.replace(VILFREDO_URL);
+    		}
 		}).fail(function(jqXHR) {
            if (jqXHR.status == 403)
 		    {
@@ -1464,16 +1468,6 @@ function PasswordResetViewModel() // wolf
     var self = this;
     self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
     
-    self.open = function()
-	{
-	    console.log("LoginViewModel.reset_pwd called...");
-	    $('#login').modal('hide');
-	    $('#reset_pwd').modal('show');
-	}
-	self.close = function()
-	{
-	    self.done();
-	}
 	self.done = function()
 	{
 	    self.email('');
@@ -1484,9 +1478,19 @@ function PasswordResetViewModel() // wolf
 	self.reset = function()
 	{
 		console.log("LoginViewModel.reset called...");
+		
+		$('#login .message').text('').fadeOut(100);
+		if (self.email() == '')
+		{
+			$('#reset_pwd .message').text('You must enter your email address.')
+			    .fadeIn(500)
+    			.delay(5000)
+    			.fadeOut(500);
+			return;
+		}
 
 		var URI = VILFREDO_API + '/request_password_reset';
-		ajaxRequest(URI, 'POST', {'email': self.email()}).done(function(data, textStatus, jqXHR) {
+		ajaxRequestPR(URI, 'POST', {'email': self.email()}).done(function(data, textStatus, jqXHR) {
 			if (jqXHR.status == 201)
 			{
 	  		    self.done();
