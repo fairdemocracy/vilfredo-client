@@ -131,6 +131,12 @@
 		
 		<!-- <div id="cvtriangle"></div> -->
 	
+		
+		<div id="askquestion" data-bind="visible: currentUserViewModel.isLoggedIn()">
+			<h3>Ask a new question</h3>
+			<a data-bind="click: beginNewQuestion" class="btn btn-success btn-md" role="button">Ask a Question</a>
+		</div>
+	
 		<h1>Active Questions</h1>
 		
 		<div class="notloggedin">
@@ -148,8 +154,6 @@
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
 					<span rel="tooltip" title="Please Register or Log In to Ask a Question" class="pointer">
-					<a data-bind="visible: currentUserViewModel.isLoggedOut" class="btn btn-success btn-md" role="button" disabled>Ask a Question</a></span>
-					<a data-bind="click: beginNewQuestion, visible: currentUserViewModel.isLoggedIn" class="btn btn-success btn-md" role="button">Ask a Question</a>
                 </div>
                 <div class="panel-body">
 				<div class="">
@@ -544,6 +548,9 @@
 		ko.applyBindings(passwordResetViewModel, $('#reset_pwd')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
+		
+		
+		ko.applyBindings(questionsViewModel, $('#askquestion')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
 		
