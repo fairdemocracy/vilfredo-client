@@ -6685,11 +6685,20 @@ a {
 .nav .btn {
   color: #FFFFFF;
 }
+#inputSearch {
+  color: black;
+  width: 300px;
+  height: 40px;
+  line-height: 40px;
+}
+.nav li {
+  margin-top: 10px;
+}
 #navlogin,
 #navregister,
 .navbutton {
   color: #FFFFFF !important;
-  margin-top: 5px;
+  /* margin-top: 5px; */
   margin-right: 10px;
   font-weight: bold;
 }
@@ -6720,6 +6729,9 @@ a {
   height: 70px;
   margin: 0;
   padding: 0;
+}
+.navbar > .container .navbar-brand {
+  padding-bottom: 5px;
 }
 .clearfix:before,
 .clearfix:after {

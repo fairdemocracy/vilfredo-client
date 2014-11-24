@@ -66,19 +66,20 @@
 	<div class="navbar navbar-inverse navbar-fixed-top main">
 		<div class="container">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button> <a class="navbar-brand" href="#">Vilfredo goes to Athens</a>
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button> <a class="navbar-brand" href="#">Vilfredo</a>
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li class="active">
 						<button data-bind="click: home" type="button" class="btn btn-primary btn-lg navbutton">Home</button>
+						<!-- Search box -->
 					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li>
-						<a href="https://github.com/pietrosperoni/Vilfredo/wiki">About</a>&gt;
+					<li data-bind="visible: isLoggedOut">
+						<a href="https://github.com/pietrosperoni/Vilfredo/wiki">About</a>
 					</li>
-					<li>
+					<li data-bind="visible: isLoggedOut">
 						<a href="#contact">Contact</a>
 					</li>
 					<li data-bind="visible: isLoggedOut"> 	
@@ -130,7 +131,7 @@
 		<!-- <div class="votesmap"></div> -->
 		
 		<!-- <div id="cvtriangle"></div> -->
-	
+		
 		
 		<div id="askquestion" data-bind="visible: currentUserViewModel.isLoggedIn()">
 			<h3>Ask a new question</h3>
