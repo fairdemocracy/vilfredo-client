@@ -128,8 +128,8 @@
 			<h5>by <span class="authorname" data-bind="text: author"></span></h5>
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
 			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
-			<p>This question will be moved on automatically in <span data-bind="text: time_dhm(last_move_on()+maximum_time()-get_timestamp())"></span></p>
-			<!-- ko if: author_id() == currentUserViewModel.userid() && minimum_time_passed() && proposalsViewModel.proposals().length > 1 -->
+			
+			<!-- ko if: author_id() == currentUserViewModel.userid() && questionViewModel.proposal_count() > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 		</div>

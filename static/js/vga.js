@@ -1292,8 +1292,8 @@ function NewQuestionViewModel()
         self.blurb('');
         self.title.isModified(false);
         self.blurb.isModified(false);
-        self.minimum_time(self.availableTimePeriods()[2]);
-        self.maximum_time(self.availableTimePeriods()[3]);
+        //self.minimum_time(self.availableTimePeriods()[2]);
+        //self.maximum_time(self.availableTimePeriods()[3]);
         $('#addquestion .alert').css('display', 'none').html('');
     }
     self.close = function()
@@ -1306,11 +1306,12 @@ function NewQuestionViewModel()
 	{
 		console.log("NewQuestionViewModel.add() called ...");
 		
+		// hare
 		questionsViewModel.addQuestion({
             title: self.title(),
             blurb: self.blurb(),
-            minimum_time: self.minimum_time().seconds,
-            maximum_time: self.maximum_time().seconds
+            minimum_time: 1,
+            maximum_time: 2592000
         });
 	}
 }
@@ -3024,7 +3025,7 @@ function PermissionsViewModel() // wolf
 	}
 }
 
-function QuestionViewModel()
+function QuestionViewModel() // hare
 {
 	var self = this;
 	self.URI = VILFREDO_API + '/questions/' + question_id;		
