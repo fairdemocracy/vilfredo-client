@@ -136,9 +136,7 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					<!-- ko if: $root.minimum_time_passed($data) -->
-					<span rel="tooltip" class="glyphicon glyphicon-time questicon" aria-hidden="true" title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'></span>
-					<!-- /ko -->
+					
 					
 					</div>
 					<!-- /ko -->
@@ -161,9 +159,7 @@
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					<!-- ko if: $root.minimum_time_passed($data) -->
-					<span rel="tooltip" class="glyphicon glyphicon-time questicon" aria-hidden="true" title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'></span>
-					<!-- /ko -->
+					
 					</div>
 					
 					<!-- /ko -->
@@ -183,9 +179,7 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					<!-- ko if: $root.minimum_time_passed($data) -->
-					<span rel="tooltip" class="glyphicon glyphicon-time questicon" aria-hidden="true" title='This question is ready to be moved on. The questioner can do it at any time. If you still have not proposed your possible answers, please do so as soon as possible'></span>
-					<!-- /ko -->
+					
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
@@ -461,9 +455,10 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
-		
 		{{ flask_util_js.js }}
 	<script type="text/javascript">
+
+	
 	function initPage()
 	{
 		console.log('initPage called...');
