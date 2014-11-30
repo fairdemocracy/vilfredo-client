@@ -5917,7 +5917,9 @@ body {
   padding-top: 75px;
 }
 #footer {
-  margin-top: 40px;
+  margin-top: 60px;
+  /*border-top: solid 1px #cccccc;*/
+  /*background-color: #eeeeee;*/
 }
 .question-view,
 .voting-graphs,
@@ -6569,7 +6571,9 @@ a.plain {
 }
 /* navbar */
 .navbar-nav > li > a {
-  padding-bottom: 5px !important;
+  line-height: 0.9em;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
 .navbar {
   min-height: 60px !important;
@@ -6731,7 +6735,8 @@ a {
   padding: 0;
 }
 .navbar > .container .navbar-brand {
-  padding-bottom: 5px;
+  font-size: 2em;
+  padding: 0 auto;
 }
 .clearfix:before,
 .clearfix:after {
