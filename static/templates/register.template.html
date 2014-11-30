@@ -1,0 +1,47 @@
+<!-- Register Modal -->
+	<div id="register" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="RegisterBox" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Register
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="message alert alert-danger"></div>
+					<p>Enter your details below. A confirmation email will be sent to the address you give after which you will be able to log in.</p>
+					<form autocomplete="on" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
+							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: username"></span>
+								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: password"></span>
+								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-10">
+								<span class="errormsg" data-bind="validationMessage: email"></span>
+								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email" type="email" required>
+								<span class="help-block">A valid email address is required to activate your account and reset your password if you lose it.</span>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button data-bind="click: register" type="button" class="btn btn-primary">Register</button> 
+								<button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- register modal -->
