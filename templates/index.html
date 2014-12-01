@@ -37,61 +37,9 @@
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.css') }}">
     </head>
     <body>
-	<!-- Fixed navbar -->
-	<div class="navbar navbar-inverse navbar-fixed-top main">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button> <a class="navbar-brand" href="#">Vilfredo</a>
-			</div>
-			<div class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li class="active">
-						<button data-bind="click: home" type="button" class="btn btn-primary btn-lg navbutton">Home</button>
-						<!-- Search box -->
-					</li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li data-bind="visible: isLoggedOut">
-						<a href="https://github.com/pietrosperoni/Vilfredo/wiki">About</a>
-					</li>
-					<li data-bind="visible: isLoggedOut"> 	
-					   <a class="btn btn-info btn-lg navbutton" role="button" data-toggle="modal" data-target="#register" href="#register">Register</a>
-					</li>
-					<li data-bind="visible: isLoggedOut"> 	
-					   <a class="btn btn-primary btn-lg navbutton" role="button" data-toggle="modal" data-target="#login" href="#login">Login</a>
-					</li>
-						<!-- Account dropdown begin -->
-						<li data-bind="visible: userid" class="userdata dropdown">
-						
-						<div class="btn-group">
-						  <button type="button" class="btn btn-success btn-lg dropdown-toggle navbutton" data-toggle="dropdown">
-						    <span data-bind="text: username" id="currentuser"></span> <span class="caret"></span>
-						  </button>
-						  <ul class="dropdown-menu" role="menu">
-						    <li><a href="#">My Details</a></li>
-						    <li><a href="#">Change Password</a></li>
-							<li><a href="#">My Questions</a></li>
-							<li><a class="alglink" href="#">Algorithms</a></li>
-						    <li class="divider"></li>
-						    <li><a data-bind="click: logout"  href="#">Logout</a></li>
-						  </ul>
-						</div>
-						</li>
-						
-						<li data-bind="visible: userid" class="userdata">
-							<button data-bind="click: logout" type="button" class="btn btn-default btn-lg navbutton navlogout">
-						     Logout
-						  </button>
-						</li>
-						
-						</ul>
-					</li><!-- Account dropdown end -->
-				</ul>
-			</div><!--/.nav-collapse -->
-		</div>
-	</div>
-	<!-- navbar -->
-
+	
+	<div id="navbar"></div>
+	
 	<div class="container main">
 		
 		<div class="jumbotron intro">
@@ -136,8 +84,6 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					
-					
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
@@ -212,14 +158,12 @@
 		</div>
 		</div> <!-- all-questions -->
 		
+		
+		<div id="footer"></div>
+		
 	</div><!-- container -->
 
 
-	<div id="footer">
-	    <div class="container">
-	      <p class="text-muted credit">&copy; 2009-2013 Pietro Speroni &amp; Derek Paterson </p>
-	    </div>
-	</div>
 	
 	
 <!-- New Question Modal -->
@@ -296,60 +240,7 @@
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 	
-	<!-- Login Modal shark -->
-	<div id="login" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="LoginBox" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-					<h4 class="modal-title" id="myModalLabel">
-						Log in
-					</h4>
-				</div>
-				<div class="modal-body">
-					<div class="message alert alert-danger"></div>
-					<form autocomplete="on" class="form-horizontal" role="form">
-						<div class="form-group">
-							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: username"></span>
-								<input data-bind="value: username, valueUpdate:'afterkeydown', event: { 'keypress': logEnter }" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: password"></span>
-								<input data-bind="value: password, valueUpdate:'afterkeydown', event: { 'keypress': logEnter }" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
-							</div>
-						</div>
-						<!--
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
-								<div class="checkbox">
-									<label><input data-bind="checked: remember" type="checkbox"> Remember me</label>
-								</div>
-							</div>
-						</div>
-						-->
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-6">
-							 <button data-bind="click: dologin.bind($data)" type="button" class="btn btn-primary">Sign in</button> <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
-							
-							</div>
-							<div class="col-sm-4">
-								<a class="pwdresetlink" href="">Forgotten Password?</a>
-							</div>
-						</div>
-					</form>
-				</div><!-- modal-body -->
-			</div><!-- modal-content -->
-		</div><!-- modal-dialog -->
-	</div><!-- login modal -->
-	
-	
-	
-	<!-- Login Modal shark -->
+	<!-- reset-pwd Modal shark -->
 	<div id="reset_pwd" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="ResetBox" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -383,61 +274,14 @@
 	</div><!-- login modal -->
 	
 	
-	<!-- Register Modal -->
-	<div id="register" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="RegisterBox" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-					<h4 class="modal-title" id="myModalLabel">
-						Register
-					</h4>
-				</div>
-				<div class="modal-body">
-					<div class="message alert alert-danger"></div>
-					<p>Enter your details below. A confirmation email will be sent to the address you give after which you will be able to log in.</p>
-					<form autocomplete="on" class="form-horizontal" role="form">
-						<div class="form-group">
-							<label for="inputUsername" class="col-sm-2 control-label">Username</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: username"></span>
-								<input data-bind="value: username" type="text" class="form-control input-lg" id="inputUsername" placeholder="Username">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: password"></span>
-								<input data-bind="value: password" type="password" class="form-control input-lg" id="inputPassword" placeholder="Password">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="inputEmail" class="col-sm-2 control-label">Email</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: email"></span>
-								<input data-bind="value: email" type="text" class="form-control input-lg" id="inputEmail" placeholder="Email" type="email" required>
-								<span class="help-block">A valid email address is required to activate your account and reset your password if you lose it.</span>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
-								<button data-bind="click: register" type="button" class="btn btn-primary">Register</button> 
-								<button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
-							</div>
-						</div>
-					</form>
-				</div><!-- modal-body -->
-			</div><!-- modal-content -->
-		</div><!-- modal-dialog -->
-	</div><!-- register modal -->
-	
-
 	</body>
+	
 	<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
     	<!--[if lt IE 9]>
       	<script src="static/bootstrap/docs-assets/js/html5shiv.js"></script>
       	<script src="static/bootstrap/docs-assets/js/respond.min.js"></script>
     	<![endif]-->
+		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
@@ -448,7 +292,6 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
@@ -456,17 +299,57 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
 		{{ flask_util_js.js }}
+		
 	<script type="text/javascript">
 
 	
 	function initPage()
 	{
 		console.log('initPage called...');
+		
 		$('.current-questions').show();
 		
 		$.when(currentUserViewModel.loadUser()).then(function()
 		{
 			console.log('loadUser completed...');
+			
+			// Load Templates
+			//
+			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( template ) 
+			{
+				$( "#navbar" ).html( template );
+				//$('body').prepend( data );
+				ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
+				$('.home').attr('href', VILFREDO_URL);
+				$('.navbar-brand').attr('href', VILFREDO_URL);
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( template ) 
+			{
+				$( "#footer" ).html( template );
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/login.template.html", function( template ) 
+			{
+				//$( "#login-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(loginViewModel, $('#login')[0]);
+				$('#login').on('hide.bs.modal', function(e) {
+					loginViewModel().clear();
+				});
+				$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/register.template.html", function( template ) 
+			{
+				//$( "#register-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(registerViewModel, $('#register')[0]);
+				$('#register').on('hide.bs.modal', function(e) {
+					registerViewModel().clear();
+				});
+			});
+			
 			if (currentUserViewModel.isLoggedIn())
 			{
 				console.log("User logged in: call fetchQuestions");
@@ -498,13 +381,15 @@
 			$('.modalvotesmap').svg({onLoad: createVoteMap});
 		})
 		
-		
+		/*
 		$('#login').on('hide.bs.modal', function(e) {
 			loginViewModel().clear();
-		})
+		})*/
+		
+		/*
 		$('#register').on('hide.bs.modal', function(e) {
 			registerViewModel().clear();
-		})
+		})*/
 	
 		
 		//$('#cvtriangle').svg({loadURL: STATIC_FILES + '/images/voting_triangle.svg', onLoad: initCVTriangleLarge});
@@ -512,14 +397,13 @@
 		
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 	
-		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
+		//-->ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
 		
-		ko.applyBindings(loginViewModel, $('#login')[0]);
+		//ko.applyBindings(loginViewModel, $('#login')[0]);
 		
 		ko.applyBindings(passwordResetViewModel, $('#reset_pwd')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
-		
 		
 		ko.applyBindings(questionsViewModel, $('#askquestion')[0]);
 		
@@ -527,12 +411,12 @@
 		
 		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
 		
-		ko.applyBindings(registerViewModel, $('#register')[0]);
+		//ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(currentUserViewModel, $('.intro')[0]);
 		
-		$('.home').attr('href', VILFREDO_URL);
-		$('.navbar-brand').attr('href', VILFREDO_URL);
-		$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
+		//$('.home').attr('href', VILFREDO_URL);
+		//$('.navbar-brand').attr('href', VILFREDO_URL);
+		//$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
 		
 		$('body').popover({
 		    selector: '[rel="popover"]',
