@@ -34,29 +34,6 @@
 		<!--
 		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
 		-->
-		<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
-    	<!--[if lt IE 9]>
-      	<script src="static/bootstrap/docs-assets/js/html5shiv.js"></script>
-      	<script src="static/bootstrap/docs-assets/js/respond.min.js"></script>
-    	<![endif]-->
-		
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-debug.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svganim.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
-		{{ flask_util_js.js }}
     </head>
     <body>
 	<div id="navbar"></div>
@@ -90,8 +67,6 @@
 		</div>
 		</div>
 		<!-- question-view end -->
-		
-		
 
 		<!-- Participation table start -->
 		<div id="participationtable" data-bind="visible: questionViewModel.phase() == 'voting'">
@@ -744,6 +719,30 @@
 	</script>
 	
 	</body>
+	<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
+    	<!--[if lt IE 9]>
+      	<script src="static/bootstrap/docs-assets/js/html5shiv.js"></script>
+      	<script src="static/bootstrap/docs-assets/js/respond.min.js"></script>
+    	<![endif]-->
+		
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svganim.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		{{ flask_util_js.js }}
+	
 	<script type="text/javascript">
 	function initPage()
 	{
