@@ -1241,12 +1241,15 @@ function CurrentUserViewModel()
 			
 			if (proposalsViewModel)
 			{
+			    console.log("fetchCurrentUser: Question Phase = " + questionViewModel.phase());
 			    if (questionViewModel.phase() == 'writing')
 			    {
+			        console.log('fetchCurrentUser: Fetching user only proposals');
 			        proposalsViewModel.fetchProposals({user_only: true});
 			    }
-			    else
+			    else if (questionViewModel.phase() == 'voting')
 			    {
+			        console.log('fetchCurrentUser: Fetching all proposals');
 			        proposalsViewModel.fetchProposals();
 			    }
 			    resetGraphsForUser();
@@ -2547,7 +2550,7 @@ function ProposalsViewModel()
 				// reset key players
 				self.fetchKeyPlayers();
 				// reset participation table
-				questionViewModel.fetchParticipationTable();
+				//questionViewModel.fetchParticipationTable();
 				redoResultsMap();
 			}
 			else
@@ -3603,13 +3606,13 @@ var ajaxRequest = function(uri, method, data) {
         beforeSend: function (xhr) {
 			if (currentUserViewModel.authToken != '')
 			{
-				console.log("Use the auth token " + currentUserViewModel.authToken);
+				//console.log("Use the auth token " + currentUserViewModel.authToken);
 				xhr.setRequestHeader('Authorization',
 					"Basic " + btoa(currentUserViewModel.authToken + ":" + ''));
 			}
 			else if (currentUserViewModel.username() != '' && currentUserViewModel.password != '')
 			{
-				console.log("Use login details");
+				//console.log("Use login details");
 				xhr.setRequestHeader("Authorization", 
                 	"Basic " + btoa(currentUserViewModel.username() + ":" + currentUserViewModel.password));
 			}
