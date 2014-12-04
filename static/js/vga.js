@@ -80,6 +80,24 @@ function arrayDiff(arr1, arr2)
     return diff;
 }
 
+function checkVGAMessages()
+{
+    if ($.cookie('vgamessage'))
+    {
+    	var status = 'success';
+    	if ($.cookie('vgastatus'))
+    	{
+    	    if ($.cookie('vgastatus') == 'error')
+    	    {
+    	        status = 'danger';
+    	    }
+    	    $.cookie('vgastatus', null);
+    	}
+    	add_page_alert(status, $.cookie('vgamessage'));
+    	$.cookie('vgamessage', null);
+    }
+}
+
 function getQuerySegment(variable)
 {
     //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
@@ -1216,10 +1234,14 @@ function CurrentUserViewModel()
     		}
     		self.fetchCurrentUser();
 		}).fail(function(jqXHR) {
-           if (jqXHR.status == 403)
+		    if (jqXHR.responseJSON.user_message)
 		    {
-				$('#login .message').text('Sorry, your login details were not recognised.').fadeIn(500);
-			}
+		        $('#login .message').text(jqXHR.responseJSON.user_message).fadeIn(500);
+		    }      
+            else
+            {
+            	$('#login .message').text('Sorry, your login details were not recognised.').fadeIn(500);
+            }
         });
 	}
 	self.fetchCurrentUser = function()
@@ -1391,7 +1413,7 @@ function RegisterViewModel()
 			{
 				console.log(data.message);
 				registerViewModel().close();
-				add_page_alert('success', 'Congratulations, you just registered with Vilfredo! You can now log in using your password.');				
+				add_page_alert('success', 'Thank you. An email with an account activation link has been sent to your address.');				
 			}
 			else 
 			{
