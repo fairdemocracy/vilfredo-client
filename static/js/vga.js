@@ -2850,6 +2850,8 @@ function InviteUsersViewModel() // shark
     // Update subscribers after 50 microseconds 
     self.users = ko.observableArray([]).extend({ rateLimit: 50 });
     self.user_emails = ko.observable();
+    self.emails_sent = ko.observable('');
+    self.emails_rejected = ko.observable('');
     
     self.questionPermissions = ko.observable([
        {name: "Read", id: 1},
@@ -2877,7 +2879,9 @@ function InviteUsersViewModel() // shark
 		    console.log('Email invitations sent...');
 		    // Remove the added users from the list of uninvited users
 		    console.log(data.invites.rejected);
-			self.user_emails(data.invites.rejected);
+			self.emails_sent(data.invites.accepted);
+			self.emails_rejected(data.invites.rejected);
+			self.user_emails('');
 		});
 	}
 
@@ -2963,6 +2967,9 @@ function InviteUsersViewModel() // shark
 	self.close_add_users = function() 
 	{
 	    console.log("close_permissions called...");
+	    self.user_emails('');
+        self.emails_sent('');
+        self.emails_rejected('');
 	    $('#add_users').modal('hide');
 	    permissionsViewModel.fetchParticipantPermissions();
 	    $('#participants').modal('show');

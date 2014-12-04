@@ -631,6 +631,16 @@
 				</select>
 			</div>
 			
+			<div data-bind="visible: emails_sent().length > 0">
+			Emails Sent:
+			<div data-bind="text: emails_sent" class="emails_semt"></div>
+			</div>
+			
+			<div data-bind="visible: emails_rejected().length > 0">
+			Emails Rejected:
+			<div data-bind="text: emails_rejected" class="emails_rejected"></div>
+			</div>
+			
 			<div class="form-group">
 				<input data-bind="value: user_emails" type="text" class="form-control input-md" id="inputEmails" placeholder="Add email addresses of people you would like to invite, seperated by commas">
 			</div>

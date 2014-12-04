@@ -6738,6 +6738,14 @@ a {
   font-size: 2em;
   padding: 0 auto;
 }
+.emails_semt {
+  color: green;
+  padding: 2px;
+}
+.emails_rejected {
+  color: red;
+  padding: 2px;
+}
 .clearfix:before,
 .clearfix:after {
   content: " ";
