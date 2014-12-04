@@ -636,6 +636,11 @@
 			<div data-bind="text: emails_sent" class="emails_semt"></div>
 			</div>
 			
+			<div data-bind="visible: emails_already_sent().length > 0">
+			Emails Already Sent:
+			<div data-bind="text: emails_already_sent" class="emails_already_sent"></div>
+			</div>
+			
 			<div data-bind="visible: emails_rejected().length > 0">
 			Emails Rejected:
 			<div data-bind="text: emails_rejected" class="emails_rejected"></div>
@@ -647,7 +652,7 @@
 			
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-			      <button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Done</button>
+			      
 				<button data-bind="click: invite_by_email.bind(), enable: true" type="button" class="btn btn-default">Send Email Invitations</button>
 			    </div>
 			</div>

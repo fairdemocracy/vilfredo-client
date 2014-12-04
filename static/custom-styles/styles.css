@@ -6746,6 +6746,10 @@ a {
   color: red;
   padding: 2px;
 }
+.emails_already_sent {
+  color: orange;
+  padding: 2px;
+}
 .clearfix:before,
 .clearfix:after {
   content: " ";

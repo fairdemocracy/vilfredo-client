@@ -2852,6 +2852,7 @@ function InviteUsersViewModel() // shark
     self.user_emails = ko.observable();
     self.emails_sent = ko.observable('');
     self.emails_rejected = ko.observable('');
+    self.emails_already_sent = ko.observable('');
     
     self.questionPermissions = ko.observable([
        {name: "Read", id: 1},
@@ -2881,6 +2882,7 @@ function InviteUsersViewModel() // shark
 		    console.log(data.invites.rejected);
 			self.emails_sent(data.invites.accepted);
 			self.emails_rejected(data.invites.rejected);
+			self.emails_already_sent(data.invites.already_sent);
 			self.user_emails('');
 		});
 	}
