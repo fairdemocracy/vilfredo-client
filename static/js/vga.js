@@ -2972,6 +2972,7 @@ function InviteUsersViewModel() // shark
 	    self.user_emails('');
         self.emails_sent('');
         self.emails_rejected('');
+        self.emails_already_sent('');
 	    $('#add_users').modal('hide');
 	    permissionsViewModel.fetchParticipantPermissions();
 	    $('#participants').modal('show');
