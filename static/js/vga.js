@@ -1209,7 +1209,7 @@ function CurrentUserViewModel()
 		}).fail(function(jqXHR) {
            console.log('requestPasswordReset: There was an error. Status ' + jqXHR.status);
 			$('#pwdreset .message .alert')
-			.html(JSON.parse(jqXHR.responseText).message)
+			.html("Oops, there was a server problem! We'll look into it.")
 			.setAlertClass('danger')
 			.fadeIn();
         });
@@ -1427,7 +1427,7 @@ function RegisterViewModel()
 		{
 			console.log('register: There was an error with register. Error ' + jqXHR.status);
 			$('#register .alert')
-			.html(JSON.parse(jqXHR.responseText).message)
+			.html("Oops, there was a server problem! We'll look into it.")
 			.setAlertClass('danger')
 			.fadeIn();
         });
@@ -2043,7 +2043,7 @@ function ViewProposalViewModel()
 		{
 			console.log('addcomment: There was an error with add comment. Status ' + jqXHR.status);
 			$('.newcommentpanel .alert')
-			.html(JSON.parse(jqXHR.responseText).message)
+			.html("Oops, there was a server problem! We'll look into it.")
 			.setAlertClass('danger')
 			.fadeIn();
         });
