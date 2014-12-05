@@ -337,6 +337,7 @@
 			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( template ) 
 			{
 				$( "#footer" ).html( template );
+				ko.applyBindings(currentUserViewModel, $('#footer')[0]);
 			});
 			
 			$.get( VILFREDO_URL + "/static/templates/login.template.html", function( template ) 
