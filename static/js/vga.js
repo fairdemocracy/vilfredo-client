@@ -1234,7 +1234,7 @@ function CurrentUserViewModel()
     		}
     		self.fetchCurrentUser();
 		}).fail(function(jqXHR) {
-		    if (jqXHR.responseJSON.user_message)
+		    if (jqXHR.responseJSON && jqXHR.responseJSON.user_message)
 		    {
 		        $('#login .message').text(jqXHR.responseJSON.user_message).fadeIn(500);
 		    }      
