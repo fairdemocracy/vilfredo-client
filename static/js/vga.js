@@ -2449,7 +2449,8 @@ function ProposalsViewModel()
 	  		    self.proposals.push({
 					id: ko.observable(parseInt(data.proposal.id)),
 					title: ko.observable(data.proposal.title),
-		      		blurb: ko.observable(data.proposal.blurb),
+		      		blurb: ko.observable(data.proposal.blurb.replace(/\r?\n/g, '<br>')),
+		      		abstract: ko.observable(data.proposal.abstract.replace(/\r?\n/g, '<br>')),
 		      		author: ko.observable(data.proposal.author),
 					endorse_type: ko.observable(data.proposal.endorse_type),
 					uri: ko.observable(data.proposal.uri),
@@ -2677,7 +2678,8 @@ function ProposalsViewModel()
 		  		self.inherited_proposals.push({
 		      		id: ko.observable(parseInt(data.proposals[i].id)),
 					title: ko.observable(data.proposals[i].title),
-		      		blurb: ko.observable(data.proposals[i].blurb),
+		      		blurb: ko.observable(data.proposals[i].blurb.replace(/\r?\n/g, '<br>')),
+		      		abstract: ko.observable(data.proposals[i].abstract.replace(/\r?\n/g, '<br>')),
 		      		author: ko.observable(data.proposals[i].author),
 					endorse_type: ko.observable(data.proposals[i].endorse_type),
 					uri: ko.observable(data.proposals[i].uri),
@@ -2716,7 +2718,8 @@ function ProposalsViewModel()
 		  		proposals_list.push({
 		      		id: ko.observable(parseInt(data.proposals[i].id)),
 					title: ko.observable(data.proposals[i].title),
-		      		blurb: ko.observable(data.proposals[i].blurb),
+		      		blurb: ko.observable(data.proposals[i].blurb.replace(/\r?\n/g, '<br>')),
+		      		abstract: ko.observable(data.proposals[i].abstract.replace(/\r?\n/g, '<br>')),
 		      		author: ko.observable(data.proposals[i].author),
 					endorse_type: ko.observable(data.proposals[i].endorse_type),
 					uri: ko.observable(data.proposals[i].uri),
