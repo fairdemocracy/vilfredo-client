@@ -412,8 +412,14 @@ function showUserVotes(clicked, svg, userid, threshold)
 
 function showProposalVotes(med, svg, threshold, voters)
 {    
+    /*
     var container_width = $(svg._container).innerWidth();
     var container_height = 0.7 * container_width;
+    */
+    
+    var dimensions = calculateTriangleDimensions(svg);
+    var container_width = dimensions.width;
+    var container_height = dimensions.height;
     
     $('#allvotes,#alluservotes').remove();
     
@@ -506,14 +512,59 @@ function redoResultsMap()
     });
 } 
 
+function calculateTriangleDimensions(svg)
+{
+    // set height of results triangle container based on available space 
+	//var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
+    //$('#resultstriangle').height(set_results_map_height);
+	
+	console.log('Start calculateTriangleDimensions');
+	
+	var map_width, map_height;
+	
+	var container_width = $(svg._container).innerWidth();
+	console.log('container_width = ' + container_width);
+	var ideal_width = map_widh = container_width;
+	var ideal_height = map_height = 0.7 * container_width;
+	console.log('ideal_width = ' + ideal_width);
+	console.log('ideal_height = ' + ideal_height);
+    
+    var container_height = $(svg._container).innerHeight();
+    console.log('container_height = ' + container_height);
+    
+    if (container_height < ideal_height)
+    {
+        console.log('container_height < ideal_height');
+        map_width = container_height / 0.7;
+        map_height = container_height;
+    }
+    
+    console.log('map_width = ' + map_width);
+	console.log('map_height = ' + map_height);
+	
+	console.log('Done calculateTriangleDimensions');
+    
+    return {'width' : map_width, 'height' : map_height};
+}
+
 
 function createResultsMap(svg) // jazz
 {
+	/*
 	console.log('createResultsMap called...');
 	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
     var container_height = 0.7 * container_width;
     console.log('container_height = ' + container_height);
+    */
+    
+    // set height of results triangle container based on available space 
+	var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
+    $('#resultstriangle').height(set_results_map_height);
+    
+    var dimensions = calculateTriangleDimensions(svg);
+    var container_width = dimensions.width;
+    var container_height = dimensions.height;
     
     var max_x = container_width;
     var max_y = container_height;
