@@ -27,13 +27,7 @@
         <title>Vilfredo - Fair Decision-Making</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<!--
-		<link rel="stylesheet" type="text/css" href="static/bootstrap/dist/css/bootstrap.css"/>
-		-->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
-		<!--
-		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
-		-->
     </head>
     <body>
 	<div id="navbar"></div>
@@ -768,7 +762,11 @@
 			   questionViewModel.fetchVotingResults()).done(function()
 		{
 			console.log('User and question loaded...');
-			
+			// Load Templates
+			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
+			{
+				$('head').append( template );
+			});
 			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( data ) 
 			{
 				$( "#navbar" ).html( data );
