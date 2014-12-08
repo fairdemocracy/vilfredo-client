@@ -524,7 +524,7 @@ function calculateTriangleDimensions(svg)
 	
 	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
-	var ideal_width = map_widh = container_width;
+	var ideal_width = map_width = container_width;
 	var ideal_height = map_height = 0.7 * container_width;
 	console.log('ideal_width = ' + ideal_width);
 	console.log('ideal_height = ' + ideal_height);
