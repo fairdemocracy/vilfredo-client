@@ -225,9 +225,9 @@
 				</div>
 				<div class="panel-footer proposal-footer">
 					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
-					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
-					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
-					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
+					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 				</div>
 			</div>
 			</div><!-- /ko -->
@@ -280,9 +280,9 @@
 					<span data-bind="html: blurb"></span>
 				</div>
 				<div class="panel-footer proposal-footer">
-					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
-					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
-					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index())"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open comments windowzzzzz" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
+					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 					<!-- <a data-toggle="modal" data-target="#votemapwindow">votemap</a> -->
 					<!-- <a data-bind="click: $parent.openvotemap.bind($data, $index())">votemap</a> -->
 					<!--
@@ -371,40 +371,6 @@
 	      </div><!-- modal-header -->
 	      <div id="viewproposalbody" class="modal-body">
 		   <div>				
-			<!-- New comment panel -->
-			<div class="newcommentpanel">
-				<div class="message alert alert-danger"></div>
-				<div class="newcomment">
-					<h4>
-						Add a point for or against this proposal
-					</h4>
-					<form autocomplete="off" class="form-horizontal" role="form">
-						<input type="hidden" id="new_comment_type" value="comment" />
-						<input type="hidden" id="reply_to" value=0 />
-						<div id="form-type-select" class="form-group">
-							<label for="inputCommentType" class="col-sm-2 control-label">Comment Type</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: comment_type"></span>
-								<select data-bind="options: comment_type_options, value: comment_type, optionsCaption: 'Select Comment Type...'" id="inputQuestionMinMoveTime"></select>
-									
-							</div>
-						</div>
-						<div class="form-group">
-							<label id='comment-label' for="inputComment" class="col-sm-2 control-label">Comment</label>
-							<div class="col-sm-10">
-								<span class="errormsg" data-bind="validationMessage: comment"></span>
-								<textarea data-bind="value: comment" id="inputComment" class="form-control" rows="6" placeholder="Comment Text"></textarea>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
-								<button data-bind="click: add, enable: isValid()" type="button" class="btn btn-primary">Submit</button> <button type="button" data-bind="click: showNewCommentPanel" class="btn btn-default">Cancel</button>
-							</div>
-						</div>
-					</form>
-				</div><!-- newcomment -->
-			</div><!-- New comment panel end -->
-
 			
 			<div id="propdetails">
 				<div data-bind="html: blurb">Hmm... This proposal has no content.</div>
@@ -420,13 +386,13 @@
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 						</div>
-					</div>
+					</div>					
 					<!-- /ko -->
 					<!-- /ko -->
-					<textarea id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
-					<button id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					<textarea data-bind="textInput: comment_for" id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
+					<button data-bind="click: submitComment.bind($data, 'for')" id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</div>
-					<!-- for comments end -->
+					<!-- for comments end bang -->
 				
 				</div>
 				<div class="col-md-6">
@@ -442,8 +408,8 @@
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
-					<textarea id="inputAgainstComment" class="form-control" rows="2" placeholder="Point Against"></textarea>
-					<button id="inputAgainstCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					<textarea data-bind="textInput: comment_against" id="inputAgainstComment" class="form-control" rows="2" placeholder="Point Against"></textarea>
+					<button data-bind="click: submitComment.bind($data, 'for')" id="inputAgainstCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</div>
 				</div>
 			</div> 
@@ -500,8 +466,8 @@
 					<!-- /ko -->
 					<div class="qabox row">
 					<div class="col-md-6">
-					<textarea id="inputQuestionComment" class="form-control" rows="2" placeholder="Question"></textarea>
-					<button id="inputQuestionCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					<textarea data-bind="textInput: question" id="inputQuestionComment" class="form-control" rows="2" placeholder="Question"></textarea>
+					<button data-bind="click: submitComment.bind($data, 'question')" id="inputQuestionCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</div>
 					<div class="col-md-6"></div>
 					</div>
@@ -872,6 +838,18 @@
 			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
+				
+				switch(viewProposalViewModel.panel)
+				{
+				   case 'comments':
+				       viewProposalViewModel.showProposalComments();
+				       break;
+				   case 'questions':
+				       viewProposalViewModel.showProposalQuestions();
+				       break;
+				   default:
+				       break;
+				}
 			}
 		})
 		
@@ -915,7 +893,7 @@
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showcomments')[0]);
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showquestions')[0]);
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal .vpheader')[0]);
-		ko.applyBindings(newCommentViewModel, $('.newcommentpanel')[0]);
+		//ko.applyBindings(newCommentViewModel, $('.newcommentpanel')[0]);
 		//ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
 		
 		//ko.applyBindings(registerViewModel, $('#register')[0]);
@@ -962,115 +940,9 @@
 			e.stopPropagation();
 		});
 		
-		$('#inputForCommentBtn').on('click', function (e) {
-			var inputFor = $('#inputForComment');
-			//if ($(inputFor).data('clicked'))
-			//{
-				var comment = $.trim($(inputFor).val());
-				console.log(comment);
-				//
-				if ( comment != '' )
-				{					
-					viewProposalViewModel.addComment({
-		                comment: comment,
-		                comment_type: 'for',
-						reply_to: 0
-		        	});
-				}
-				//
-				$(inputFor).data('clicked', false);
-				$(inputFor).val('');
-			//}
-		});
-		$('#inputAgainstCommentBtn').on('click', function (e) {
-			var inputAgainst = $('#inputAgainstComment');
-			//if ($(inputAgainst).data('clicked'))
-			//{
-				var comment = $.trim($(inputAgainst).val());
-				console.log(comment);
-				//
-				if ( comment != '' )
-				{					
-					viewProposalViewModel.addComment({
-		                comment: comment,
-		                comment_type: 'against',
-						reply_to: 0
-		        	});
-				}
-				//
-				$(inputAgainst).data('clicked', false);
-				$(inputAgainst).val('');
-			//}
-		});
-		
-		$('#inputQuestionCommentBtn').on('click', function (e) {
-			var inputQuestion = $('#inputQuestionComment');
-			var comment = $.trim($(inputQuestion).val());
-			console.log(comment);
-			//
-			if ( comment != '' )
-			{
-				viewProposalViewModel.addComment({
-	                comment: comment,
-	                comment_type: 'question',
-					reply_to: 0
-	        	});
-			}
-			//
-			$(inputQuestion).data('clicked', false);
-			$(inputQuestion).val('');
-		});
-		
-		
-		
-		/*
-		$('html').click(function() {
-			// Check for text in inputFor
-			var inputFor = $('#inputForComment');
-			if ($(inputFor).data('clicked'))
-			{
-				var comment = $.trim($(inputFor).val());
-				console.log(comment);
-				//
-				if ( comment != '' )
-				{					
-					viewProposalViewModel.addComment({
-		                comment: comment,
-		                comment_type: 'for',
-						reply_to: 0
-		        	});
-				}
-				//
-				$(inputFor).data('clicked', false);
-				$(inputFor).val('');
-			}
-			// Check for text in inputAgainst
-			var inputAgainst = $('#inputAgainstComment');
-			if ($(inputAgainst).data('clicked'))
-			{
-				var comment = $.trim($(inputAgainst).val());
-				console.log(comment);
-				//
-				if ( comment != '' )
-				{
-					viewProposalViewModel.addComment({
-		                comment: comment,
-		                comment_type: 'against',
-						reply_to: 0
-		        	});
-				}
-				//
-				$(inputAgainst).data('clicked', false);
-				$(inputAgainst).val('');
-			}
-		});
-		*/
-		
-		
 		//$('.home').attr('href', VILFREDO_URL);
 		//$('.navbar-brand').attr('href', VILFREDO_URL);
-		
-		
+
 		$('body').popover({
 		    selector: '[rel="popover"]',
 			trigger: 'hover',

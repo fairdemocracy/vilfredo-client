@@ -68,6 +68,14 @@ function getKeys(object)
     return keys;
 }
 
+function getItemIndexFromArrayWithID(itemArray, item_id)
+{
+    console.log("getItemIndexFromArrayWithID called with pid = " + item_id);
+    return arrayFirstIndexOf(itemArray, function(item) {
+       return item.id() === item_id;    
+    });
+}
+
 function arrayDiff(arr1, arr2)
 {
     diff = [];
@@ -1820,6 +1828,10 @@ function ViewProposalViewModel()
 	self.author_id = ko.observable();
 	self.index;
 	
+	self.comment_for = ko.observable('');
+	self.comment_against = ko.observable('');
+	self.question = ko.observable('');
+	self.answer = ko.observable('');
 	
 	self.addcommentanswer = function(comment_id)
 		{
@@ -1967,10 +1979,17 @@ function ViewProposalViewModel()
 		var $showing = $('#propdetails, #showquestions').filter(function() {
 		   return $(this).is(':visible');
 	    });
-		$showing.fadeOut(function()
-		{
-			$('#showcomments').fadeIn();
-		});
+	    if ($showing.length)
+	    {
+		    $showing.fadeOut(function()
+    		{
+    			$('#showcomments').fadeIn();
+    		});
+    	}
+    	else
+    	{
+    	    $('#showcomments').fadeIn();
+    	}
 	}
 	self.showProposalQuestions = function()
 	{
@@ -2058,7 +2077,44 @@ function ViewProposalViewModel()
 		});
 	}
 	
-	self.addComment = function(comment) // eating
+	self.submitComment = function(comment_type, proposal) // bang
+    {
+	    console.log(proposal.id());
+	    console.log(comment_type);
+	    
+        switch (comment_type)
+        {
+            case "for": 
+               console.log('Adding comment for');
+               self.addComment({
+	                comment: $.trim(self.comment_for()),
+	                comment_type: 'for',
+					reply_to: 0
+			   });
+               break;
+            case "against": 
+               console.log('Adding comment against');
+               self.addComment({
+	                comment: $.trim(self.comment_against()),
+	                comment_type: 'against',
+					reply_to: 0
+			   });
+               break;
+               case "question": 
+               console.log('Adding question');
+               self.addComment({
+	                comment: $.trim(self.question()),
+	                comment_type: 'question',
+					reply_to: 0
+			   });
+               break;
+            default: 
+               console.log('Unknown comment type');
+               return;
+        }
+    }
+	
+	self.addComment = function(comment) // bang
 	{
 		console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';
@@ -2068,7 +2124,6 @@ function ViewProposalViewModel()
 			
 			if (jqXHR.status == 201)
 			{
-				//newCommentViewModel().showNewCommentPanel();
 				console.log('Updating comments list for propsalal' + self.proposal.id());
 				self.comments.push({
 		      		id: ko.observable(data.comment.id),
@@ -2079,16 +2134,43 @@ function ViewProposalViewModel()
 					author_id: ko.observable(data.comment.author_id),
 					supporters: ko.observableArray(JSON.parse(data.comment.supporters))
 		  		});
+		  		
+		  		// Clear comment input box
+		  		switch (data.comment.comment_type)
+		  		{
+		  		    case "for":
+		  		        self.comment_for('');
+		  		        break;
+		  		    case "against":
+		  		        self.comment_against('');
+		  		        break;
+		  		    case "question":
+		  		        self.question('');
+		  		        break;
+		  		}
+		  		
+		  		// Update counts
+		  		var index = getItemIndexFromArrayWithID(proposalsViewModel.proposals(), self.id());
+		  		if (index != -1)
+		  		{
+		  		    proposalsViewModel.proposals()[index].comment_count(parseInt(data.comment.comment_count));
+		  		    proposalsViewModel.proposals()[index].question_count(parseInt(data.comment.question_count));
+		  		}
+		  		
+		  		index = getItemIndexFromArrayWithID(proposalsViewModel.inherited_proposals(), self.id());
+		  		if (index != -1)
+		  		{
+		  		    proposalsViewModel.inherited_proposals()[index].comment_count(parseInt(data.comment.comment_count));
+		  		    proposalsViewModel.inherited_proposals()[index].question_count(parseInt(data.comment.question_count));
+		  		}
 			}
 			else
 			{
-				console.log('addcomment: There was an problem adding the comment. Status ' + jqXHR.status);
-				/*
-				$('.newcommentpanel .alert')
-				.html(data.message)
-				.setAlertClass('danger')
-				.fadeIn();
-				*/
+				console.log('addcomment: There was an error with add comment. Status ' + jqXHR.status);
+    			$('.newcommentpanel .alert')
+    			.html("There was an problem adding the comment.")
+    			.setAlertClass('danger')
+    			.fadeIn();
 			}
 		}).fail(function(jqXHR) 
 		{
@@ -2476,11 +2558,12 @@ function ProposalsViewModel()
 		$('#votemapwindow').modal('show');
 	}
 	
-	self.read = function(index, proposal)
+	self.read = function(index, panel, proposal) // catz
 	{
 		console.log("ProposalsViewModel.read called with index " + index);
 		viewProposalViewModel.setProposal(proposal);
 		viewProposalViewModel.index = index;
+		viewProposalViewModel.panel = panel;
 		viewProposalViewModel.loadTriangle();
 		viewProposalViewModel.reset();
 		$('#viewproposal').modal('show');
