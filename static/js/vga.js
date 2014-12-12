@@ -2374,7 +2374,7 @@ function QuestionsViewModel()
 					link: VILFREDO_URL + "/question/" + data.questions[i].id
 		  		});
 			}
-			self.questions(fetched_questions);
+			self.questions(fetched_qustions);
 		});
 	}
 	self.beginNewQuestion = function()
