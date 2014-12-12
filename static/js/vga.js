@@ -338,8 +338,13 @@ function showUserVotes(clicked, svg, userid, threshold)
     
     var med_selected_fill_color = '#7e7e7e';
     
-    var container_width = $(svg._container).innerWidth();
-    var container_height = 0.7 * container_width;
+    // snow
+    //var container_width = $(svg._container).innerWidth();
+    //var container_height = 0.7 * container_width;
+    
+    var dimensions = calculateTriangleDimensions(svg);
+    var container_width = dimensions.width;
+    var container_height = dimensions.height;
 
     jQuery.each(questionViewModel.results, function(pid, coords) {
         medx = container_width * coords['median']['medx'];
@@ -526,19 +531,18 @@ function calculateTriangleDimensions(svg)
 	//var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
     //$('#resultstriangle').height(set_results_map_height);
 	
-	console.log('Start calculateTriangleDimensions');
+	console.log('********* Start calculateTriangleDimensions *********');
 	
 	var map_width, map_height;
 	
 	var container_width = $(svg._container).innerWidth();
+	var container_height = $(svg._container).innerHeight();
 	console.log('container_width = ' + container_width);
+    console.log('container_height = ' + container_height);
+	
 	var ideal_width = map_width = container_width;
 	var ideal_height = map_height = 0.7 * container_width;
-	console.log('ideal_width = ' + ideal_width);
 	console.log('ideal_height = ' + ideal_height);
-    
-    var container_height = $(svg._container).innerHeight();
-    console.log('container_height = ' + container_height);
     
     if (container_height < ideal_height)
     {
@@ -546,17 +550,23 @@ function calculateTriangleDimensions(svg)
         map_width = container_height / 0.7;
         map_height = container_height;
     }
+    else
+    {
+        console.log('container_height >= ideal_height');
+        map_width = container_height;
+        map_height = container_height;
+    }
     
     console.log('map_width = ' + map_width);
 	console.log('map_height = ' + map_height);
 	
-	console.log('Done calculateTriangleDimensions');
-    
+	console.log('********* Completed calculateTriangleDimensions *********');
+	    
     return {'width' : map_width, 'height' : map_height};
 }
 
 
-function createResultsMap(svg) // jazz
+function createResultsMap(svg) // snow
 {
 	/*
 	console.log('createResultsMap called...');
@@ -602,20 +612,6 @@ function createResultsMap(svg) // jazz
     var threshold_y = container_height*questionViewModel.mapy;
     // Add current threshold point - debugging
     var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
-    
-    /*
-    // Add threshold marker
-    var marker_top = svg.line(resultsmap, threshold_x, 0, threshold_x, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
-    
-    var Lx = plotThresholdEndpoint(0, 0, mid_x, max_y, threshold_y);
-    //console.log("Left point at " + Lx + ", " + threshold_y);
-    
-    var Rx = plotThresholdEndpoint(max_x, 0, mid_x, max_y, threshold_y);
-    //console.log("Right point at " + Rx + ", " + threshold_y);
-    // #CDCDCD
-    var marker_left = svg.line(resultsmap, Lx, threshold_y, Rx, threshold_y, {id: 'marker_top', strokeWidth: 2, stroke: 'black'});
-    */
-
     var g = svg.group(resultsmap, 'votes');
     var radius = 10;
     
