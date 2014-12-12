@@ -2262,9 +2262,10 @@ function ViewProposalViewModel()
 					'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Comments data returned...');
 			console.log(data);
+			var fetched_comments = [];
 			for (var i = 0; i < data.comments.length; i++) {
 		  		var supporters = JSON.parse(data.comments[i].supporters)
-				self.comments.push({
+				fetched_comments.push({
 		      		id: ko.observable(data.comments[i].id),
 					comment: ko.observable(data.comments[i].comment),
 		      		comment_type: ko.observable(data.comments[i].comment_type),
@@ -2274,6 +2275,7 @@ function ViewProposalViewModel()
 					supporters: ko.observableArray(JSON.parse(data.comments[i].supporters))
 		  		});
 			}
+			self.comments(fetched_comments);
 			console.log(data.comments.length + " comments loaded");
 		});
 	}
@@ -2350,8 +2352,9 @@ function QuestionsViewModel()
 		    console.log('Questions data returned...');
 			console.log(data);
 			self.questions([]);
+			var fetched_qustions = [];
 			for (var i = 0; i < data.questions.length; i++) {
-		  		self.questions.push({
+		  		fetched_qustions.push({
 		      		id: ko.observable(data.questions[i].id),
 					title: ko.observable(data.questions[i].title),
 		      		blurb: ko.observable(data.questions[i].blurb),
@@ -2371,6 +2374,7 @@ function QuestionsViewModel()
 					link: VILFREDO_URL + "/question/" + data.questions[i].id
 		  		});
 			}
+			self.questions(fetched_questions);
 		});
 	}
 	self.beginNewQuestion = function()
@@ -2808,8 +2812,9 @@ function ProposalsViewModel()
 		    console.log('Proposals data returned...');
 			console.log(data);
 			self.proposals([]);
+			fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
-		  		self.inherited_proposals.push({
+		  		fetched_proposals.push({
 		      		id: ko.observable(parseInt(data.proposals[i].id)),
 					title: ko.observable(data.proposals[i].title),
 		      		blurb: ko.observable(data.proposals[i].blurb.replace(/\r?\n/g, '<br>')),
@@ -2824,6 +2829,7 @@ function ProposalsViewModel()
 					mapy: parseFloat(data.proposals[i].mapy)
 		  		});
 			}
+			self.proposals(fetched_proposals);
 		});
 	}
 
@@ -2848,8 +2854,9 @@ function ProposalsViewModel()
 		    console.log('Proposals data returned...');
 			console.log(data);
 			self.proposals([]);
+			var fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
-		  		proposals_list.push({
+		  		fetched_proposals.push({
 		      		id: ko.observable(parseInt(data.proposals[i].id)),
 					title: ko.observable(data.proposals[i].title),
 		      		blurb: ko.observable(data.proposals[i].blurb.replace(/\r?\n/g, '<br>')),
@@ -2864,6 +2871,7 @@ function ProposalsViewModel()
 					mapy: parseFloat(data.proposals[i].mapy)
 		  		});
 			}
+			proposals_list(fetched_proposals);
 			
 			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
@@ -3027,40 +3035,44 @@ function InviteUsersViewModel() // shark
     // 
     // Fetch non-participating associated users
     //
-    self.fetch_associated_users = function() 
+    self.fetched_associated_users = function() 
 	{
 		self.users([]);
 		var URI = VILFREDO_API + '/users/associated_users?ignore_question=' + question_id;	
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Not invited list returned...');
+		    var fetched_users = [];
 			for (var i = 0; i < data.not_invited.length; i++) {
-				self.users.push({
+				fetched_users.push({
 		      		user_id: data.not_invited[i].user_id,
 					username: data.not_invited[i].username,
 		      		selected: ko.observable(false)
 		  		});
 			}
+			self.users(fetched_users);
 		});
 	}
     
-    self.fetch_uninvited_associates = function() 
+    self.fetched_uninvited_associates = function() 
 	{
 		self.users([]);
 		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';	
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Not invited list returned...');
+		    var fetched_users = [];
 			for (var i = 0; i < data.not_invited.length; i++) {
-				self.users.push({
+				fetched_users.push({
 		      		user_id: data.not_invited[i].user_id,
 					username: data.not_invited[i].username,
 		      		selected: ko.observable(false)
 		  		});
 			}
+			self.users(fetched_users);
 		});
 	}
     
     /*
-	self.fetch_non_participants = function() 
+	self.fetched_non_participants = function() 
 	{
 		self.users([]);
 		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';	
@@ -3150,13 +3162,15 @@ function PermissionsViewModel() // wolf
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Question results returned...');
 			//self.permissions(data.permissions);
+			var fetched_permissions = [];
 			for (var i = 0; i < data.permissions.length; i++) {
-				self.permissions.push({
+				fetched_permissions.push({
 		      		user_id: data.permissions[i].user_id,
 					username: data.permissions[i].username,
 					permissions: parseInt(data.permissions[i].permissions)
 		  		});
 			}
+			self.permissions(fetched_permissions);
 		});
 	}
 	self.open_permissions = function() 
@@ -3170,7 +3184,7 @@ function PermissionsViewModel() // wolf
 	self.add_users = function()
 	{
 	    console.log("PermissionsViewModel.add_users called...");
-	    inviteUsersViewModel.fetch_associated_users();
+	    inviteUsersViewModel.fetched_associated_users();
 	    $('#participants').modal('hide');
 	    $('#add_users').modal('show');
 	}
@@ -3459,11 +3473,13 @@ function QuestionViewModel() // hare
 		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Domination Map data returned...');
+		    var fetched_domination_map = [];
 			//self.domination_map(data.domination_map);
 			for (var i = 0; i < data.domination_map.length; i++) {
-			    self.domination_map_array.push(data.domination_map[i]);
+			    fetched_domination_map.push(data.domination_map[i]);
 		    }
 		    //alert(self.dom_table_algorithm());
+		    self.domination_map_array(fetched_domination_map);
 		});
 	}
 	
