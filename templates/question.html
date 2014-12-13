@@ -840,18 +840,18 @@
 			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
-				
-				switch(viewProposalViewModel.panel)
-				{
-				   case 'comments':
-				       viewProposalViewModel.showProposalComments();
-				       break;
-				   case 'questions':
-				       viewProposalViewModel.showProposalQuestions();
-				       break;
-				   default:
-				       break;
-				}
+			}
+			
+			switch(viewProposalViewModel.panel)
+			{
+			   case 'comments':
+			       viewProposalViewModel.showProposalComments();
+			       break;
+			   case 'questions':
+			       viewProposalViewModel.showProposalQuestions();
+			       break;
+			   default:
+			       break;
 			}
 		})
 		
