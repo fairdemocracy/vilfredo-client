@@ -38,7 +38,7 @@
 		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary">Participants</button>
 		</div>
 
-		<div class="question-view">
+		<div class="question-view" data-bind="visible: currentUserViewModel.isLoggedIn()">
 		<div class="page-header question-info">
 			<h1 data-bind="text: title"></h1>
 			<h5>by <span class="authorname" data-bind="text: author"></span></h5>
@@ -76,11 +76,11 @@
 		<div id="resultstriangle"></div>
 		<!-- resultstriangle table end -->
 		</div>
-		
-		<br><br>
+
 				
-		<div id="keyplayer_info" data-bind="visible: questionViewModel.selected_algorithm() == 1 && questionViewModel.phase() == 'voting'">
-		<!-- ko if: key_players().length --> <!-- 0 -->
+		<div id="keyplayer_info" data-bind="visible: questionViewModel.key_players().length > 0 && questionViewModel.selected_algorithm() == 1 && questionViewModel.phase() == 'voting'">
+		<br><br>
+		<!-- ko if: key_players().length > 0 --> <!-- 0 -->
 		<div class="keyplayers">
 			<h2>Key Players</h2>
 			<p>There are currently <strong><span data-bind="text: key_players().length"></span> Key Players</strong>, though this can change at any moment as people change their votes.</p>
@@ -175,7 +175,7 @@
 		</div>
 		<!-- /ko --> <!-- 0 -->
 		</div>
-
+		
 		
 		<!-- Graphs -->
 		<div data-bind="visible: questionViewModel.phase() == 'voting' || questionViewModel.generation() > 1" class="voting-graphs">
@@ -722,12 +722,14 @@
 	function initPage()
 	{
 		console.log('initPage called...');
-		$('.question-view, .current-proposals').show();
+		
 		$.when(currentUserViewModel.loadUser(), 
 			   questionViewModel.fetchQuestion(), 
 			   questionViewModel.fetchVotingResults()).done(function()
 		{
 			console.log('User and question loaded...');
+			$('.question-view, .current-proposals').show();
+			
 			// Load Templates
 			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
 			{

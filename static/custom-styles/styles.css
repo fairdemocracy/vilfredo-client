@@ -6207,6 +6207,9 @@ body {
 .container.main {
   padding-top: 75px;
 }
+#keyplayer_info {
+  display: none;
+}
 #footer {
   margin-top: 60px;
   /*border-top: solid 1px #cccccc;*/
