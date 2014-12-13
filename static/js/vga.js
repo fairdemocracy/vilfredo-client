@@ -2705,7 +2705,7 @@ function ProposalsViewModel()
 				}
 				*/
 				// reset key players
-				self.fetchKeyPlayers();
+				//self.fetchKeyPlayers();
 				// reset participation table
 				//questionViewModel.fetchParticipationTable();
 				redoResultsMap();
@@ -2751,7 +2751,7 @@ function ProposalsViewModel()
 					fetchVotingGraphs();
 				}
 				// reset key players
-				self.fetchKeyPlayers();
+				//self.fetchKeyPlayers();
 			}
 			else
 			{
@@ -2882,7 +2882,7 @@ function ProposalsViewModel()
 					$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg'});//,
 					//			 onLoad: init3WayTriangle});
 				});
-				self.fetchKeyPlayers();
+				//self.fetchKeyPlayers();
 			}
 		});
 	}
