@@ -68,6 +68,13 @@ function getKeys(object)
     return keys;
 }
 
+function getJQXHRMessage(jqXHR, default_message)
+{
+    default_message = (default_message) ? default_message : 'There was a problem';
+    var message = (jqXHR.responseJSON && jqXHR.responseJSON.message) ? jqXHR.responseJSON.message : default_message;
+    return message;
+}
+
 function getItemIndexFromArrayWithID(itemArray, item_id)
 {
     console.log("getItemIndexFromArrayWithID called with pid = " + item_id);
@@ -1117,7 +1124,7 @@ jQuery.fn.extend({
     }
 });
 
-function add_page_alert(alert, text, class_id) // herring
+function add_page_alert(alert, text, class_id) // bear
 {
     if (typeof(class_id) == 'undefined')
     {
@@ -2168,13 +2175,16 @@ function ViewProposalViewModel()
     			.setAlertClass('danger')
     			.fadeIn();
 			}
-		}).fail(function(jqXHR) 
+		}).fail(function(jqXHR, textStatus, errorThrown) 
 		{
-			console.log('addcomment: There was an error with add comment. Status ' + jqXHR.status);
-			$('.newcommentpanel .alert')
-			.html("Oops, there was a server problem! We'll look into it.")
+			console.log('addcomment: There was an error with add comment. Status: ' + textStatus); // bear
+            var message = getJQXHRMessage(jqXHR, 'There was an problem adding your comment');
+            $('#viewproposal .alert')
+			.text(message)
 			.setAlertClass('danger')
-			.fadeIn();
+			.slideDown('slow')
+			.delay(2000)
+			.slideUp('slow');
         });
 	}
 	
@@ -2329,8 +2339,10 @@ function QuestionsViewModel()
 		}).fail(function(jqXHR) {
             console.log('addQuestion: There was an error. Error ' + jqXHR.status);
             // Set modal alert
+            var message = (jqXHR.responseText && JSON.parse(jqXHR.responseText).message) ? JSON.parse(jqXHR.responseText).message : 'There was a problem';
+            
             $('#addquestion .alert')
-            .text(JSON.parse(jqXHR.responseText).message)
+            .text(message)
             .setAlertClass('danger')
             .fadeIn()
         });

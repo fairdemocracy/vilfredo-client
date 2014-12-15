@@ -6804,6 +6804,9 @@ a.plain {
 .message {
   display: none;
 }
+.alert_container {
+  height: 60px;
+}
 /* Graph */
 .myprop {
   stroke: red;
@@ -6995,6 +6998,9 @@ a {
 .emails_already_sent {
   color: orange;
   padding: 2px;
+}
+a.disabled {
+  color: grey;
 }
 .clearfix:before,
 .clearfix:after,
