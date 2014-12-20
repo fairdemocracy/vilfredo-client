@@ -2571,7 +2571,7 @@ function ProposalsViewModel()
            return item.id() === proposal_id;
         });
         var proposal = proposalsViewModel.proposals()[index];
-	    self.read(index, proposal);
+	    self.read(index, 'content', proposal);
 	}
 
 	self.readproposal = function(id)
@@ -2590,7 +2590,7 @@ function ProposalsViewModel()
 		$('#votemapwindow').modal('show');
 	}
 
-	self.read = function(index, panel, proposal) // catz
+	self.read = function(index, panel, proposal)
 	{
 		console.log("ProposalsViewModel.read called with index " + index);
 		viewProposalViewModel.setProposal(proposal);
