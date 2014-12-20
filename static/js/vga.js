@@ -18,7 +18,7 @@
 #
 ****************************************************************************/
 var question_id = getQuerySegment('question');
-if (!question_id) { 
+if (!question_id) {
     question_id = getQuerySegment('domination');
 }
 console.log('Question = ' + question_id);
@@ -79,7 +79,7 @@ function getItemIndexFromArrayWithID(itemArray, item_id)
 {
     console.log("getItemIndexFromArrayWithID called with pid = " + item_id);
     return arrayFirstIndexOf(itemArray, function(item) {
-       return item.id() === item_id;    
+       return item.id() === item_id;
     });
 }
 
@@ -87,7 +87,7 @@ function arrayDiff(arr1, arr2)
 {
     diff = [];
     jQuery.grep(arr2, function(el) {
-        if (jQuery.inArray(el, arr1) == -1) 
+        if (jQuery.inArray(el, arr1) == -1)
         {
             diff.push(el);
         }
@@ -191,8 +191,8 @@ function drawTriangle2(svg, width, height)
         .line( 200, 0, true )
         .close(),
         {
-            fill: 'blue', 
-            stroke: 'white', 
+            fill: 'blue',
+            stroke: 'white',
             strokeWidth: 2
         }
     );
@@ -218,12 +218,12 @@ function initCVTriangleLarge_v2(svg)
 
 
 
-function resetSize(svg, width, height) 
+function resetSize(svg, width, height)
 {
 	svg.configure({width: width, height: height}, true);
 }
 
-function setMapColor(nx, ny) // whale
+function setMapColor(nx, ny) 
 {
     var col_max = 255;
     var G = Math.round(col_max * nx);
@@ -238,7 +238,7 @@ function setVote(proposal) // eel
     console.log('setVote called...');
 	var votemap = $('#modalvotesmap');
 	var svg = $(votemap).svg('get');
-	
+
 	max_x = $(svg._container).innerWidth();
 	//console.log('container_width = ' + max_x);
     max_y = 0.7 * max_x;
@@ -246,10 +246,10 @@ function setVote(proposal) // eel
 
 	cx = max_x * proposal.mapx;
 	cy = max_y * proposal.mapy;
-	
+
 	var votesgroup = $('.votes', svg.root());
     var radius = 10;
-	
+
 	// If a vote is already plotted, remove it
 	var vote = $('.vote', svg.root()).filter(function() {
 		return $(this).data("pid") == proposal.id();
@@ -258,7 +258,7 @@ function setVote(proposal) // eel
 	{
 		$(vote).remove();
 	}
-	
+
 	// Set color based on endorse_type
 	/*
 	switch(proposal.endorse_type())
@@ -275,14 +275,13 @@ function setVote(proposal) // eel
     default:
         fill_color = 'yellow';
     }*/
-    
+
     //console.log("setMapColor ==========> " + setMapColor(proposal.mapx, proposal.mapy));
-    
-    // whale
+
     fill_color = setMapColor(proposal.mapx, proposal.mapy);
-    
+
     //fill_color = "rgb(164, 91, 121)";
-	
+
 	// Plot vote on votemap
 	vote = svg.circle(votesgroup, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
     $(vote).data('pid', proposal.id());
@@ -309,17 +308,17 @@ function voteHandler(e)
 }
 
 
-function showUserVotes(clicked, svg, userid, threshold)
+function showUserVotes(clicked, svg, userid, threshold) // snow
 {
     $('#allvotes').remove();
-    
+
     var g = svg.group(resultsmap, 'alluservotes');
     var radius = 10;
     var fill_color;
-    
+
     var votex = parseInt($(clicked).attr('cx'));
     var votey = parseInt($(clicked).attr('cy'));
-    
+
     // Display username
     var txtx, texty;
     if (votex < 30)
@@ -339,16 +338,16 @@ function showUserVotes(clicked, svg, userid, threshold)
         txty = votey - 20;
     }
     //svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username);
-    var username = questionViewModel.results[parseInt($(med).data('pid'))].voters[parseInt(userid)].username; 
+    var username = questionViewModel.results[parseInt($(med).data('pid'))].voters[parseInt(userid)].username;
     var label = "All " + username + "'s votes";
     svg.text(g, txtx, txty, label);
-    
+
     var med_selected_fill_color = '#7e7e7e';
-    
+
     // snow
     //var container_width = $(svg._container).innerWidth();
     //var container_height = 0.7 * container_width;
-    
+
     var dimensions = calculateTriangleDimensions(svg);
     var container_width = dimensions.width;
     var container_height = dimensions.height;
@@ -356,13 +355,12 @@ function showUserVotes(clicked, svg, userid, threshold)
     jQuery.each(questionViewModel.results, function(pid, coords) {
         medx = container_width * coords['median']['medx'];
         medy = container_height * coords['median']['medy'];
-        
+
         cx = container_width * coords['voters'][parseInt(userid)]['mapx'];
         cy = container_height * coords['voters'][parseInt(userid)]['mapy'];
-        
-        // whale
+
         fill_color = setMapColor(coords['voters'][parseInt(userid)]['mapx'], coords['voters'][parseInt(userid)]['mapy']);
-        
+
         // Set fill colour
         /*
         if (cy > threshold.mapy)
@@ -378,16 +376,17 @@ function showUserVotes(clicked, svg, userid, threshold)
             fill_color = 'green';
         }
         */
-        
+
         // Draw line to connect vote with median
         svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
-        
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'alluservotes', fill: fill_color, cursor: 'pointer', title: 'User ' + userid});
+
+        vote = svg.circle(g, cx, cy, radius+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); // snow storm
         $(vote).data('userid', userid);
         $(vote).data('pid', pid);
-        
+
         $(vote).on( "click", function(e) {
-            var pid = parseInt($(this).data('pid'));           
+            e.stopPropagation();
+            var pid = parseInt($(this).data('pid'));
             var med = $('.med').filter(function() {
                 return parseInt($(this).data('pid')) === pid;
             });
@@ -398,15 +397,29 @@ function showUserVotes(clicked, svg, userid, threshold)
             }
         });
         
-        var med = svg.circle(g, medx, medy, radius+1, {fill: med_selected_fill_color, cursor: 'pointer', title: 'User ' + userid})
+        
+        var prop_title;
+        var prop = proposalsViewModel.getProposal(pid);
+
+        if (prop)
+        {
+             prop_title = prop.title();
+        }
+        else
+        {
+            prop_title = 'Proposal ID ' + pid
+        }
+        
+
+        var med = svg.circle(g, medx, medy, radius+1, {fill: med_selected_fill_color, title: prop_title})
         $(med).on( "click", function(e) {
             showProposalVotes(this, svg, threshold, coords['voters']);
         });
-        
+
         /*
         var votex = parseInt($(vote).attr('cx'));
         var votey = parseInt($(vote).attr('cy'));
-        
+
         // Display username
         var txtx, texty;
         if (votex < 30)
@@ -425,40 +438,40 @@ function showUserVotes(clicked, svg, userid, threshold)
         {
             txty = votey - 20;
         }
-        svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username); 
+        svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username);
         */
     });
 }
 
-function showProposalVotes(med, svg, threshold, voters)
-{    
+function showProposalVotes(med, svg, threshold, voters) //snow
+{
     /*
     var container_width = $(svg._container).innerWidth();
     var container_height = 0.7 * container_width;
     */
-    
+
     var dimensions = calculateTriangleDimensions(svg);
     var container_width = dimensions.width;
     var container_height = dimensions.height;
-    
+
     $('#allvotes,#alluservotes').remove();
-    
+
     //threshold = {'mapx': container_width * questionViewModel.mapx, 'mapy': container_height * questionViewModel.mapy}
-    console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
-    
+    //console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
+
     var g = svg.group(resultsmap, 'allvotes');
     var radius = 10;
     var fill_color;
-    
+
     var med_selected_fill_color = '#7e7e7e';
-        
+
     //svg.circle(g, threshold.mapx, threshold.mapx, radius+1, {fill: 'yellow', title: 'THRESHOLD ' + threshold.mapx + ', ' +  threshold.mapy});
-    
+
     jQuery.each(voters, function(userid, coords) {
         cx = container_width * coords.mapx;
         cy = container_height * coords.mapy;
-        //console.log("Draw " + coords.username + "'s vote at (" + cx + ", " + cy +")");
-        
+        console.log("showProposalVotes: Draw " + coords.username + "'s vote at (" + cx + ", " + cy +")");
+
         /*
         // Set fill colour
         if (cy > threshold.mapy)
@@ -479,23 +492,23 @@ function showProposalVotes(med, svg, threshold, voters)
             fill_color = 'green';
         }
         */
-        
-        // whale
+
         fill_color = setMapColor(coords.mapx, coords.mapy);
-        
+
         // Draw line to connect vote with median
         svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {strokeWidth: 1, stroke: fill_color});
-        
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'allvotes', fill: fill_color, cursor: 'pointer', title: 'User ' + userid});
+
+        vote = svg.circle(g, cx, cy, radius+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); // snow storm
         $(vote).data('userid', userid);
         $(vote).data('pid', $(med).attr('pid'));
-        
+
         $(vote).on( "click", function(e) {
+            e.stopPropagation();
             console.log('click on user vote...');
             showUserVotes(this, svg, userid, threshold);
         });
-        
-        
+
+
         // Display username
         var txtx, texty;
         if (cx < 30)
@@ -514,9 +527,11 @@ function showProposalVotes(med, svg, threshold, voters)
         {
             txty = cy - 20;
         }
-        svg.text(g, txtx, txty, coords.username); 
+        svg.text(g, txtx, txty, coords.username);  // rel="popover" 
     });
-    svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), radius+1, {class: 'allvotes', fill: med_selected_fill_color, cursor: 'pointer', title: 'User ' + userid});
+    // Add marker over selected median
+    var c = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), radius+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
+    //$(c).popover({content:"Blah blah blah", container:"body"});
 }
 
 // jazz
@@ -530,45 +545,45 @@ function redoResultsMap()
 	    svg = $('#resultstriangle').svg('get');
         createResultsMap(svg);
     });
-} 
+}
 
 function calculateTriangleDimensions(svg)
 {
-    // set height of results triangle container based on available space 
+    // set height of results triangle container based on available space
 	//var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
     //$('#resultstriangle').height(set_results_map_height);
-	
-	console.log('********* Start calculateTriangleDimensions *********');
-	
+
+	//console.log('********* Start calculateTriangleDimensions *********');
+
 	var map_width, map_height;
-	
+
 	var container_width = $(svg._container).innerWidth();
 	var container_height = $(svg._container).innerHeight();
-	console.log('container_width = ' + container_width);
-    console.log('container_height = ' + container_height);
-	
+	//console.log('container_width = ' + container_width);
+    //console.log('container_height = ' + container_height);
+
 	var ideal_width = map_width = container_width;
 	var ideal_height = map_height = 0.7 * container_width;
-	console.log('ideal_height = ' + ideal_height);
-    
+	//console.log('ideal_height = ' + ideal_height);
+
     if (container_height < ideal_height)
     {
-        console.log('container_height < ideal_height');
+        //console.log('container_height < ideal_height');
         map_width = container_height / 0.7;
         map_height = container_height;
     }
     else
     {
-        console.log('container_height >= ideal_height');
+        //console.log('container_height >= ideal_height');
         map_width = container_height;
         map_height = container_height;
     }
-    
-    console.log('map_width = ' + map_width);
-	console.log('map_height = ' + map_height);
-	
-	console.log('********* Completed calculateTriangleDimensions *********');
-	    
+
+    //console.log('map_width = ' + map_width);
+	//console.log('map_height = ' + map_height);
+
+	//console.log('********* Completed calculateTriangleDimensions *********');
+
     return {'width' : map_width, 'height' : map_height};
 }
 
@@ -582,24 +597,29 @@ function createResultsMap(svg) // snow
     var container_height = 0.7 * container_width;
     console.log('container_height = ' + container_height);
     */
-    
-    // set height of results triangle container based on available space 
+
+    // set height of results triangle container based on available space
 	var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
     $('#resultstriangle').height(set_results_map_height);
     
+    $('#results_map').on( "click", function(e) {
+    	e.stopPropagation();
+        $('#allvotes,#alluservotes').remove();
+    });
+
     var dimensions = calculateTriangleDimensions(svg);
     var container_width = dimensions.width;
     var container_height = dimensions.height;
-    
+
     var max_x = container_width;
     var max_y = container_height;
     var mid_x = container_width/2;
     var mid_y = container_height/2;
-    
-    var resultsmap = svg.group('resultsmap');
-    
-    resetSize(svg, container_width, container_height); 
-    
+
+    var resultsmap = svg.group('resultsmap'); // snow
+
+    resetSize(svg, container_width, container_height);
+
 	var path = svg.createPath();
     var triangle = svg.path(resultsmap,
         path.move(0, 0)
@@ -614,36 +634,35 @@ function createResultsMap(svg) // snow
         }
     );
 
-    
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
     // Add current threshold point - debugging
     var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
-    var g = svg.group(resultsmap, 'votes');
+    var g = svg.group(resultsmap, 'votes'); // mapgroup
     var radius = 10;
-    
+
     jQuery.each(questionViewModel.results, function(pid, coords) {
         if (!coords['median'])
         {
             return;
         }
-        
+
         cx = container_width * coords['median'].medx;
         cy = container_height * coords['median'].medy;
-        
+
         //console.log("Draw result vote at (" + cx + ", " + cy +")");
-        
+
         fill_color = '#BEBEBE';
-        
+
         med_fill = '#BEBEBE';
         med_selected_fill_color = '#7e7e7e';
-        
+
         // var title ='Proposal ' + pid;
-        var title; 
+        var title;
         var prop = proposalsViewModel.getProposal(pid);
-        
+
         //title = 'Coords (' + cx + ', ' + cy + ')';
-        
+
         if (prop)
         {
              title = prop.title();
@@ -652,10 +671,10 @@ function createResultsMap(svg) // snow
         {
             title = 'Proposal ID ' + pid
         }
-        
-        med = svg.circle(g, cx, cy, radius+1, {class: 'med', fill: med_fill, cursor: 'pointer', title: title});
+
+        med = svg.circle(g, cx, cy, radius+1, {class: 'med', fill: med_fill, title: title}); // snow storm
         $(med).data('pid', pid);
-        
+
         // Display proposal ID
         var txtx, texty;
         txtx = cx;
@@ -667,13 +686,14 @@ function createResultsMap(svg) // snow
         {
             txty = cy - 20;
         }
-        svg.text(g, txtx, txty, pid); 
+        svg.text(g, txtx, txty, pid);
 
         $(med).on( "click", function(e) {
             //console.log('click on median...');
+            e.stopPropagation();
             showProposalVotes(this, svg, threshold, coords['voters']);
         });
-        
+
         // Add error triangle if defined
         if (false && coords['e_error'])
         {
@@ -684,7 +704,7 @@ function createResultsMap(svg) // snow
             var o_error_cy = container_height * coords['o_error']['mapy'];
             var c_error_cx = container_width * coords['c_error']['mapx'];
             var c_error_cy = container_height * coords['c_error']['mapy'];
-            
+
             var path = svg.createPath();
             svg.path(
                 path.move(e_error_cx, e_error_cy)
@@ -692,36 +712,36 @@ function createResultsMap(svg) // snow
                 .line( c_error_cx, c_error_cy )
                 .close(),
                 {fill: 'none', stroke: '#CDCDCD', strokeWidth: 1}
-            ); 
+            );
         }
     });
 }
 
-function createVoteMap(svg) // eel
+function createVoteMap(svg)
 {
 	//alert('createVoteMap called');
-	
+
 	console.log('createVotesMap called...');
-	
+
 	var container_width = $(svg._container).innerWidth();
 	console.log('container_width = ' + container_width);
     var container_height = 0.7 * container_width;
     console.log('container_height = ' + container_height);
-    
+
     var max_x = container_width;
     var max_y = container_height;
     var mid_x = container_width/2;
     var mid_y = container_height/2;
-    
-    resetSize(svg, container_width, container_height); 
-    
+
+    resetSize(svg, container_width, container_height);
+
     var triangle_width = container_width - triangle_offset_x;
     var triangle_height = container_height - triangle_offset_y;
     voting_triangle_width = triangle_width;
     voting_triangle_height = triangle_height;
     //var triangle_translation = 'translate(' + triangle_offset_x  + ',' + triangle_offset_y + ')'
     var tg = svg.group();
-    
+
 	var path = svg.createPath();
     var triangle = svg.path(
         tg,
@@ -736,105 +756,105 @@ function createVoteMap(svg) // eel
             id: 'map'
         }
     );
-    
+
     /*
-    svg.mask(parent, id, x, y, width, height, settings) 
-    
-    svg.linearGradient(parent, id, stops, x1, y1, x2, y2, settings) 
-    svg.radialGradient(parent, id, stops, cx, cy, r, fx, fy, settings) 
-    //svg.radialGradient(defs, 'supportGradient', [['0%', 'red'], ['50%', 'blue'], ['100%', 'red']], 200, 100, 150, 200, 100); 
+    svg.mask(parent, id, x, y, width, height, settings)
+
+    svg.linearGradient(parent, id, stops, x1, y1, x2, y2, settings)
+    svg.radialGradient(parent, id, stops, cx, cy, r, fx, fy, settings)
+    //svg.radialGradient(defs, 'supportGradient', [['0%', 'red'], ['50%', 'blue'], ['100%', 'red']], 200, 100, 150, 200, 100);
     */
     /*
-    
+
      [0.5, 'white', 0.1],
-    
+
     var guide_group = svg.group();
-    var defs = svg.defs(guide_group); 
-    svg.linearGradient(defs, 'supportGradient', [['0%', 'red'], ['100%', 'green']], max_x-110, max_y-230, 30, 100); 
+    var defs = svg.defs(guide_group);
+    svg.linearGradient(defs, 'supportGradient', [['0%', 'red'], ['100%', 'green']], max_x-110, max_y-230, 30, 100);
     */
-    
-    var defs = svg.defs(); 
+
+    var defs = svg.defs();
     svg.linearGradient(defs, 'blur', [[0, 'white']], 0, 0, 10, 0, {gradientUnits: 'userSpaceOnUse'});
     svg.linearGradient(defs, 'support_gradient', [[0, 'red'], [1, 'orange']], 0, 0, 1, 0, {gradientUnits: 'userSpaceOnUse'});
     svg.linearGradient(defs, 'oagradient', [[0, 'red'], [1, 'green']], 0, 0, 230, 0, {gradientUnits: 'userSpaceOnUse'});
-    
+
     //  [0.5, 'grey', 0.5],
-    
+
     //var agree_oppose = svg.rect(20, max_y-75, 250, 30, 5, 5, {fill: 'url(#oagradient)', stroke: 'grey', strokeWidth: 3});
-    
-    //svg.linearGradient(defs, 'support_gradient_2', [[0.5, 'grey', 0.5]], 0, 0, max_x, 0, {gradientUnits: 'userSpaceOnUse'}); 
-    
+
+    //svg.linearGradient(defs, 'support_gradient_2', [[0.5, 'grey', 0.5]], 0, 0, max_x, 0, {gradientUnits: 'userSpaceOnUse'});
+
     var agree_oppose = svg.rect(20, max_y-75, 250, 30, 5, 5, {fill: 'green', stroke: 'grey', strokeWidth: 3});
     var agree_oppose_fill = svg.rect(20, max_y-75, 125, 30, {id: 'haobox', fill: 'red', stroke: 'none'});
-    
+
     /*
     var vunderstand = svg.rect(max_x-110, max_y-230, 30, 200, 5, 5, {fill: 'blue', stroke: 'grey', strokeWidth: 3});
     var vunderstand_fill = svg.rect(max_x-110, max_y-230, 30, 100, {id: 'vubox', fill: 'yellow', stroke: 'none'});
     */
-    
+
     var vunderstand = svg.rect(max_x-110, max_y-230, 30, 200, 5, 5, {fill: 'yellow', stroke: 'grey', stroke: 'none'});
     var vunderstand_fill = svg.rect(max_x-110, max_y-230, 30, 100, {id: 'vubox', fill: '#cdcdcd', stroke: 'none'});
-    
+
     svg.text(15, max_y-85, 'Oppose', {id: 'uboxtext', fill: 'red', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
     svg.text(210, max_y-85, 'Agree', {id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
     svg.text(max_x-165, max_y-240, 'Understand', {id: 'aboxtext', fill: 'yellow', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana'});
-    
-    
-    // Add  mask 
+
+
+    // Add  mask
     /*
     var defs = svg.defs();
-    var mask = svg.mask(defs, 'agree_oppose_mask', 0, max_y - triangle_offset_y, triangle_width/2, triangle_offset_y, {maskUnits: 'userSpaceOnUse'}); 
-    svg.rect(mask, 0, max_y - triangle_offset_y, triangle_width, triangle_offset_y, {id: 'footer_haobox_mask', fill: 'white'}); 
+    var mask = svg.mask(defs, 'agree_oppose_mask', 0, max_y - triangle_offset_y, triangle_width/2, triangle_offset_y, {maskUnits: 'userSpaceOnUse'});
+    svg.rect(mask, 0, max_y - triangle_offset_y, triangle_width, triangle_offset_y, {id: 'footer_haobox_mask', fill: 'white'});
     //
     */
-    
+
     // testing
-    // var test_mask = svg.mask(defs, 'Mask', 0, 0, 100, 20, {maskUnits: 'userSpaceOnUse'}); 
+    // var test_mask = svg.mask(defs, 'Mask', 0, 0, 100, 20, {maskUnits: 'userSpaceOnUse'});
     // svg.rect(test_mask, 0, 0, 300, 20, {fill: 'orange'});
     //
-    
+
     var opp_agg_group = svg.group({ mask: 'url(#agree_oppose_mask)' });
-    
+
     var agree_oppose = svg.rect(opp_agg_group, 0, max_y - triangle_offset_y, triangle_width, triangle_offset_y, {fill: 'green', stroke: 'none', strokeWidth: 3});
     var agree_oppose_fill = svg.rect(opp_agg_group, 0, max_y - triangle_offset_y, triangle_width/2, triangle_offset_y, {id: 'footer_haobox', fill: 'red', stroke: 'none'});
-    
-    
+
+
     var vunderstand = svg.rect(max_x - triangle_offset_x, 0, triangle_offset_x, triangle_height, {fill: 'yellow', stroke: 'none'});
     var vunderstand_fill = svg.rect(max_x - triangle_offset_x, 0, triangle_offset_x, triangle_height/2, {id: 'side_vubox', fill: '#cdcdcd', stroke: 'none'});
-    
-    
+
+
     var g = svg.group(tg, 'votes');
     var radius = 10;
-    
+
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
 
     // Add current votes to votemap
     ko.utils.arrayForEach(proposalsViewModel.proposals(), function(proposal) {
-            
+
         if (!proposal.mapx || !proposal.mapy)
         {
             console.log('no map coords');
             return;
         }
-        
+
         cx = triangle_width * proposal.mapx;
         cy = triangle_height * proposal.mapy;
         console.log("Draw vote at (" + cx + ", " + cy +")");
-        
-        if (proposal.id() == voteMapViewModel.proposal_id()) // whale
-        {            
+
+        if (proposal.id() == voteMapViewModel.proposal_id()) 
+        {
             fill_color = setMapColor(proposal.mapx, proposal.mapy);
         }
         else
         {
             fill_color = '#BEBEBE';
         }
-        
+
         vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
         $(vote).data('pid', proposal.id());
-        
-        
+
+
         // Display proposal ID
         /*
         var txtx, texty;
@@ -847,9 +867,9 @@ function createVoteMap(svg) // eel
         {
             txty = cy - 20;
         }
-        svg.text(g, txtx, txty, String(proposal.id())); 
+        svg.text(g, txtx, txty, String(proposal.id()));
         */
-        
+
         $(vote).on( "click", function(e) {
             console.log('click on vote');
             $(this).parent().siblings('#map').trigger(e);
@@ -858,13 +878,13 @@ function createVoteMap(svg) // eel
             $(this).parent().siblings('#map').trigger(e);
         });
     });
-    
+
      // eel
      // Set helpers through mose movements
      $(triangle).on( "mousemove", function(e) {
     	var posX = $(this).offset().left;
     	var posY = $(this).offset().top;
-    	    	
+
     	var cx, cy;
     	if (typeof $.browser.webkit == 'undefined')
     	{
@@ -876,22 +896,22 @@ function createVoteMap(svg) // eel
     	    cx = e.pageX - posX;
     	    cy = e.pageY - posY;
     	}
-    	
+
     	var max_x = $(svg._container).innerWidth();
     	var max_y = $(svg._container).innerHeight();
-        
+
         var norm_cx = cx / (max_x - triangle_offset_x);
     	var norm_cy = cy / (max_y - triangle_offset_y);
-    	
+
     	var horizontal_width = voting_triangle_width;
     	var vertical_height = voting_triangle_height;
 
     	var oppose_val = (1 - norm_cx) * horizontal_width;
     	var vunderstand_val = norm_cy * vertical_height;
-    	
+
     	//$('#footer_haobox').attr('width', oppose_val);
     	$('#side_vubox').attr('height', vunderstand_val);
-    	
+
     	var oppose_mask_val = (norm_cx * horizontal_width)/2;
     	$('#footer_haobox_mask').attr('x', oppose_mask_val);
     });
@@ -899,7 +919,7 @@ function createVoteMap(svg) // eel
     $(triangle).on( "mousemove", function(e) {
     	var posX = $(this).offset().left;
     	var posY = $(this).offset().top;
-    	
+
     	var cx, cy;
     	if (typeof $.browser.webkit == 'undefined')
     	{
@@ -911,13 +931,13 @@ function createVoteMap(svg) // eel
     	    cx = e.pageX - posX;
     	    cy = e.pageY - posY;
     	}
-    	
+
     	var max_x = $(svg._container).innerWidth();
     	var max_y = $(svg._container).innerHeight();
-        
+
         var norm_cx = cx / max_x;
     	var norm_cy = cy / max_y;
-    	
+
     	var horizontal_width = 250;
     	var vertical_height = 200;
 
@@ -925,21 +945,21 @@ function createVoteMap(svg) // eel
     	var oppose_val = (1 - norm_cx) * horizontal_width;
     	var understand_val = (1 - norm_cy) * horizontal_width;
     	var vunderstand_val = norm_cy * vertical_height;
-    	
+
     	$('#haobox').attr('width', oppose_val);
     	$('#vubox').attr('height', vunderstand_val);
     });
-    
+
     /*
     Record vote on votemap
     */
     $(triangle).on( "click", function(e) {
-        
+
         console.log('Voting triangle clicked!!!!! Recording vote...');
     	var posX = $(this).offset().left;
     	var posY = $(this).offset().top;
         //console.log("posX, posY = (" + posX + ", " + posY + ")");
-    	
+
     	var cx, cy;
     	if (typeof $.browser.webkit == 'undefined')
     	{
@@ -951,11 +971,11 @@ function createVoteMap(svg) // eel
     	    cx = e.pageX - posX;
     	    cy = e.pageY - posY;
     	}
-    	
+
     	// Endorse with normalised vote coordinates
     	var n_cx = cx / max_x;
     	var n_cy = cy / max_y;
-    	    	
+
     	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
 	}); // eel
 }
@@ -989,7 +1009,7 @@ function initCVTriangleLarge(jqsvg)
         var votes = $('.votes', jqsvg.root()).get(0);
     	jqsvg.circle(pt.x, pt.y, 5, {class: 'vote', fill: 'yellow', stroke: 'white', strokeWidth: 0, cursor: 'pointer'});
 	});
-	
+
 	/*
 	$(votemap).on( "mouseout", function(e) {
     	console.log('mouse out...');
@@ -997,7 +1017,7 @@ function initCVTriangleLarge(jqsvg)
     	var jqsvg = $('#cvtriangle').svg('get');
     	var pointer = $('.pointer', jqsvg.root()).remove();
 	});*/
-	
+
 	$(votemap).on( "mousemove", function(e) {
     	console.log('mouse move...');
     	//svg = document.querySelector("svg");
@@ -1007,7 +1027,7 @@ function initCVTriangleLarge(jqsvg)
         pt.y = e.clientY;
         pt = pt.matrixTransform(svg.getScreenCTM().inverse());
         console.log('Move point to pt.x ' + pt.x + ' , pt.y ' + pt.y);
-    	
+
     	var pointer = $('.pointer', jqsvg.root()).get(0);
     	$(pointer).attr('fill', 'white');
 	    var cx = pointer.cx.baseVal;
@@ -1024,7 +1044,7 @@ function initCVTriangleLarge(jqsvg)
         pt.y = e.clientY;
         pt = pt.matrixTransform(svg.getScreenCTM().inverse());
         console.log('Move point to pt.x ' + pt.x + ' , pt.y ' + pt.y);
-    	
+
     	var pointer = $('.pointer', jqsvg.root()).get(0);
     	$(pointer).attr('fill', 'white');
     	    var cx = pointer.cx.baseVal;
@@ -1037,18 +1057,18 @@ function initCVTriangleLarge(jqsvg)
 function initCVTriangle(svg)
 {
 	$('#votenowwindow .showtriangle .votenow').on( "click", function(e) {
-    	
+
     	var posX = $(this).offset().left;
         var posY = $(this).offset().top;
-        
+
         console.log('posX ' + posX + ' , ' + 'posY ' + posY);
         console.log('e.pageX ' + e.pageX + ' , ' + 'e.pageY ' + e.pageY);
-        
+
         panelwidth = $('.showtriangle').innerWidth();
         panelheight = $('.showtriangle').innerHeight();
-        
+
         console.log('panelwidth ' + panelwidth + ' , ' + 'panelheight ' + panelheight);
-        
+
     	console.log((e.pageX - posX) + ' , ' + (e.pageY - posY));
     	currentx = (e.pageX - posX);
         currenty = (e.pageY - posY);
@@ -1138,12 +1158,12 @@ function add_page_alert(alert, text, class_id) // bear
             return;
         }
     }
-    
+
     var alertbox = '<div class="main alert alert-'+ alert +' alert-dismissable ' + class_id + '">';
 	alertbox = alertbox + '	<span class="flash">' + alert_flash[alert] + '</span> <span class="text">';
 	alertbox = alertbox + text + '</span>';
 	alertbox = alertbox +  '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button></div>';
-	
+
 	$('.container.main').prepend(alertbox);
 	$('.alert.main').fadeIn();
 }
@@ -1181,19 +1201,19 @@ function CurrentUserViewModel()
         console.log('isLoggedOut...' + this.userid());
 		return this.userid() == 0;
     }, this);
-    
+
     self.openLoginBox = function() // herring
     {
         console.log("Calling loginViewModel.open()...");
         loginViewModel().open();
     }
-    
+
     self.openRegisterBox = function() // herring
     {
         console.log("Calling loginViewModel.open()...");
         registerViewModel().open();
     }
-    
+
 
     // cat
 	self.login = function(username, password, remember) {
@@ -1201,12 +1221,12 @@ function CurrentUserViewModel()
 		self.password = password;
 		self.getAuthToken();
     }
-    
+
     self.home = function()
     {
         window.location.replace(VILFREDO_URL);
     }
-    
+
 	self.logout = function()
 	{
 		console.log("User logged out...");
@@ -1260,7 +1280,7 @@ function CurrentUserViewModel()
 			return false;
 		}
 	}
-	
+
 	self.requestPasswordReset = function(email)
 	{
 		var URI = VILFREDO_API +'/request_password_reset';
@@ -1276,7 +1296,7 @@ function CurrentUserViewModel()
 			.fadeIn();
         });
 	}
-	
+
 	self.getAuthToken = function()
 	{
 		var URI = VILFREDO_API +'/authtoken';
@@ -1299,7 +1319,7 @@ function CurrentUserViewModel()
 		    if (jqXHR.responseJSON && jqXHR.responseJSON.user_message)
 		    {
 		        $('#login .message').text(jqXHR.responseJSON.user_message).fadeIn(500);
-		    }      
+		    }
             else
             {
             	$('#login .message').text('Sorry, your login details were not recognised.').fadeIn(500);
@@ -1309,7 +1329,7 @@ function CurrentUserViewModel()
 	self.fetchCurrentUser = function()
 	{
 		var URI = VILFREDO_API + '/currentuser';
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) 
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR)
 		{
 		    console.log('Current user data returned...');
 			console.log(data);
@@ -1317,12 +1337,12 @@ function CurrentUserViewModel()
 			console.log('fetchCurrentUser:: User ID set ==> ' + self.userid());
 			self.user = data.user;
 			self.username(data.user.username);
-			
+
 			if (typeof(questionsViewModel) != 'undefined')
 			{
 			    questionsViewModel.fetchQuestions();
 			}
-			
+
 			if (proposalsViewModel)
 			{
 			    console.log("fetchCurrentUser: Question Phase = " + questionViewModel.phase());
@@ -1349,7 +1369,7 @@ function CurrentUserViewModel()
 	}
 }
 
-function NewQuestionViewModel() 
+function NewQuestionViewModel()
 {
     var self = this;
     self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:1 });
@@ -1363,15 +1383,15 @@ function NewQuestionViewModel()
        new TimePeriod("1 week", 604800),
        new TimePeriod("30 days", 2592000)
     ]);
-    
+
     self.minimum_time = ko.observable(self.availableTimePeriods()[2]);
     self.maximum_time = ko.observable(self.availableTimePeriods()[3]);
-    
+
     self.clear = function()
     {
         self.resetform();
     }
-    
+
     self.resetform = function()
     {
 		console.log("NewQuestionViewModel.resetform() called ...");
@@ -1392,7 +1412,7 @@ function NewQuestionViewModel()
     self.add = function()
 	{
 		console.log("NewQuestionViewModel.add() called ...");
-		
+
 		// hare
 		questionsViewModel.addQuestion({
             title: self.title(),
@@ -1409,12 +1429,12 @@ function RegisterViewModel()
     self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
     self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
     self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
-    
+
     self.clear = function()
     {
         self.reset();
     }
-    
+
     self.reset = function()
     {
 		self.username('');
@@ -1430,13 +1450,13 @@ function RegisterViewModel()
         self.reset();
         $('#register').modal('hide');
     }
-    
+
     self.doregister = function()
     {
         self.reset();
         $('#register').modal('show');
     }
-    
+
     self.open = function() // herring
 	{
 		console.log("RegisterViewModel.open() called...")
@@ -1455,7 +1475,7 @@ function RegisterViewModel()
 		self.email.isModified(false);
 		$('#register').modal('show');
 	}
-    
+
     self.register = function() {
 		$('#register .message').text('').fadeOut(100);
 		if (self.username() == '' || self.password() == '' || self.email() == '')
@@ -1466,18 +1486,18 @@ function RegisterViewModel()
 			return;
 		}
         var new_user = {username: self.username(), password: self.password(), email: self.email()};
-        ajaxRequest(VILFREDO_API + '/users', 'POST', new_user).done(function(data, textStatus, jqXHR) 
+        ajaxRequest(VILFREDO_API + '/users', 'POST', new_user).done(function(data, textStatus, jqXHR)
 		{
 		    console.log('toggleCommentSupport data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				console.log(data.message);
 				registerViewModel().close();
-				add_page_alert('success', 'Thank you. An email with an account activation link has been sent to your address.');				
+				add_page_alert('success', 'Thank you. An email with an account activation link has been sent to your address.');
 			}
-			else 
+			else
 			{
 				console.log("RegisterViewModel.register failed with status " + jqXHR.status);
 				$('#register .alert')
@@ -1485,7 +1505,7 @@ function RegisterViewModel()
 				.setAlertClass('danger')
 				.fadeIn();
 			}
-		}).fail(function(jqXHR) 
+		}).fail(function(jqXHR)
 		{
 			console.log('register: There was an error with register. Error ' + jqXHR.status);
 			$('#register .alert')
@@ -1506,9 +1526,9 @@ function NewPasswordViewModel()
         message: "Password is required",
         maxLength: 12
     });
-    
+
     self.confirmpassword = ko.observable('');
-    
+
     self.setnewpassword = function()
     {
         if (self.checkEqual())
@@ -1531,7 +1551,7 @@ function NewPasswordViewModel()
     			    //$('#enter_password').fadeOut(400);
     			    $('#enter_password').find('input').val('');
 				}
-    		
+
     		}).fail(function(jqXHR) {
                if (jqXHR.status == 403)
     		    {
@@ -1541,7 +1561,7 @@ function NewPasswordViewModel()
             });
         }
     }
-    
+
     self.checkEqual = function()
     {
         if (self.password() != self.confirmpassword())
@@ -1562,7 +1582,7 @@ function PasswordResetViewModel() // wolf
 {
     var self = this;
     self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
-    
+
 	self.done = function()
 	{
 	    self.email('');
@@ -1573,7 +1593,7 @@ function PasswordResetViewModel() // wolf
 	self.reset = function()
 	{
 		console.log("LoginViewModel.reset called...");
-		
+
 		$('#login .message').text('').fadeOut(100);
 		if (self.email() == '')
 		{
@@ -1609,7 +1629,7 @@ function PasswordResetViewModel() // wolf
 	}
 }
 
-function LoginViewModel() 
+function LoginViewModel()
 {
     var self = this;
     self.username = ko.observable('');
@@ -1625,7 +1645,7 @@ function LoginViewModel()
 		}
         currentUserViewModel.login(self.username(), self.password(), self.remember());
     }
-    
+
     self.logEnter = function(data, e)
     {
         if(e.which == 13)
@@ -1638,7 +1658,7 @@ function LoginViewModel()
             return true;
         }
     }
-    
+
 	self.logout = function()
 	{
 		console.log("logout  called...");
@@ -1668,7 +1688,7 @@ function LoginViewModel()
 	self.clear = function()
 	{
 		console.log("LoginViewModel clear called...");
-		self.username(''); 
+		self.username('');
 		self.password('');
 		self.username.isModified(false);
 		self.password.isModified(false);
@@ -1685,7 +1705,7 @@ function LoginViewModel()
 	}
 }
 
-function ThreeWayVoteViewModel() 
+function ThreeWayVoteViewModel()
 {
     var self = this;
     self.id = ko.observable();
@@ -1697,7 +1717,7 @@ function ThreeWayVoteViewModel()
 	}
 }
 
-function AddProposalViewModel() 
+function AddProposalViewModel()
 {
     var self = this;
     self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 25, message: "Please make sure your title clearly summarizes your proposal!" } });
@@ -1720,7 +1740,7 @@ function AddProposalViewModel()
     }
     self.clear = function()
 	{
-		//self.title(''); 
+		//self.title('');
 		//self.abstract('');
 		//self.blurb('');
 		self.title.isModified(false);
@@ -1740,18 +1760,18 @@ function NewCommentViewModel()
 {
 	var self = this;
 	self.comment = ko.observable().extend({ required: true, maxLength: 300, minLength:10 });
-	
+
 	self.validate_comment_type = ko.observable(true);
     self.comment_type = ko.observable().extend({ required: { onlyIf: self.validate_comment_type } });
 	//self.comment_type = ko.observable().extend({ required: true });
-	
+
 	self.comment_type_options = ['for', 'against'];
-	
+
 	self.setProposal = function(proposal)
 	{
 		self.proposal = proposal;
 	}
-	
+
 	self.clear = function() // noo
 	{
 	    console.log("newCommentViewModel clear called..");
@@ -1764,7 +1784,7 @@ function NewCommentViewModel()
 				.setAlertClass('danger')
 				.fadeOut();
 	}
-	
+
 	self.resetNewCommentPanel = function()
 	{
 		console.log("resetNewCommentPanel called.....");
@@ -1774,7 +1794,7 @@ function NewCommentViewModel()
 		{
           return panel.slideUp(400);
           self.clear();
-        } 
+        }
 		else
 		{
 			return true;
@@ -1784,20 +1804,20 @@ function NewCommentViewModel()
 	{
 		console.log("showNewCommentPanel called..");
 		var panel = $('.newcommentpanel');
-		if (panel.is(":visible")) 
+		if (panel.is(":visible"))
 		{
           panel.slideUp(400);
           self.resetNewCommentPanel();
-        } 
-		else 
+        }
+		else
 		{
           panel.slideDown(400);
         }
 	}
-	
+
 	self.add = function() // eating
 	{
-		console.log("NewCommentViewModel.add() called ...");		
+		console.log("NewCommentViewModel.add() called ...");
 		var reply_to = $('.newcommentpanel #reply_to').attr('value');
 		var new_comment_type = $('.newcommentpanel #new_comment_type').attr('value');
 		if (new_comment_type == 'answer' || new_comment_type == 'question')
@@ -1808,7 +1828,7 @@ function NewCommentViewModel()
 				reply_to: reply_to
         	});
 		}
-		else 
+		else
 		{
             viewProposalViewModel.addComment({
                 comment: self.comment(),
@@ -1816,7 +1836,7 @@ function NewCommentViewModel()
             });
 		}
 	}
-	
+
 }
 
 function ViewProposalViewModel()
@@ -1830,12 +1850,12 @@ function ViewProposalViewModel()
 	self.comments = ko.observableArray();
 	self.author_id = ko.observable();
 	self.index;
-	
+
 	self.comment_for = ko.observable('');
 	self.comment_against = ko.observable('');
 	self.question = ko.observable('');
 	self.answer = ko.observable('');
-	
+
 	self.addcommentanswer = function(comment_id)
 		{
 			console.log("addcommentanswer called with id " + comment_id);
@@ -1852,8 +1872,8 @@ function ViewProposalViewModel()
 	        	});
 			}
 		}
-	
-	
+
+
 	self.getCommentCount = function()
 	{
 		var count = 0
@@ -1878,7 +1898,7 @@ function ViewProposalViewModel()
         });
         return count;
 	};
-	
+
 	self.getAnswer = function(id)
     {
         var match = ko.utils.arrayFirst(self.comments(), function (comment)
@@ -1901,7 +1921,7 @@ function ViewProposalViewModel()
         else
             return match;
     };
-	
+
 	self.userSupports = function(comment)
     {
 		if (!comment)
@@ -1917,10 +1937,10 @@ function ViewProposalViewModel()
         else
             return true;
     };
-    
+
     self.addNewComment = function(comment, type, reply_to) // eating
 	{
-		console.log("ViewProposalViewModel.addComment() called ...");	
+		console.log("ViewProposalViewModel.addComment() called ...");
 		var reply_to = $('.newcommentpanel #reply_to').attr('value');
 		var new_comment_type = $('.newcommentpanel #new_comment_type').attr('value');
 		if (new_comment_type == 'answer' || new_comment_type == 'question')
@@ -1931,7 +1951,7 @@ function ViewProposalViewModel()
 				reply_to: reply_to
         	});
 		}
-		else 
+		else
 		{
             viewProposalViewModel.addComment({
                 comment: self.comment(),
@@ -1939,13 +1959,13 @@ function ViewProposalViewModel()
             });
 		}
 	}
-	
+
 	self.clearComments = function()
 	{
 		self.comments([]);
 	}
-	
-	/* 
+
+	/*
 		View Proposal Panels
 	*/
 	self.reset = function()
@@ -2005,7 +2025,7 @@ function ViewProposalViewModel()
 			$('#showquestions').fadeIn();
 		});
 	}
-	
+
 	self.beginNewComment = function(operation, proposalmodel, reply_to)
 	{
 		console.log('beginNewComment called with op ' + operation);
@@ -2045,7 +2065,7 @@ function ViewProposalViewModel()
 			newCommentViewModel().showNewCommentPanel();
 		});
 	}
-	
+
 	self.beginAnswer = function(commentmodel)
 	{
 		console.log('beginAnswer called for comment ' + commentmodel.id());
@@ -2062,11 +2082,11 @@ function ViewProposalViewModel()
 		}
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments/' + comment.id() + '/support';
 		console.log("ViewProposalViewModel.supportComment() URI set to " + URI);
-		ajaxRequest(URI, OPP).done(function(data, textStatus, jqXHR) 
+		ajaxRequest(URI, OPP).done(function(data, textStatus, jqXHR)
 		{
 		    console.log('toggleCommentSupport data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				console.log(data.message);
@@ -2079,15 +2099,15 @@ function ViewProposalViewModel()
 			}
 		});
 	}
-	
+
 	self.submitComment = function(comment_type, proposal) // bang
     {
 	    console.log(proposal.id());
 	    console.log(comment_type);
-	    
+
         switch (comment_type)
         {
-            case "for": 
+            case "for":
                console.log('Adding comment for');
                self.addComment({
 	                comment: $.trim(self.comment_for()),
@@ -2095,7 +2115,7 @@ function ViewProposalViewModel()
 					reply_to: 0
 			   });
                break;
-            case "against": 
+            case "against":
                console.log('Adding comment against');
                self.addComment({
 	                comment: $.trim(self.comment_against()),
@@ -2103,7 +2123,7 @@ function ViewProposalViewModel()
 					reply_to: 0
 			   });
                break;
-               case "question": 
+               case "question":
                console.log('Adding question');
                self.addComment({
 	                comment: $.trim(self.question()),
@@ -2111,12 +2131,12 @@ function ViewProposalViewModel()
 					reply_to: 0
 			   });
                break;
-            default: 
+            default:
                console.log('Unknown comment type');
                return;
         }
     }
-	
+
 	self.addComment = function(comment) // bang
 	{
 		console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
@@ -2124,7 +2144,7 @@ function ViewProposalViewModel()
 		ajaxRequest(URI, 'POST', comment).done(function(data, textStatus, jqXHR) {
 		    console.log('Add comment data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				console.log('Updating comments list for propsalal' + self.proposal.id());
@@ -2137,7 +2157,7 @@ function ViewProposalViewModel()
 					author_id: ko.observable(data.comment.author_id),
 					supporters: ko.observableArray(JSON.parse(data.comment.supporters))
 		  		});
-		  		
+
 		  		// Clear comment input box
 		  		switch (data.comment.comment_type)
 		  		{
@@ -2151,7 +2171,7 @@ function ViewProposalViewModel()
 		  		        self.question('');
 		  		        break;
 		  		}
-		  		
+
 		  		// Update counts
 		  		var index = getItemIndexFromArrayWithID(proposalsViewModel.proposals(), self.id());
 		  		if (index != -1)
@@ -2159,7 +2179,7 @@ function ViewProposalViewModel()
 		  		    proposalsViewModel.proposals()[index].comment_count(parseInt(data.comment.comment_count));
 		  		    proposalsViewModel.proposals()[index].question_count(parseInt(data.comment.question_count));
 		  		}
-		  		
+
 		  		index = getItemIndexFromArrayWithID(proposalsViewModel.inherited_proposals(), self.id());
 		  		if (index != -1)
 		  		{
@@ -2175,7 +2195,7 @@ function ViewProposalViewModel()
     			.setAlertClass('danger')
     			.fadeIn();
 			}
-		}).fail(function(jqXHR, textStatus, errorThrown) 
+		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
 			console.log('addcomment: There was an error with add comment. Status: ' + textStatus); // bear
             var message = getJQXHRMessage(jqXHR, 'There was an problem adding your comment');
@@ -2187,12 +2207,12 @@ function ViewProposalViewModel()
 			.slideUp('slow');
         });
 	}
-	
+
 	self.setIndex = function(index)
 	{
 		self.index = index;
 	}
-	
+
 	self.openvotemap = function(proposal)
 	{
 		console.log("ViewProposalViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
@@ -2204,7 +2224,7 @@ function ViewProposalViewModel()
 		$('#votemap-thisprop').html(proposal.title());
 		$('#votemapwindow').modal('show');
 	}
-	
+
 	self.setProposal = function(proposal)
 	{
 		self.proposal = proposal;
@@ -2218,7 +2238,7 @@ function ViewProposalViewModel()
 		self.fetchComments();
 	}
 	/*
-	self.init3WayTriangle = function(svg) 
+	self.init3WayTriangle = function(svg)
 	{
 		console.log('ViewProposalViewModel.init3WayTriangle called **************');
 		var index = parseInt($(this).data('index'));
@@ -2236,35 +2256,35 @@ function ViewProposalViewModel()
 			proposalsViewModel.endorseWithIndex('confused', index);
 		});
 	}*/
-	
+
 	self.loadTriangle = function()
 	{
 		console.log("ViewProposalViewModel.loadTriangle called>>>>>>>>>>>>>>>");
 		if (questionViewModel.phase() == 'voting')
 		{
 			console.log('Loading voting triangle to view proposal window...');
-			
+
 			/*
 			if ($('.votebox').svg('get'))
             {
                 console.log('Removing svg from votebox------------');
                 $('.votebox').svg('destroy').data('pid', false).data('index', false);
             }*/
-			
+
 			$('.votebox').data('pid', self.proposal.id).addClass('threeway').data('index', self.index);
 			//$('.votebox').svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
 			/*
 			$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg', //});
 							   onLoad: init3WayTriangle});
 			*/
-			
+
 			//var bg_image = "url('" + STATIC_FILES + "/images/triangle.svg" + "')";
 			//$('.votebox').css('background-image', bg_image);
 		}
 	}
-	
+
 	self.fetchComments = function() {
-		ajaxRequest(VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ self.proposal.id() +'/comments', 
+		ajaxRequest(VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ self.proposal.id() +'/comments',
 					'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Comments data returned...');
 			console.log(data);
@@ -2293,8 +2313,8 @@ function QuestionsViewModel()
 {
     var self = this;
     self.questions = ko.observableArray();
-    
-    self.addQuestion = function(question) 
+
+    self.addQuestion = function(question)
 	{
 		console.log("QuestionsViewModel.addQuestion() called...");
 		console.log(question);
@@ -2302,11 +2322,11 @@ function QuestionsViewModel()
 		ajaxRequest(URI, 'POST', question).done(function(data, textStatus, jqXHR) {
 		    console.log('Add question data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				newQuestionViewModel().close();
-				
+
 				console.log('Updating questions list');
 				self.questions.push({
 		      		id: ko.observable(data.question.id),
@@ -2340,14 +2360,14 @@ function QuestionsViewModel()
             console.log('addQuestion: There was an error. Error ' + jqXHR.status);
             // Set modal alert
             var message = (jqXHR.responseText && JSON.parse(jqXHR.responseText).message) ? JSON.parse(jqXHR.responseText).message : 'There was a problem';
-            
+
             $('#addquestion .alert')
             .text(message)
             .setAlertClass('danger')
             .fadeIn()
         });
 	}
-	
+
 	/*
 	Fetch the questions which the user is permitted to see
 	*/
@@ -2387,7 +2407,7 @@ function QuestionsViewModel()
 	}
 	self.beginNewQuestion = function()
 	{
-	    console.log('begin_new_question'); 
+	    console.log('begin_new_question');
 	    $('#addquestion').modal('show');
 	}
 	self.is_new_question = function(question)
@@ -2402,7 +2422,7 @@ function QuestionsViewModel()
 	    if (question.new_proposal_count() > 0)
 	    {
 	        html = html + "<br>Recently "
-	            + question.new_proposer_count() + " users proposed " 
+	            + question.new_proposer_count() + " users proposed "
 	            + question.new_proposal_count() + " proposals";
 	    }
 	    else
@@ -2411,8 +2431,8 @@ function QuestionsViewModel()
 	    }
 	    if (question.inherited_proposal_count() > 0)
 	    {
-	        html = html + "<br>There are " 
-		        + question.inherited_proposal_count() 
+	        html = html + "<br>There are "
+		        + question.inherited_proposal_count()
 		        + " inherited from the previous generation";
 	    }
 	    return html;
@@ -2438,20 +2458,20 @@ function VoteMapViewModel()
 function ProposalsViewModel()
 {
     var self = this;
-    
+
 	// Voting phase only
 	self.proposals = ko.observableArray();
 	self.key_players = ko.observableArray();
 	// Writing phase only
 	self.inherited_proposals = ko.observableArray();
-	
+
 	self.clearData = function()
 	{
 	    self.proposals([]);
 	    self.key_players([]);
 	    self.inherited_proposals([]);
 	}
-	
+
 	self.getProposal = function(pid) // huh
     {
 		var match = ko.utils.arrayFirst(self.proposals(), function (proposal)
@@ -2463,7 +2483,7 @@ function ProposalsViewModel()
         else
             return match;
     };
-	
+
 	self.getUserKeyPlayerInfo = function() //donow
     {
         var match = ko.utils.arrayFirst(self.key_players(), function (key_player)
@@ -2471,7 +2491,7 @@ function ProposalsViewModel()
             return currentUserViewModel.userid() === key_player.id();
         });
         console.log('getUserKeyPlayerInfo');
-        if (match) 
+        if (match)
         {
             //console.log('Current user IS a key player');
             //console.log(match.id());
@@ -2482,84 +2502,84 @@ function ProposalsViewModel()
         }
         return match;
     };
-	
-	self.vote_for_list_v3 = function (props) 
+
+	self.vote_for_list_v3 = function (props)
 	{
 	    html = '';
-	    for (var i = 0; i < props.length; i++) 
+	    for (var i = 0; i < props.length; i++)
 	    {
 	        html = html + '<span class="prop_link">' + props[i] + '</span>'
 	    }
 	    return html;
     }
-	
-	self.vote_for_list_v2 = function (keyplayer) 
+
+	self.vote_for_list_v2 = function (keyplayer)
 	{
 	    html = '';
-	    $.each(keyplayer.add_vote(), function (endorse_type, pids) 
+	    $.each(keyplayer.add_vote(), function (endorse_type, pids)
 	    {
             switch(endorse_type)
             {
                 case 'notvoted':
                     html = html + '<br>Did not vote for proposals '
-                    $.each(pids, function (pid) 
+                    $.each(pids, function (pid)
                     {
                         html = html + '<span class="prop_link">' + pid + '</span>'
                     })
                     break;
                 case 'oppose':
                     html = html + '<br>Voted against proposals '
-                    $.each(pids, function (pid) 
+                    $.each(pids, function (pid)
                     {
                         html = html + '<span class="prop_link">' + pid + '</span>'
                     })
                     break;
                 case 'confused':
                     html = html + '<br>Did not understand proposals '
-                    $.each(pids, function (pid) 
+                    $.each(pids, function (pid)
                     {
                         html = html + '<span class="prop_link">' + pid + '</span>'
                     })
                     break;
-                default:  
+                default:
             }
         })
 	    return html;
 	}
-	
+
 	self.vote_for_list = function (keyplayer) {
 	    html = '';
-	    for (var i = 0; i < keyplayer.add_vote().length; i++) 
+	    for (var i = 0; i < keyplayer.add_vote().length; i++)
 	    {
 	        html = html + '<span class="prop_link">' + keyplayer.add_vote()[i] + '</span>'
 	    }
 	    return html;
 	}
-	
+
 	self.getProposalIndex = function(proposal_id)
 	{
 	    console.log("ProposalsViewModel.getProposalIndex() called with pid = " + proposal_id);
 	    return arrayFirstIndexOf(proposalsViewModel.proposals(), function(item) {
-           return item.id() === proposal_id;    
+           return item.id() === proposal_id;
         });
 	}
-	
+
 	self.showProposalNode = function(proposal_id)
 	{
 	    console.log("ProposalsViewModel.showProposalNode() called with pid = " + proposal_id);
 	    var index = arrayFirstIndexOf(proposalsViewModel.proposals(), function(item) {
-           return item.id() === proposal_id;    
+           return item.id() === proposal_id;
         });
         var proposal = proposalsViewModel.proposals()[index];
 	    self.read(index, proposal);
 	}
-	
+
 	self.readproposal = function(id)
 	{
 	    console.log("ProposalsViewModel.readproposal called with id " + id);
 	    index = self.fetchIndex(id);
 	}
-	
+
 	self.openvotemap = function(index, proposal)
 	{
 		console.log("ProposalsViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
@@ -2569,7 +2589,7 @@ function ProposalsViewModel()
 		$('#votemap-thisprop').html(proposal.title());
 		$('#votemapwindow').modal('show');
 	}
-	
+
 	self.read = function(index, panel, proposal) // catz
 	{
 		console.log("ProposalsViewModel.read called with index " + index);
@@ -2580,7 +2600,7 @@ function ProposalsViewModel()
 		viewProposalViewModel.reset();
 		$('#viewproposal').modal('show');
 	}
-	
+
 	self.add = function(proposal)
 	{
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
@@ -2589,7 +2609,7 @@ function ProposalsViewModel()
 			console.log(data);
 			console.log('textstatus = ' + textStatus);
 			console.log('status code = ' + jqXHR.statusCode());
-			
+
 			if (jqXHR.status == 201)
 			{
 	  		    self.proposals.push({
@@ -2622,7 +2642,7 @@ function ProposalsViewModel()
             .fadeIn()
         });
 	}
-	
+
 	self.endorse = function(endorsement_type, proposal)
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
@@ -2633,13 +2653,13 @@ function ProposalsViewModel()
 		console.log(endorsement_type);
 		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
 		console.log('endorse uri = ' + endorse_uri);
-		
+
 		ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
 		.done(function(data, textStatus, jqXHR)
 		{
 		    console.log('Proposals data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				console.log('Updating proposal ' + proposal.id() + ' to ' + endorsement_type);
@@ -2647,7 +2667,7 @@ function ProposalsViewModel()
 				var prev_endorsement_type = proposal.endorse_type();
 				proposal.endorse_type(endorsement_type);
 				if ( (prev_endorsement_type == 'endorse'
-					&& (endorsement_type == 'confused' || endorsement_type == 'oppose')) 
+					&& (endorsement_type == 'confused' || endorsement_type == 'oppose'))
 				|| (endorsement_type == 'endorse'
 					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
 					    || prev_endorsement_type == 'notvoted')) )
@@ -2662,7 +2682,7 @@ function ProposalsViewModel()
 			}
 		});
 	}
-	
+
 	// Add endorsement using normalised votemap coordinates
 	self.mapEndorseWithIndex = function(mapx, mapy, index) // eel
 	{
@@ -2671,21 +2691,21 @@ function ProposalsViewModel()
 		    console.log("Not logged in");
 		    return;
 		}
-		
+
 		var proposal = self.proposals()[index];
 		console.log('mapEndorseWithIndex called with index ' + index + ' and coords ' + mapx + ', ' + mapy);
 		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
 		console.log('endorse uri = ' + endorse_uri);
-		
+
 		// Normalized vote coordinates
         var coords = {mapx: mapx, mapy: mapy};
-		
+
 		ajaxRequest(endorse_uri, 'POST', {use_votemap:true, coords:coords})
 		.done(function(data, textStatus, jqXHR)
 		{
 		    console.log('Proposals data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				console.log('Updating proposal ' + proposal.id() + ' to ' + data.endorsement_type);
@@ -2693,7 +2713,7 @@ function ProposalsViewModel()
 				proposal.endorse_type(data.endorsement_type);
 				viewProposalViewModel.setProposal(proposal);
 				if ( (prev_endorsement_type == 'endorse'
-					&& (data.endorsement_type == 'confused' || data.endorsement_type == 'oppose')) 
+					&& (data.endorsement_type == 'confused' || data.endorsement_type == 'oppose'))
 				|| (data.endorsement_type == 'endorse'
 					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
 					    || prev_endorsement_type == 'notvoted')) )
@@ -2701,12 +2721,12 @@ function ProposalsViewModel()
 					console.log('Refreshing graphs after vote...');
 					fetchVotingGraphs(); // chaos
 				}
-				
+
 				// Update vote coordinates and endorsement type
 				proposal.endorse_type(data.endorsement_type);
 				proposal.mapx = mapx;
 				proposal.mapy = mapy;
-				
+
 				// Draw vote on votemap if displayed
 				setVote(proposal);
 				/*
@@ -2728,7 +2748,7 @@ function ProposalsViewModel()
 			}
 		});
 	}
-	
+
 	self.endorseWithIndex = function(endorsement_type, index)
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
@@ -2740,13 +2760,13 @@ function ProposalsViewModel()
 		console.log('endorseWithIndex called with index ' + index + ' and endorsement_type ' + endorsement_type);
 		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
 		console.log('endorse uri = ' + endorse_uri);
-		
+
 		ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
 		.done(function(data, textStatus, jqXHR)
 		{
 		    console.log('Proposals data returned...');
 			console.log(data);
-			
+
 			if (jqXHR.status == 201)
 			{
 				console.log('Updating proposal ' + proposal.id() + ' to ' + endorsement_type);
@@ -2754,7 +2774,7 @@ function ProposalsViewModel()
 				proposal.endorse_type(endorsement_type);
 				viewProposalViewModel.setProposal(proposal);
 				if ( (prev_endorsement_type == 'endorse'
-					&& (endorsement_type == 'confused' || endorsement_type == 'oppose')) 
+					&& (endorsement_type == 'confused' || endorsement_type == 'oppose'))
 				|| (endorsement_type == 'endorse'
 					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
 					    || prev_endorsement_type == 'notvoted')) )
@@ -2771,16 +2791,16 @@ function ProposalsViewModel()
 			}
 		});
 	}
-	
+
 	self.show3WayTriangle = function()
 	{
 		console.log('show3WayTriangle called...');
-		$('#vote3waywindow').modal('show');		
+		$('#vote3waywindow').modal('show');
 		$('#vote3waywindow .show3waytriangle').svg(
 		    {loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'})}); //,
-		//	onLoad: init3WayTriangle});	
+		//	onLoad: init3WayTriangle});
 	}
-	
+
 	self.showTriangle = function()
 	{
 		console.log('showTriangle called...');
@@ -2788,12 +2808,12 @@ function ProposalsViewModel()
 		$('#votenowwindow').modal('show');
 		//$('.showtriangle').svg({onLoad: drawVotingTriangle});
 		$('#votenowwindow .showtriangle').svg(
-		    {loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}), 
+		    {loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
 		    onLoad: initTriangle});
 	}
-	
+
 	self.fetchKeyPlayers = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/key_players?' + 'algorithm=' + ALGORITHM_VERSION;	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/key_players?' + 'algorithm=' + ALGORITHM_VERSION;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Key Player data returned...');
 			console.log(data.key_players);
@@ -2810,7 +2830,7 @@ function ProposalsViewModel()
 			}
 		});
 	}
-	
+
 	self.fetchInheritedProposals = function() {
 	    console.log('fetchInheritedProposals() called...');
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
@@ -2845,7 +2865,7 @@ function ProposalsViewModel()
 	    console.log('fetchProposals() called...');
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
 		var proposals_list = self.proposals;
-		
+
 	    if (options != null && options.user_only != null)
 	    {
 	        proposalsURI = proposalsURI + '?user_only=true';
@@ -2880,7 +2900,7 @@ function ProposalsViewModel()
 		  		});
 			}
 			proposals_list(fetched_proposals);
-			
+
 			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
 				$('.voting').each(function(){
@@ -2898,11 +2918,11 @@ function ProposalsViewModel()
 			}
 		});
 	}
-	
+
 	self.beginNew = function() {
         $('#addproposal').modal('show');
     }
-	
+
 	//self.fetchProposals();
 	//self.beginLogin();
 }
@@ -2917,18 +2937,18 @@ function drawTriangle(svg)
         .line( 200, 0, true )
         .close(),
         {
-            fill: 'blue', 
-            stroke: 'white', 
+            fill: 'blue',
+            stroke: 'white',
             strokeWidth: 2
         }
     );
 }
 
-function setTriangleSize(svg) 
+function setTriangleSize(svg)
 {
 	//console.log("setTriangleSize called...");
 	var width = 700;
-	var height = 700; 
+	var height = 700;
 	gwidth = width || $(svg._container).innerWidth();
 	gheight = height || $(svg._container).innerHeight();
 	svg.configure({width: gwidth, height: gheight}, true);
@@ -2949,7 +2969,7 @@ function init3WayTriangle(svg)
 {
 	console.log('init3WayTriangle function called');
 	return;
-	
+
 	var index = parseInt($(this).data('index'));
 	console.log('init3WayTriangle function called... index = ' + index);
 	$('.oppose', svg.root()).click(function(e) {
@@ -2970,13 +2990,13 @@ function drawVotingTriangle(svg)
 {
 	//svg.polygon([[0,0],[300,0],[150,211]],
 	//	{fill: 'lime', stroke: 'blue', strokeWidth: 1, class: 'votenow'});
-	
+
 	svg.polygon([[1,1],[299,1],[149,210]],
-		{fill: 'lime', stroke: 'blue', strokeWidth: 1, class: 'votenow'}); 
-				
+		{fill: 'lime', stroke: 'blue', strokeWidth: 1, class: 'votenow'});
+
 	/*
-	svg.linearGradient(defs, 'myGrad', 
-    	[[0, 'red'], [1, 'green']], 0, 0, 800, 0, 
+	svg.linearGradient(defs, 'myGrad',
+    	[[0, 'red'], [1, 'green']], 0, 0, 800, 0,
 	    {gradientUnits: 'userSpaceOnUse'});*/
 }
 
@@ -2988,7 +3008,7 @@ var questionViewModel = function(data) {
     this.nameLength = ko.computed(function() {
         return this.name().length;
     }, this);
-    
+
     this.canMoveOn = ko.computed(function() {
 	    var currentdate = new Date();
 	    var currentSeconds = currentdate.getSeconds();
@@ -3000,33 +3020,33 @@ var questionViewModel = function(data) {
 function InviteUsersViewModel() // shark
 {
     var self = this;
-    // Update subscribers after 50 microseconds 
+    // Update subscribers after 50 microseconds
     self.users = ko.observableArray([]).extend({ rateLimit: 50 });
     self.user_emails = ko.observable();
     self.emails_sent = ko.observable('');
     self.emails_rejected = ko.observable('');
     self.emails_already_sent = ko.observable('');
-    
+
     self.questionPermissions = ko.observable([
        {name: "Read", id: 1},
        {name: "Vote", id: 3},
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
-    
+
     self.questionEmailPermissions = ko.observable([
        {name: "Read", id: 1},
        {name: "Vote", id: 3},
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
-    
+
     self.selectedPermissions = 7;
-    
+
     self.invite_by_email = function()
 	{
 	    console.log("invite_by_email called...");
-	    
+
         var URI = VILFREDO_API + '/questions/' + question_id + '/emailinvitations';
         var invite_users = {'user_emails': self.user_emails(), 'permissions': self.selectedPermissions};
 		return ajaxRequest(URI, 'POST', invite_users).done(function(data, textStatus, jqXHR) {
@@ -3040,13 +3060,13 @@ function InviteUsersViewModel() // shark
 		});
 	}
 
-    // 
+    //
     // Fetch non-participating associated users
     //
-    self.fetched_associated_users = function() 
+    self.fetched_associated_users = function()
 	{
 		self.users([]);
-		var URI = VILFREDO_API + '/users/associated_users?ignore_question=' + question_id;	
+		var URI = VILFREDO_API + '/users/associated_users?ignore_question=' + question_id;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Not invited list returned...');
 		    var fetched_users = [];
@@ -3060,11 +3080,11 @@ function InviteUsersViewModel() // shark
 			self.users(fetched_users);
 		});
 	}
-    
-    self.fetched_uninvited_associates = function() 
+
+    self.fetched_uninvited_associates = function()
 	{
 		self.users([]);
-		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Not invited list returned...');
 		    var fetched_users = [];
@@ -3078,12 +3098,12 @@ function InviteUsersViewModel() // shark
 			self.users(fetched_users);
 		});
 	}
-    
+
     /*
-	self.fetched_non_participants = function() 
+	self.fetched_non_participants = function()
 	{
 		self.users([]);
-		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Not invited list returned...');
 			for (var i = 0; i < data.not_invited.length; i++) {
@@ -3096,14 +3116,14 @@ function InviteUsersViewModel() // shark
 		});
 	}
 	*/
-	
+
 	self.add_users = function()
 	{
 	    console.log("InviteUsersViewModel.add_users called...");
 	    var invite_user_ids = new Array();
-	    ko.utils.arrayForEach(self.users(), function(user) 
+	    ko.utils.arrayForEach(self.users(), function(user)
 	    {
-            if (user.selected()) 
+            if (user.selected())
             {
                 invite_user_ids.push(user.user_id);
             }
@@ -3117,13 +3137,13 @@ function InviteUsersViewModel() // shark
 			self.users.remove(function(user) { return user.selected(); });
 		});
 	}
-	self.open_add_users = function() 
+	self.open_add_users = function()
 	{
 	    console.log("open_permissions.open called...");
 	    self.permissions(questionViewModel.permissions());
 	    $('#participants').modal('show');
 	}
-	self.close_add_users = function() 
+	self.close_add_users = function()
 	{
 	    console.log("close_permissions called...");
 	    self.user_emails('');
@@ -3139,16 +3159,16 @@ function PermissionsViewModel() // wolf
 {
     var self = this;
     self.permissions = ko.observableArray([]);
-    
+
     self.questionPermissions = ko.observable([
        {name: "Read", id: 1},
        {name: "Vote", id: 3},
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
-    
+
     self.selectedPermissions = 7;
-    
+
     self.userPerms = function (user, perm) {
         return ko.computed({
             read: function () {
@@ -3166,7 +3186,7 @@ function PermissionsViewModel() // wolf
 	self.fetchParticipantPermissions = function() // jaws
 	{
 		self.permissions([]); // haha
-		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Question results returned...');
 			//self.permissions(data.permissions);
@@ -3181,14 +3201,14 @@ function PermissionsViewModel() // wolf
 			self.permissions(fetched_permissions);
 		});
 	}
-	self.open_permissions = function() 
+	self.open_permissions = function()
 	{
 	    console.log("open_permissions.open called...");
 	    //self.permissions(questionViewModel.permissions());
 	    self.fetchParticipantPermissions();
 	    $('#participants').modal('show');
 	}
-	
+
 	self.add_users = function()
 	{
 	    console.log("PermissionsViewModel.add_users called...");
@@ -3201,17 +3221,17 @@ function PermissionsViewModel() // wolf
 	    console.log("update_permissions called...");
 	    questionViewModel.updatePermissions(self.permissions);
 	}
-	self.close_permissions = function() 
+	self.close_permissions = function()
 	{
 	    console.log("close_permissions called...");
 	    $('#participants').modal('hide');
 	}
-	self.reset_permissions = function() 
+	self.reset_permissions = function()
 	{
 	    console.log("reset_permissions called...");
 	    self.permissions(questionViewModel.permissions());
 	}
-	self.remove_permissions = function() 
+	self.remove_permissions = function()
 	{
 	    // remove permissions for user - in other words exclude him completely from the question
 	    console.log("remove_permissions called for user " + this.user_id);
@@ -3222,7 +3242,7 @@ function PermissionsViewModel() // wolf
 function QuestionViewModel() // hare
 {
 	var self = this;
-	self.URI = VILFREDO_API + '/questions/' + question_id;		
+	self.URI = VILFREDO_API + '/questions/' + question_id;
 	self.id = ko.observable();
 	self.title = ko.observable();
 	self.blurb = ko.observable();
@@ -3242,37 +3262,37 @@ function QuestionViewModel() // hare
 	self.can_propose = false;
 	self.can_propose_ob = ko.observable(false);
 	self.can_not_propose = false;
-	
+
 	self.key_players = ko.observableArray();
-	
+
 	self.participation_table = ko.observable();
 	self.num_proposals = ko.observable();
-	
+
 	self.domination_map_array = ko.observableArray([]);
 	//self.domination_map = ko.observable();
 	self.levels_map = ko.observable();
 	self.voting_map = ko.observable();
-	
-    
+
+
     self.dom_table_algorithm = ko.observable(ALGORITHM_VERSION);
 	self.levels_table_algorithm = ko.observable(ALGORITHM_VERSION);
-	
+
 	self.selected_generation = ko.observable(generation_id);
 	self.selected_algorithm = ko.observable(ALGORITHM_VERSION);
-	
+
 	self.permissions = ko.observable([]);
-	
+
 	self.results;
-	
+
 	self.questionPermissions = ko.observableArray([
        {name: "Read", id: 1},
        {name: "Vote", id: 3},
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
-    
+
     self.defaultPermissions = 7;
-	
+
 	self.permissionTitles = function(val)
 	{
 	    switch(parseInt(val))
@@ -3293,55 +3313,55 @@ function QuestionViewModel() // hare
             return '-';
         }
 	}
-	
+
 	// shark
 	self.updatePermissions = function()
 	{
 	    console.log("updatePermissions called...");
 	}
-	self.closePermissions = function() 
+	self.closePermissions = function()
 	{
 	    console.log("closePermissions called...");
 	    $('#participants').modal('hide');
 	}
-	self.resetPermissions = function() 
+	self.resetPermissions = function()
 	{
 	    console.log("resetPermissions called...");
 	}
-	self.removePermissions = function() 
+	self.removePermissions = function()
 	{
 	    // remove permissions for user
 	    console.log("Remove permisions for user " + this.user_id);
 	    self.permissions.remove(this);
 	}
-	
-	self.fetchParticipantPermissions_off = function() 
+
+	self.fetchParticipantPermissions_off = function()
 	{
-		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Question results returned...');
 			self.permissions(data.permissions);
 		});
 	}
-	
+
 	// jazz
 	self.fetchVotingResults = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/results';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/results';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Question results returned...');
 			self.results = data.results;
 		});
 	}
-	
+
 	self.fetchParticipationTable = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/participation_table';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/participation_table';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('participation table data returned...');
 			self.participation_table(data.participation_table);
 			self.num_proposals(data.num_proposals)
 		});
 	}
-	// 
+	//
     // Participation Table colors and text
     //
     self.proposalsEvaluatedClass = function(evaluations) {
@@ -3361,29 +3381,29 @@ function QuestionViewModel() // hare
 	self.proposalsEvaluatedText = function(evaluations) {
         return evaluations + '/' + self.num_proposals();
     }
-    
-	
+
+
 	self.hasConfusedVotes = function(generation_id) {
 	    if (typeof(self.voting_map()) == 'undefined') return;
 	    return self.voting_map()[generation_id]['confused_count'] + self.voting_map()[generation_id]['oppose_count'];
     }
-    
+
     self.alternateVotes = function(generation_id) {
 	    if (typeof(self.voting_map()) == 'undefined' || typeof(generation_id)  == 'undefined') return;
 	    return 'Generation ' + generation_id + ' has ' + self.voting_map()[generation_id]['confused_count'] + ' confused and ' + self.voting_map()[generation_id]['oppose_count'] + ' opposed votes';
     }
-    
+
     self.proposalVoting = function(pid) {
 	    if (
-	        typeof(self.voting_map()) == 'undefined' || 
-	        typeof(self.selected_generation()) == 'undefined' || 
-	        typeof(pid) == 'undefined' || 
+	        typeof(self.voting_map()) == 'undefined' ||
+	        typeof(self.selected_generation()) == 'undefined' ||
+	        typeof(pid) == 'undefined' ||
 	        typeof(self.voting_map()[self.selected_generation()]['proposals'][pid]) == 'undefined' ||
-	        typeof(self.voting_map()[self.selected_generation()]['proposals'][pid].votes) == 'undefined' ) 
+	        typeof(self.voting_map()[self.selected_generation()]['proposals'][pid].votes) == 'undefined' )
 	    {
 	        return 'no data available for proposal ' + pid + ' in generation ' + self.selected_generation();
         }
-	    
+
 	    console.log('selected_generation = ' + self.selected_generation());
 	    console.log('pid = ' + pid);
 	    votes = self.voting_map()[self.selected_generation()]['proposals'][pid]['votes'];
@@ -3393,8 +3413,8 @@ function QuestionViewModel() // hare
 	    title = title + 'Not understood by [' + votes['confused'] + ']';
 	    return title;
     }
-    
-	
+
+
 	self.allGenerations = ko.computed(function() {
         allgen = new Array();
         gen = 1;
@@ -3404,63 +3424,63 @@ function QuestionViewModel() // hare
         }
         return allgen;
     });
-    
+
     // Fetch voting map for all generaion of the question
     //
     self.fetchVotingMap = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/voting_map';	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/voting_map';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Voting Map data returned...');
 			self.voting_map(data.voting_map);
 		});
 	}
-    
+
     self.fetchTablesForSelectedAlgorithm = function(algorithm) {
         // Set the current generation for tables
         self.selected_algorithm(algorithm);
 
         // Fetch graph
         fetchGenerationGraph(self.selected_generation(), self.selected_algorithm())
-        
+
         self.domination_map_array([]);
         self.fetchDominationMap(self.selected_algorithm());
 		self.fetchLevelsMap(self.selected_algorithm());
     }
-    
+
     self.fetchTablesForSelectedGeneration = function(generation_id) {
         // Set the current generation for tables
         self.selected_generation(generation_id);
 
         // Fetch graph
         fetchGenerationGraph(self.selected_generation(), self.selected_algorithm())
-        
+
         self.domination_map_array([]);
         self.fetchDominationMap(self.selected_algorithm());
 		self.fetchLevelsMap(self.selected_algorithm());
     }
-    
+
     self.fetchTables = function(generation_id) {
         self.domination_map_array([]);
         self.selected_generation(generation_id);
-        
+
         self.fetchDominationMap(self.dom_table_algorithm());
 		self.fetchLevelsMap(self.levels_table_algorithm());
     }
 
-	
+
 	self.fetchLevelsMap = function(algorithm) {
 		// Set the algorithm for the levels table
 		self.levels_table_algorithm(algorithm);
 		generation = self.selected_generation();
 		self.levels_map();
-		
-		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+
+		var URI = VILFREDO_API + '/questions/' + question_id + '/levels_map?' + 'generation=' + generation + '&algorithm=' + algorithm;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Pareto Map data returned...');
 			self.levels_map(data.levels_map);
 		});
 	}
-	
+
 	self.fetchDomMap = function(algorithm) {
 	    // self.domination_map_array.removeAll();
 	    console.log("fetchDomMap: using generation: " + self.selected_generation());
@@ -3469,15 +3489,15 @@ function QuestionViewModel() // hare
 	    console.log("fetchDomMap: using algorithm: " + self.dom_table_algorithm());
         self.fetchDominationMap(self.selected_generation(), algorithm);
     }
-	
+
 	self.fetchDominationMap = function(algorithm) {
 		// Set the current domination table algorithm
 		self.dom_table_algorithm(algorithm);
-		
+
 		// Reset the domination map
 		self.domination_map_array([]);
 		generation = self.selected_generation();
-		
+
 		var URI = VILFREDO_API + '/questions/' + question_id + '/domination_map?' + 'generation=' + generation + '&algorithm=' + algorithm;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Domination Map data returned...');
@@ -3490,26 +3510,26 @@ function QuestionViewModel() // hare
 		    self.domination_map_array(fetched_domination_map);
 		});
 	}
-	
+
 	self.fetchProposalRelations = function(generation, algorithm) {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/proposal_relations?' + 'generation=' + generation + '&algorithm=' + algorithm;	
+		var URI = VILFREDO_API + '/questions/' + question_id + '/proposal_relations?' + 'generation=' + generation + '&algorithm=' + algorithm;
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Proposal Relation data returned...');
 			console.log(data.proposal_relations);
 			self.proposal_relations = data.proposal_relations;
 		});
 	}
-	
+
 	self.compareProposalVotes = function(pid1, pid2)
     {
-        if (typeof(self.voting_map()) == 'undefined' || typeof(pid1) == 'undefined' || typeof(pid2) == 'undefined') 
+        if (typeof(self.voting_map()) == 'undefined' || typeof(pid1) == 'undefined' || typeof(pid2) == 'undefined')
 	    {
 	        return 'no data available';
         }
-        
+
         pid1_votes = self.voting_map()[self.selected_generation()]['proposals'][pid1]['votes'];
         pid2_votes = self.voting_map()[self.selected_generation()]['proposals'][pid2]['votes'];
-        
+
         pid1_endorse_diff = arrayDiff(pid1['endorse'], pid2['endorse']);
         pid1_oppose_diff = arrayDiff(pid1['oppose'], pid2['oppose']);
         pid1_confused_diff = arrayDiff(pid1['confused'], pid2['confused']);
@@ -3517,22 +3537,22 @@ function QuestionViewModel() // hare
         pid2_endorse_diff = arrayDiff(pid2['endorse'], pid1['endorse']);
         pid2_oppose_diff = arrayDiff(pid2['oppose'], pid1['oppose']);
         pid2_confused_diff = arrayDiff(pid2['confused'], pid1['confused']);
-        
+
         title = '<strong>Proposal ' + pid + ':</strong><br><br> Endorsed by [' + votes['endorse'] + ']<br>';
 	    title = title + 'Opposed by [' + votes['oppose'] + ']<br>';
 	    title = title + 'Not understood by [' + votes['confused'] + ']';
-	    
+
 	    title = "<table><tr><th></th><th>Endorsed</th><th>Opposed</th><th>Confused</th></tr>";
-	    
+
 	    return title;
     }
-	
+
 	self.canMoveOn = ko.computed(function() {
 	    var currentdate = new Date();
 	    var currentSeconds = currentdate.getSeconds();
 	    return self.minimum_time();
 	});
-	
+
 	self.show_next_phase = function()
 	{
 	    if (self.phase() == 'writing')
@@ -3549,18 +3569,18 @@ function QuestionViewModel() // hare
 	{
         return (get_timestamp() - self.last_move_on()) > self.minimum_time();
     }
-    
+
     self.maximum_time_passed = function()
     {
         return (get_timestamp() - self.last_move_on()) > self.maximum_time();
 	}
-	
+
 	self.userPermissions = function() // shark
 	{
 	    alert('here');
 	    permissionsViewModel.open();
 	}
-	
+
 	self.moveOn = function()
 	{
 	    console.log('moveOn called...');
@@ -3579,7 +3599,7 @@ function QuestionViewModel() // hare
     		initPage();
 	    });
 	}
-	
+
 	self.fetchQuestion = function()
 	{
 	    console.log('fetchQuestion called...');
@@ -3606,7 +3626,7 @@ function QuestionViewModel() // hare
     		self.permissions(data.question.user_permissions);
     		self.proposal_count(parseInt(data.question.proposal_count))
 	    });
-	    
+
 	    //
   		// Set selected generation to current generation if not already set
   		//
@@ -3622,9 +3642,9 @@ function fetchGraph2(map_type, generation, algorithm)
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	map_type = map_type !== undefined ? map_type : DEFAULT_MAP_TYPE;
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
-	
+
 	var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type + '&algorithm=' + algorithm;
-	
+
 	return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 	    console.log('fetchGraph2 data returned...');
 		console.log(data);
@@ -3636,7 +3656,7 @@ function fetchGraph(map_type, generation, algorithm)
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	map_type = map_type !== undefined ? map_type : DEFAULT_MAP_TYPE;
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
-	
+
 	var URI = VILFREDO_API + '/questions/'+ question_id +'/graph?generation=' + generation + '&map_type=' + map_type + '&algorithm=' + algorithm;
 
 	return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
@@ -3684,7 +3704,7 @@ function fetchWritingGraph(generation, algorithm)
 			//loadGraphs(null, pfvotesgraph);
 			loadSingleGraph(pfvotesgraph);
 		}
-	}).fail(function(jqXHR) 
+	}).fail(function(jqXHR)
 	{
 		console.log('fetchWritingGraphs: There was an error fetching the graphs. Error ' + jqXHR.status);
     });
@@ -3697,7 +3717,7 @@ function fetchGenerationGraph(generation, algorithm) // jazz
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
 	console.log("Fetching GenerationGraph for genration " + generation + ' using alg ' + algorithm);
-    
+
     console.log("Fetching GenerationGraph for genration " + generation);
     //$.when(fetchGraph2('all', generation, algorithm)).done(function( all )
     $.when(fetchGraph('all', generation, algorithm)).done(function( all )
@@ -3709,7 +3729,7 @@ function fetchGenerationGraph(generation, algorithm) // jazz
 		gengraph = all['url'];
 		console.log("Loading gengraph " + gengraph);
 		loadSingleGraph(gengraph);
-	}).fail(function(jqXHR) 
+	}).fail(function(jqXHR)
 	{
 		console.log('fetchGenerationGraph: There was an error fetching the graph. Error ' + jqXHR.status);
     });
@@ -3720,7 +3740,7 @@ function fetchVotingGraph(generation, algorithm)
 	console.log("fetchVotingGraph called...");
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
-	
+
 	$.when(fetchGraph('all', generation, algorithm)).done(function( all )
 	{
 	    $('.voting-graphs').show();
@@ -3729,7 +3749,7 @@ function fetchVotingGraph(generation, algorithm)
 		votesgraph = all['url'];
 		console.log("Loading votesgraph " + votesgraph);
 		loadSingleGraph(votesgraph);
-	}).fail(function(jqXHR) 
+	}).fail(function(jqXHR)
 	{
 		console.log('fetchVotingGraph: There was an error fetching the graphs. Error ' + jqXHR.status);
     });
@@ -3739,12 +3759,12 @@ function fetchVotingGraphs(generation, algorithm)
 	console.log("fetchVotingGraphs called...");
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	algorithm = algorithm !== undefined ? algorithm : questionViewModel.selected_algorithm();
-	
+
 	if (algorithm > 1)
 	{
 	    return fetchVotingGraph(generation, algorithm);
 	}
-	
+
 	$.when(fetchGraph('all', generation, algorithm), fetchGraph('pareto', generation, algorithm)).done(function( all, pareto )
 	{
 		if (all[2].status == 204)
@@ -3763,7 +3783,7 @@ function fetchVotingGraphs(generation, algorithm)
 			pfvotesgraph = pareto[0]['url'];
 			loadGraphs(votesgraph, pfvotesgraph);
 		}
-	}).fail(function(jqXHR) 
+	}).fail(function(jqXHR)
 	{
 		console.log('fetchVotingGraphs: There was an error fetching the graphs. Error ' + jqXHR.status);
     });
@@ -3806,7 +3826,7 @@ var ajaxRequest = function(uri, method, data) {
 			else if (currentUserViewModel.username() != '' && currentUserViewModel.password != '')
 			{
 				//console.log("Use login details");
-				xhr.setRequestHeader("Authorization", 
+				xhr.setRequestHeader("Authorization",
                 	"Basic " + btoa(currentUserViewModel.username() + ":" + currentUserViewModel.password));
 			}
         },
@@ -3828,7 +3848,7 @@ var ajaxRequest_xd = function(uri, method) {
         dataType: 'jsonp',
         //data: JSON.stringify(data),
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", 
+            xhr.setRequestHeader("Authorization",
                 "Basic " + btoa(self.username + ":" + self.password));
         },
         error: function(jqXHR) {
@@ -3837,7 +3857,7 @@ var ajaxRequest_xd = function(uri, method) {
      };
      return $.ajax(request);
    }
-  
+
 var enterShow = function() {
     console.log('enterShow')
 	$(this).popover('show');

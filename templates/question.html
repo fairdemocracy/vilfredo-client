@@ -283,27 +283,7 @@
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
-					<!-- <a data-toggle="modal" data-target="#votemapwindow">votemap</a> -->
-					<!-- <a data-bind="click: $parent.openvotemap.bind($data, $index())">votemap</a> -->
-					<!--
-					<button data-bind="click: $parent.endorse.bind($data, 'endorse')" type="button" class="btn btn-xs btn-success">Endorse</button>
-					<button data-bind="click: $parent.endorse.bind($data, 'oppose')" type="button" class="btn btn-xs btn-danger">Oppose</button>
-					<button data-bind="click: $parent.endorse.bind($data, 'confused')" type="button" class="btn btn-xs btn-primary">Confused</button>
-					-->
-					<!--<div data-toggle="modal" data-target="#votemapwindow" class="pull-right voting"></div>-->
-					 <!--<a data-toggle="popover" data-placement="top" rel="popover" title="">popover</a>-->
-					<!--<div data-bind="click: $parent.show3WayTriangle" class="pull-right voting"></div>-->
-					<!--
-					<a data-toggle="popover" data-placement="top" rel="popover" title="">
-					<div class="voting"></div>
-					</a>
-					-->
 					<div data-bind="click: $parent.openvotemap.bind($data, $index())" class="voting"></div>
-					<!--
-					<a data-toggle="popover" data-placement="top" rel="popover" title="">
-					<img src="static/images/triangle.svg" width="40" height="40" alt="">
-					</a>
-					-->
 				</div>
 			</div>
 			</div><!-- /ko -->
@@ -947,6 +927,7 @@
 		//$('.home').attr('href', VILFREDO_URL);
 		//$('.navbar-brand').attr('href', VILFREDO_URL);
 
+		/*
 		$('body').popover({
 		    selector: '[rel="popover"]',
 			trigger: 'hover',
@@ -955,7 +936,7 @@
 			content: 'hello world',
 			title: 'Add your vote',
 			content: '<div class="poptriangle"></div>'
-		});
+		});*/
 		
 		$('body').on('show.bs.popover', function () {
   			console.log('popover displayed...');
@@ -983,6 +964,8 @@
 		});
 		
 		$('button').removeAttr('disabled');
+		
+		$("[data-toggle='tooltip']").tooltip();
 	});	
 	</script>
 </html>
