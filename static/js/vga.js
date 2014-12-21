@@ -531,7 +531,7 @@ function showProposalVotes(med, svg, threshold, voters) //snow
     });
     // Add marker over selected median
     var c = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), radius+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
-    //$(c).popover({content:"Blah blah blah", container:"body"});
+    //$(c).popover({ content:"Blah blah blah", container:"body" });
 }
 
 // jazz
@@ -2629,17 +2629,19 @@ function ProposalsViewModel()
 	  		else
 			{
 				console.log(jqXHR.status);
-				$('#addproposal .alert')
-				.text(data.error)
-				.setAlertClass('danger')
-				.fadeIn()
+				var message = getJQXHRMessage(jqXHR, 'There was an problem adding your proposal');
+                $('#addproposal .alert')
+                .text(message)
+                .setAlertClass('danger')
+                .fadeIn();
 			}
-		}).fail(function(jqXHR) {
-            console.log('register: There was an error with register. Error ' + jqXHR.status);
+		}).fail(function(jqXHR, textStatus, errorThrown) { // fix
+            console.log('add: There was an error adding a proposal. Error ' + jqXHR.status);
+            var message = getJQXHRMessage(jqXHR, 'There was an problem adding your proposal');
             $('#addproposal .alert')
-            .text(JSON.parse(jqXHR.responseText).message)
+            .text(message)
             .setAlertClass('danger')
-            .fadeIn()
+            .fadeIn();
         });
 	}
 
