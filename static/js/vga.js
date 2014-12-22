@@ -602,7 +602,7 @@ function createResultsMap(svg) // snow
 	var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
     $('#resultstriangle').height(set_results_map_height);
     
-    $('#results_map').on( "click", function(e) {
+    $('#resultstriangle').on( "click", function(e) {
     	e.stopPropagation();
         $('#allvotes,#alluservotes').remove();
     });
@@ -643,6 +643,11 @@ function createResultsMap(svg) // snow
 
     jQuery.each(questionViewModel.results, function(pid, coords) {
         if (!coords['median'])
+        {
+            return;
+        }
+        
+        if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
         {
             return;
         }
@@ -3285,6 +3290,7 @@ function QuestionViewModel() // hare
 	self.permissions = ko.observable([]);
 
 	self.results;
+	self.results_pf_only = ko.observable(false); // lava
 
 	self.questionPermissions = ko.observableArray([
        {name: "Read", id: 1},
@@ -3292,6 +3298,23 @@ function QuestionViewModel() // hare
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
+    
+    self.select_pf_only = function(pf_only, $data)
+    {
+        self.results_pf_only(pf_only);
+        redoResultsMap();
+    }
+    
+    self.show_pareto_results = ko.computed(function() {
+        if (self.results_pf_only())
+        {
+		    return 'Pareto Proposals';
+		}
+		else
+		{
+		    return 'All Proposals';
+		} 
+    }, this);
 
     self.defaultPermissions = 7;
 

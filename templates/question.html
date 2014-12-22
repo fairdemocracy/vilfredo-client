@@ -72,7 +72,25 @@
 		
 		<div id="results_map" data-bind="visible: phase() == 'voting' || generation() > 1">
 		<h2>Results</h2>
+		
+		<!--
+		<div class="btn-group" role="group">
+ 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+	      <span data-bind="text: show_pareto_results"></span>
+	      <span class="caret"></span>
+	    </button>
+	    <ul class="dropdown-menu" role="menu">
+	      <li><a data-bind="click: $root.select_pf_only.bind($data, false)" href="#">All Proposals</a></li>
+	      <li><a data-bind="click: $root.select_pf_only.bind($data, true)" href="#">Pareto Only</a></li>
+	    </ul>
+	  </div>
+	<br><br>
+	-->
+	
 		<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
+		
+		
+		
 		<div id="resultstriangle"></div>
 		<!-- resultstriangle table end -->
 		</div>
