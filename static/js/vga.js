@@ -575,7 +575,7 @@ function calculateTriangleDimensions(svg)
     else
     {
         //console.log('container_height >= ideal_height');
-        map_width = container_height;
+        map_width = container_width;
         map_height = container_height;
     }
 
