@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="200" height="200" viewBox="0.00 0.00 200.00 200.00" preserveAspectRatio="none">
-<g>
-<path d="M100,0l0,80l-50,20l-50,-100z" fill="#d9534f" stroke="#d9534f" stroke-width="2" class="oppose" title="Click to vote"/>
-<path d="M100,0l0,80l50,20l50,-100z" fill="#5cb85c" stroke="#5cb85c" stroke-width="2" class="endorse" title="Click to vote"/>
-<path d="M100,200l50,-100l-50,-20l-50,20z" fill="#428bca" stroke="#428bca" stroke-width="2" class="confused" title="Click to vote"/>
+<g title="Click to open the vote window">
+<path d="M100,0l0,80l-50,20l-50,-100z" fill="#d9534f" stroke="#d9534f" stroke-width="2" class="oppose"/>
+<path d="M100,0l0,80l50,20l50,-100z" fill="#5cb85c" stroke="#5cb85c" stroke-width="2" class="endorse"/>
+<path d="M100,200l50,-100l-50,-20l-50,20z" fill="#428bca" stroke="#428bca" stroke-width="2" class="confused"/>
 </g>
 </svg>
