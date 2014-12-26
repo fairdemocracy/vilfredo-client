@@ -6615,6 +6615,9 @@ fieldset[disabled] .select_comment.supports button.active {
   font-size: 0.8em;
   color: green;
 }
+#voting_graphs {
+  display: none;
+}
 .newcommentpanel {
   height: 300px;
   width: 97%;

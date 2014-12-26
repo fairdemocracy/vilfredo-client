@@ -140,7 +140,7 @@ function loadSingleGraph(graph)
 {
     clearGraphs();
     $('.graphcontainer').hide();
-    $('.voting-graphs .controls').hide();
+    $('#voting_graphs .controls').hide();
     $('.singlegraph').show();
     if (graph != null)
 	{
@@ -167,7 +167,7 @@ function loadGraphs(votesgraph, pfgraph)
 	console.log("loadGraphs called: Loading ", votesgraph, " and ", pfgraph);
 	clearGraphs();
 	$('.singlegraph').hide();
-	$('.voting-graphs .controls').show();
+	$('#voting_graphs .controls').show();
 	
 	$('.graphpanel').show();
 	

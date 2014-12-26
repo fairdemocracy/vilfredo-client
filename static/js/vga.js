@@ -83,6 +83,18 @@ function getItemIndexFromArrayWithID(itemArray, item_id)
     });
 }
 
+// Add show/hide custom event triggers
+(function ($) 
+{
+  $.each(['show', 'hide'], function (i, ev) {
+    var el = $.fn[ev];
+    $.fn[ev] = function () {
+      this.trigger(ev);
+      return el.apply(this, arguments);
+    };
+  });
+})(jQuery);
+
 function arrayDiff(arr1, arr2)
 {
     diff = [];
@@ -534,7 +546,24 @@ function showProposalVotes(med, svg, threshold, voters) //snow
     //$(c).popover({ content:"Blah blah blah", container:"body" });
 }
 
-// jazz
+// snow
+function drawVoteNowTriangle(svg)
+{
+	var width = 200, height = 200;
+	var path = svg.createPath();
+	var triangle = svg.path(
+	    path.move(0, 0)
+	    .line( width/2, height, true )
+	    .line( width/2, -height, true )
+	    .close(),
+	    {
+	        fill: '#ffa500',
+	        class: 'votenow'
+	    }
+	);
+}
+
+// snow
 function redoResultsMap()
 {
     console.log('redoResultsMap called...');
@@ -882,6 +911,32 @@ function createVoteMap(svg)
         $(vote).on( "mousemove", function(e) {
             $(this).parent().siblings('#map').trigger(e);
         });
+        
+        // moon
+        $(vote).on( "mousedown", function(e) {
+            $( this ).on( "mousemove", function() {
+                //$( this ).data('saved', { 'x': $( this ).attr('cx'),  'y': $( this ).attr('cy')});
+                var posX = $(this).offset().left;
+            	var posY = $(this).offset().top;
+
+            	var cx, cy;
+            	if (typeof $.browser.webkit == 'undefined')
+            	{
+            	    cx = e.pageX - posX - radius;
+            	    cy = e.pageY - posY - radius;
+            	}
+            	else
+            	{
+            	    cx = e.pageX - posX;
+            	    cy = e.pageY - posY;
+            	}
+                //$(this).attr('cx', posX).attr('cy', posY);
+                console.log("CX = " + cx + ", CY = ", cy)
+            });
+        });
+        $(vote).on( "mouseup", function(e) {
+            $( this ).off( "mousemove");
+        });
     });
 
      // eel
@@ -1197,6 +1252,7 @@ function CurrentUserViewModel()
 	self.user = false
 	self.remember = false;
 
+	
 	self.isLoggedIn = ko.computed(function() {
         console.log('isLoggedIn...' + this.userid());
 		return this.userid() != 0;
@@ -2475,7 +2531,23 @@ function ProposalsViewModel()
 	    self.proposals([]);
 	    self.key_players([]);
 	    self.inherited_proposals([]);
-	}
+	};
+    
+    self.votedAll = ko.pureComputed(function() {
+		var proposals = self.proposals();
+		if (proposals.length == 0)
+		{
+		    return false;
+		}
+		for (var i = 0, j = proposals.length; i < j; i++)
+		{
+		    if (proposals[i].endorse_type() == 'notvoted')
+		    {
+		        return false;
+		    }
+		}
+		return true;
+    });
 
 	self.getProposal = function(pid) // huh
     {
@@ -2650,45 +2722,7 @@ function ProposalsViewModel()
         });
 	}
 
-	self.endorse = function(endorsement_type, proposal)
-	{
-		if (currentUserViewModel.isLoggedIn() == false)
-		{
-		    console.log("Not logged in");
-		    return;
-		}
-		console.log(endorsement_type);
-		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
-		console.log('endorse uri = ' + endorse_uri);
-
-		ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
-		.done(function(data, textStatus, jqXHR)
-		{
-		    console.log('Proposals data returned...');
-			console.log(data);
-
-			if (jqXHR.status == 201)
-			{
-				console.log('Updating proposal ' + proposal.id() + ' to ' + endorsement_type);
-
-				var prev_endorsement_type = proposal.endorse_type();
-				proposal.endorse_type(endorsement_type);
-				if ( (prev_endorsement_type == 'endorse'
-					&& (endorsement_type == 'confused' || endorsement_type == 'oppose'))
-				|| (endorsement_type == 'endorse'
-					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
-					    || prev_endorsement_type == 'notvoted')) )
-				{
-					console.log('Refreshing graphs after vote...');
-					fetchVotingGraphs();
-				}
-			}
-			else
-			{
-				console.log(jqXHR.status);
-			}
-		});
-	}
+	
 
 	// Add endorsement using normalised votemap coordinates
 	self.mapEndorseWithIndex = function(mapx, mapy, index) // eel
@@ -2723,10 +2757,18 @@ function ProposalsViewModel()
 					&& (data.endorsement_type == 'confused' || data.endorsement_type == 'oppose'))
 				|| (data.endorsement_type == 'endorse'
 					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
-					    || prev_endorsement_type == 'notvoted')) )
+					    || prev_endorsement_type == 'notvoted')) 
+				|| ($('#voting_graphs').is(":visible") == false && proposalsViewModel.votedAll()) )
 				{
-					console.log('Refreshing graphs after vote...');
-					fetchVotingGraphs(); // chaos
+					if (proposalsViewModel.votedAll())
+					{
+					    console.log('Refreshing graphs after voted FOR ALL...');
+    					fetchVotingGraphs(); // boots
+					}
+					else
+					{
+					    console.log('Dont refresh graphs until voted FOR ALL...');
+					}
 				}
 
 				// Update vote coordinates and endorsement type
@@ -2787,7 +2829,7 @@ function ProposalsViewModel()
 					    || prev_endorsement_type == 'notvoted')) )
 				{
 					console.log('Refreshing graphs after vote...');
-					fetchVotingGraphs();
+					fetchVotingGraphs(); // boots
 				}
 				// reset key players
 				//self.fetchKeyPlayers();
@@ -3700,8 +3742,10 @@ function fetchGraphs(algorithm, generation)
     {
         fetchWritingGraph(generation, algorithm);
     }
-    else if (phase == 'voting')
+    else if (phase == 'voting') // snow boots
     {
+        console.log("fetchGraphs: fetchVotingGraphs called ************  " + proposalsViewModel.votedAll());
+        console.log("fetchGraphs: fetchVotingGraphs called ************  num proposals = " + proposalsViewModel.proposals().length);
         fetchVotingGraphs(generation, algorithm);
     }
 }
@@ -3716,12 +3760,13 @@ function fetchWritingGraph(generation, algorithm)
 		//if (typeof graph_resp[2].status !== 'undefined' && graph_resp[2].status == 204)
 		if (false)
 		{
-		    $('.voting-graphs').hide();
+		    $('#voting_graphs').hide();
 		    console.log('fetchWritingGraphs: No endorsememnts yet');
 		}
 		else
 		{
-		    $('.voting-graphs').show();
+		    console.log("show 2");
+		    $('#voting_graphs').show();
 			// a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
 			// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
 			console.log( "Pareto graph URL = " + graph_resp['url'] );
@@ -3747,7 +3792,8 @@ function fetchGenerationGraph(generation, algorithm) // jazz
     //$.when(fetchGraph2('all', generation, algorithm)).done(function( all )
     $.when(fetchGraph('all', generation, algorithm)).done(function( all )
 	{
-	    $('.voting-graphs').show();
+	    console.log("show 3");
+	    $('#voting_graphs').show();
 	    // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
 		// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
 		//console.log( "Generation graph URL = " + all[0]['url'] );
@@ -3765,10 +3811,17 @@ function fetchVotingGraph(generation, algorithm)
 	console.log("fetchVotingGraph called...");
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
+	
+	if (!proposalsViewModel.votedAll())
+	{
+	    console.log("Don't fetch graph until user has voted for all proposals - " + proposalsViewModel.votedAll());
+	    return;
+	}
 
 	$.when(fetchGraph('all', generation, algorithm)).done(function( all )
 	{
-	    $('.voting-graphs').show();
+	    console.log("show 4");
+	    $('#voting_graphs').show(); // boots
 	    // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
 		// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
 		votesgraph = all['url'];
@@ -3779,7 +3832,7 @@ function fetchVotingGraph(generation, algorithm)
 		console.log('fetchVotingGraph: There was an error fetching the graphs. Error ' + jqXHR.status);
     });
 }
-function fetchVotingGraphs(generation, algorithm)
+function fetchVotingGraphs(generation, algorithm) // boots
 {
 	console.log("fetchVotingGraphs called...");
 	generation = generation !== undefined ? generation : questionViewModel.generation();
@@ -3794,12 +3847,13 @@ function fetchVotingGraphs(generation, algorithm)
 	{
 		if (all[2].status == 204)
 		{
-		    $('.voting-graphs').hide();
+		    $('#voting_graphs').hide();
 		    console.log('fetchVotingGraphs: No endorsememnts yet');
 		}
 		else
 		{
-		    $('.voting-graphs').show();
+		    console.log("show 1");
+		    $('#voting_graphs').show();
 		    // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
 			// Each argument is an array with the following structure: [ data, statusText, jqXHR ]
 			console.log( "All votes graph URL = " + all[0]['url'] );

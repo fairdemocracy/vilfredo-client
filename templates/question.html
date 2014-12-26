@@ -62,142 +62,38 @@
 		</div>
 		<!-- question-view end -->
 
-		<!-- Participation table start -->
-		<div id="participationtable" data-bind="visible: questionViewModel.phase() == 'voting'">
-			<!-- Participation table was here -->
-		</div>
-		<!-- Participation table end -->
 		
-		<br>
+		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1)">
 		
-		<div id="results_map" data-bind="visible: phase() == 'voting' || generation() > 1">
-		<h2>Results</h2>
+			<h2>Results</h2>
 		
-		<!--
-		<div class="btn-group" role="group">
- 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-	      <span data-bind="text: show_pareto_results"></span>
-	      <span class="caret"></span>
-	    </button>
-	    <ul class="dropdown-menu" role="menu">
-	      <li><a data-bind="click: $root.select_pf_only.bind($data, false)" href="#">All Proposals</a></li>
-	      <li><a data-bind="click: $root.select_pf_only.bind($data, true)" href="#">Pareto Only</a></li>
-	    </ul>
-	  </div>
-	<br><br>
-	-->
+			<!--
+			<div class="btn-group" role="group">
+	 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+		      <span data-bind="text: show_pareto_results"></span>
+		      <span class="caret"></span>
+		    </button>
+		    <ul class="dropdown-menu" role="menu">
+		      <li><a data-bind="click: $root.select_pf_only.bind($data, false)" href="#">All Proposals</a></li>
+		      <li><a data-bind="click: $root.select_pf_only.bind($data, true)" href="#">Pareto Only</a></li>
+		    </ul>
+		   </div>
+			<br><br>
+			-->
 	
-		<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
+			<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
 		
+			<div id="resultstriangle"></div>
+			<!-- resultstriangle table end -->
+		</div> 
+		<!-- results_map end -->
 		
-		
-		<div id="resultstriangle"></div>
-		<!-- resultstriangle table end -->
-		</div>
-
-				
-		<div id="keyplayer_info" data-bind="visible: questionViewModel.key_players().length > 0 && questionViewModel.selected_algorithm() == 1 && questionViewModel.phase() == 'voting'">
-		<br><br>
-		<!-- ko if: key_players().length > 0 --> <!-- 0 -->
-		<div class="keyplayers">
-			<h2>Key Players</h2>
-			<p>There are currently <strong><span data-bind="text: key_players().length"></span> Key Players</strong>, though this can change at any moment as people change their votes.</p>
-			<p>Key Players are users who if they were to vote for a proposal they currently disagree with or do not understand then we would move closer to reaching a consensus (i.e. the number of winning proposals accepted by everyone would decrease).</p>
-			
-			<!-- ko if: getUserKeyPlayerInfo() -->
-			<div data-bind="with: getUserKeyPlayerInfo()">
-			<div class="keyplayer" data-bind="with: add_vote">
-				<h4>Hey <span class="user_link" data-bind="text: currentUserViewModel.username"></span> you are a key player!</h4>
-					<!-- ko if: notvoted.length -->
-					<div class="votegroup">
-					<p>You have not yet voted for these proposals: 
-					<!-- ko foreach: notvoted --><!-- 2 -->
-					<span data-bind="text: $data, click: $root.showProposalNode.bind($data)" class="prop_link"></span>
-					<!-- /ko --><!-- 2 -->
-					</p>
-					<p>Perhaps you could do so?</p>
-					</div>
-					<!-- /ko -->
-					
-					<!-- ko if: oppose.length -->
-					<div class="votegroup">
-					<p>You voted against these proposals: 
-					<!-- ko foreach: oppose --><!-- 2 -->
-					<span data-bind="text: $data, click: $root.showProposalNode.bind($data)" class="prop_link"></span>
-					<!-- /ko --><!-- 2 -->
-					</p>
-					<p>Please make sure none of these proposals are acceptable to you.</p>
-					</div>
-					<!-- /ko -->
-					
-					<!-- ko if: confused.length -->
-					<div class="votegroup" data-bind="if: confused.length">
-					<p>You do not understand these proposals: 
-					<!-- ko foreach: confused --><!-- 2 -->
-					<span data-bind="text: $data, click: $root.showProposalNode.bind($data)" class="prop_link"></span>
-					<!-- /ko --><!-- 2 -->
-					</p>
-					<p>Click on a proposal and open the Questions panel to read questions asked by other users and the author's replies. Or else click on the Ask Question link to ask the proposal author a question of your own. Hopefully he can clarify things for you.</p>
-					</div>
-					<!-- /ko -->
-				</p>
-			</div>
-			</div>
-			<!-- /ko -->
-			
-			<!-- ko if: key_players().length -->
-			<h4>Other Key Players</h4>
-			<!-- /ko -->
-			
-			<!-- ko foreach: key_players --> <!-- 1 -->
-			<!-- ko ifnot: id() == currentUserViewModel.userid() -->
-			<div class="keyplayer" data-bind="with: add_vote">
-				<p>User <span class="user_link" data-bind="text: $parent.username"></span></p>
-					<!-- ko if: notvoted.length -->
-					<div class="votegroup">
-					<p>Has not yet voted for these proposals: 
-					<!-- ko foreach: notvoted --><!-- 2 -->
-					<span data-bind="text: $data, click: $root.showProposalNode.bind($data)" class="prop_link"></span>
-					<!-- /ko --><!-- 2 -->
-					</p>
-					<p>Perhaps you could remind him to do so?</p>
-					</div>
-					<!-- /ko -->
-					
-					<!-- ko if: oppose.length -->
-					<div class="votegroup">
-					<p>Has voted against these proposals: 
-					<!-- ko foreach: oppose --><!-- 2 -->
-					<span data-bind="text: $data, click: $root.showProposalNode.bind($data)" class="prop_link"></span>
-					<!-- /ko --><!-- 2 -->
-					</p>
-					<p>Perhaps you could make him change his mind?</p>
-					</div>
-					<!-- /ko -->
-					
-					<!-- ko if: confused.length -->
-					<div class="votegroup" data-bind="if: confused.length">
-					<p>Does not understand these proposals: 
-					<!-- ko foreach: confused --><!-- 2 -->
-					<span data-bind="text: $data, click: $root.showProposalNode.bind($data)" class="prop_link"></span>
-					<!-- /ko --><!-- 2 -->
-					</p>
-					<p>Perhaps you could help him?</p>
-					</div>
-					<!-- /ko -->
-				</p>
-			</div>
-			<!-- /ko --> <!-- if not current user -->
-			<!-- /ko --> <!-- 1 -->
-			
-		</div>
-		<!-- /ko --> <!-- 0 -->
-		</div>
 		
 		
 		<!-- Graphs -->
-		<div data-bind="visible: questionViewModel.phase() == 'voting' || questionViewModel.generation() > 1" class="voting-graphs">
-		<br>
+		<div id="voting_graphs" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1)">
+			<br><br>
+		<p>The proposal graph shows how each proposal dominates another according to the voting pattern. The winners are shown in blue at the top.</p>
 		<div class="controls text-center">	
 			  <button id="vgonly" type="button" class="btn btn-md btn-info">All Proposals</button>
 			  <button id="bothgraphs" type="button" class="btn btn-md btn-info">Show Both</button>
@@ -311,10 +207,11 @@
 		Current Proposals End
 		-->
 		
+		
 	</div><!-- /container -->
 
 
-	<div id="footer"></div>
+	<div id="footer"></div> <!-- page end -->
 	
 	
 	<!-- Tri Voting Modal -->
@@ -620,7 +517,7 @@
 			</form>		
 		</div><!-- /.modal-body -->
 	    </div><!-- modal-content -->
-	  </div><!-- modal-dialog -->
+	  </div><!-- modal-dialog stopped -->
 	</div><!-- add_users modal -->
 	
 	<!-- Participants -->
@@ -684,7 +581,9 @@
 			</form>		
 		</div><!-- /.modal-body -->
 	    </div><!-- modal-content -->
-	  </div><!-- modal-dialog -->
+	</div><!-- modal-dialog -->
+	
+	
 	</div><!-- modal -->
 	
 
@@ -774,12 +673,7 @@
 			
 			//questionViewModel.fetchParticipationTable();
 			
-			fetchGraphs(questionViewModel.selected_algorithm());
 			
-			if (currentUserViewModel.isLoggedIn())
-			{
-				resetGraphsForUser();
-			}
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
@@ -789,6 +683,11 @@
 			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
 			    {
 					$('#resultstriangle').svg({onLoad: createResultsMap});
+					fetchGraphs(questionViewModel.selected_algorithm()); // boots
+					if (currentUserViewModel.isLoggedIn())
+					{
+						resetGraphsForUser();
+					}
 				});
 
 		    }
@@ -798,6 +697,11 @@
 				$.when(proposalsViewModel.fetchProposals()).done(function()
 			    {
 					$('#resultstriangle').svg({onLoad: createResultsMap});
+					fetchGraphs(questionViewModel.selected_algorithm()); // boots
+					if (currentUserViewModel.isLoggedIn())
+					{
+						resetGraphsForUser();
+					}
 				});
 		    }
 		
@@ -881,15 +785,16 @@
 		});
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
 		
-		ko.applyBindings(questionViewModel, $('#participationtable')[0]);
+		//ko.applyBindings(questionViewModel, $('#participationtable')[0]);
 		ko.applyBindings(questionViewModel, $('#results_map')[0]);
+		ko.applyBindings(questionViewModel, $('#voting_graphs')[0]);
 		
 		
 		ko.applyBindings(permissionsViewModel, $('#participants')[0]); //shark
 		ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]); //shark
 		
 		
-		ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
+		//ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);
 				
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #propdetails')[0]);
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showcomments')[0]);

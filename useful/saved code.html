@@ -1,4 +1,53 @@
+	
 
+	self.endorse = function(endorsement_type, proposal)
+	{
+		if (currentUserViewModel.isLoggedIn() == false)
+		{
+		    console.log("Not logged in");
+		    return;
+		}
+		console.log(endorsement_type);
+		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
+		console.log('endorse uri = ' + endorse_uri);
+
+		ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
+		.done(function(data, textStatus, jqXHR)
+		{
+		    console.log('Proposals data returned...');
+			console.log(data);
+
+			if (jqXHR.status == 201)
+			{
+				console.log('Updating proposal ' + proposal.id() + ' to ' + endorsement_type);
+
+				var prev_endorsement_type = proposal.endorse_type();
+				proposal.endorse_type(endorsement_type);
+				if ( (prev_endorsement_type == 'endorse'
+					&& (endorsement_type == 'confused' || endorsement_type == 'oppose'))
+				|| (endorsement_type == 'endorse'
+					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
+					    || prev_endorsement_type == 'notvoted')) )
+				{
+					console.log('************** Refreshing graphs after vote...');
+					if (proposalsViewModel.votedAll())
+					{
+					    console.log("votedAll = " + proposalsViewModel.votedAll() + "..... fetching graph");
+					    fetchVotingGraphs(); // boots
+					}
+				}
+				else if ( $('#voting_graphs').is(":visible") == false && proposalsViewModel.votedAll() )
+				{
+				    console.log('************** Refreshing graphs after all voted...');
+					fetchVotingGraphs(); // boots
+				}
+			}
+			else
+			{
+				console.log(jqXHR.status);
+			}
+		});
+	}
 
 
 <div class="page-header">
