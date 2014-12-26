@@ -912,6 +912,7 @@ function createVoteMap(svg)
             $(this).parent().siblings('#map').trigger(e);
         });
         
+        /*
         // moon
         $(vote).on( "mousedown", function(e) {
             $( this ).on( "mousemove", function() {
@@ -937,6 +938,8 @@ function createVoteMap(svg)
         $(vote).on( "mouseup", function(e) {
             $( this ).off( "mousemove");
         });
+        */
+        
     });
 
      // eel
