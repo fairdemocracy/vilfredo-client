@@ -23,6 +23,9 @@ var API_VERSION = 'v1';
 
 var ALGORITHM_VERSION = 1;
 
+// radius of circle representing a vote
+var radius = 10;
+
 // Don't edit below
 //
 var VILFREDO_API = VILFREDO_URL + '/api/' + API_VERSION;
