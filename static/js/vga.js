@@ -68,6 +68,14 @@ function getKeys(object)
     return keys;
 }
 
+function getContrastYIQ(hexcolor){
+	var r = parseInt(hexcolor.substr(0,2),16);
+	var g = parseInt(hexcolor.substr(2,2),16);
+	var b = parseInt(hexcolor.substr(4,2),16);
+	var yiq = ((r*299)+(g*587)+(b*114))/1000;
+	return (yiq >= 128) ? 'black' : 'white';
+}
+
 function getJQXHRMessage(jqXHR, default_message)
 {
     default_message = (default_message) ? default_message : 'There was a problem';
@@ -2874,6 +2882,17 @@ function ProposalsViewModel()
 				proposal.endorse_type(data.endorsement_type);
 				proposal.mapx = mapx;
 				proposal.mapy = mapy;
+				
+				proposal.box_background(setMapColor(mapx, mapy));
+		  		proposal.box_color(getContrastYIQ(proposal.box_background()));
+		  						
+				// setcolor
+				//setProposalPanelColor(proposal);
+				/*
+				var background = setMapColor(proposal.mapx, proposal.mapy);
+                var color = getContrastYIQ(background);
+                $(".proposal_list .proposal[pid='" + proposal.id() + "'] .panel-heading").css("color", color).css("background-color", background).css("border", background);
+                */
 
 				// Draw vote on votemap if displayed
 				setVote(proposal);
@@ -2990,6 +3009,12 @@ function ProposalsViewModel()
 			self.proposals([]);
 			fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
+		  		
+		  		var mapx = parseFloat(data.proposals[i].mapx);
+		  		var mapy = parseFloat(data.proposals[i].mapy);
+		  		var background = setMapColor(mapx, mapy);
+		  		var color = getContrastYIQ(background);
+		  		
 		  		fetched_proposals.push({
 		      		id: ko.observable(parseInt(data.proposals[i].id)),
 					title: ko.observable(data.proposals[i].title),
@@ -3001,13 +3026,16 @@ function ProposalsViewModel()
 					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
-					mapx: parseFloat(data.proposals[i].mapx),
-					mapy: parseFloat(data.proposals[i].mapy)
+					mapx: mapx,
+					mapy: mapy,
+					box_background: ko.observable(background), 
+					box_color: ko.observable(color)
 		  		});
 			}
 			self.proposals(fetched_proposals);
 		});
 	}
+
 
 	self.fetchProposals = function(options) {
 	    console.log('fetchProposals() called...');
@@ -3032,6 +3060,12 @@ function ProposalsViewModel()
 			self.proposals([]);
 			var fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
+			    
+			    var mapx = parseFloat(data.proposals[i].mapx);
+		  		var mapy = parseFloat(data.proposals[i].mapy);
+		  		var background = setMapColor(mapx, mapy);
+		  		var color = getContrastYIQ(background);
+			    
 		  		fetched_proposals.push({
 		      		id: ko.observable(parseInt(data.proposals[i].id)),
 					title: ko.observable(data.proposals[i].title),
@@ -3043,8 +3077,10 @@ function ProposalsViewModel()
 					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
-					mapx: parseFloat(data.proposals[i].mapx),
-					mapy: parseFloat(data.proposals[i].mapy)
+					mapx: mapx,
+					mapy: mapy,
+					box_background: ko.observable(background), 
+					box_color: ko.observable(color)
 		  		});
 			}
 			proposals_list(fetched_proposals);

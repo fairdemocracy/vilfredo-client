@@ -181,13 +181,13 @@
 		
 		<div class="proposal_list row">
 			<!-- ko foreach: proposals -->
-			<div class="proposal col-md-4">
+			<div class="proposal col-md-4" data-bind="attr: { pid: id, index: $index }">
 			<input data-bind="value: id" type="hidden" class="propId" value="">
 			<input data-bind="value: $index" type="hidden" class="index" value="">
      		<input data-bind="value: author" type="hidden" class="author" value="">
 			<input data-bind="value: uri" type="hidden" class="uri" value="">
 			<div data-bind="css: endorse_type" class="panel">
-				<div class="panel-heading">
+				<div class="panel-heading" data-bind="style: {color: box_color(), background: box_background(), border: box_background()}">
 					<h3 class="panel-title" data-bind="text: title"></h3>
 				</div>
 				<div class="panel-body proposal-blurb">
