@@ -68,14 +68,6 @@ function getKeys(object)
     return keys;
 }
 
-function getContrastYIQ(hexcolor){
-	var r = parseInt(hexcolor.substr(0,2),16);
-	var g = parseInt(hexcolor.substr(2,2),16);
-	var b = parseInt(hexcolor.substr(4,2),16);
-	var yiq = ((r*299)+(g*587)+(b*114))/1000;
-	return (yiq >= 128) ? 'black' : 'white';
-}
-
 function getJQXHRMessage(jqXHR, default_message)
 {
     default_message = (default_message) ? default_message : 'There was a problem';
@@ -237,19 +229,46 @@ function initCVTriangleLarge_v2(svg)
 }
 
 
-
 function resetSize(svg, width, height)
 {
 	svg.configure({width: width, height: height}, true);
 }
 
+// hellfire
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
 function setMapColor(nx, ny) 
 {
+    if (isNaN(nx) || isNaN(ny))
+    {
+        //return "rgb(245,245,245)";
+        return "#f5f5f5";
+    }
     var col_max = 255;
     var G = Math.round(col_max * nx);
     var R = Math.round(col_max - G);
     var B = Math.round(col_max * ny);
-    return "rgb(" + R + "," + G + "," + B + ")";
+    //return "rgb(" + R + "," + G + "," + B + ")";
+    return rgbToHex(R, G, B);
+}
+
+function getContrastYIQ(hexcolor){
+	if(hexcolor.indexOf('#') !== -1)
+    {
+        hexcolor = hexcolor.substr(1);
+    }
+	var r = parseInt(hexcolor.substr(0,2),16);
+	var g = parseInt(hexcolor.substr(2,2),16);
+	var b = parseInt(hexcolor.substr(4,2),16);
+	var yiq = ((r*299)+(g*587)+(b*114))/1000;
+	return (yiq >= 128) ? 'black' : 'white';
 }
 
 // Add current votes to votemap
@@ -3061,9 +3080,9 @@ function ProposalsViewModel()
 			var fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
 			    
-			    var mapx = parseFloat(data.proposals[i].mapx);
+			    var mapx = parseFloat(data.proposals[i].mapx); 
 		  		var mapy = parseFloat(data.proposals[i].mapy);
-		  		var background = setMapColor(mapx, mapy);
+		  		var background = setMapColor(mapx, mapy); // hellfire
 		  		var color = getContrastYIQ(background);
 			    
 		  		fetched_proposals.push({
