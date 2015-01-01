@@ -1909,7 +1909,7 @@ function AddProposalViewModel()
     var self = this;
     self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
     self.abstract = ko.observable('').extend({ maxLength: 5000 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength:25 });
+    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
 
     self.addProposal = function() { //now
         $('#addproposal .alert').text('').fadeOut(100);
@@ -2815,6 +2815,11 @@ function ProposalsViewModel()
 
 			if (jqXHR.status == 201)
 			{
+	  		    var mapx = parseFloat(data.proposal.mapx);
+		  		var mapy = parseFloat(data.proposal.mapy);
+		  		var background = setMapColor(mapx, mapy);
+		  		var color = getContrastYIQ(background);
+
 	  		    self.proposals.push({
 					id: ko.observable(parseInt(data.proposal.id)),
 					title: ko.observable(data.proposal.title),
@@ -2825,7 +2830,11 @@ function ProposalsViewModel()
 					uri: ko.observable(data.proposal.uri),
 					author_id: ko.observable(parseInt(data.proposal.author_id)),
 					question_count: ko.observable(parseInt(data.proposal.question_count)),
-					comment_count: ko.observable(parseInt(data.proposal.comment_count))
+					comment_count: ko.observable(parseInt(data.proposal.comment_count)),
+					mapx: mapx,
+					mapy: mapy,
+					box_background: ko.observable(background),
+					box_color: ko.observable(color)
 		  		});
 		  		addProposalViewModel().close();
 	  		}
