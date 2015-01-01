@@ -271,7 +271,7 @@ function getContrastYIQ(hexcolor){
 	return (yiq >= 128) ? 'black' : 'white';
 }
 
-// Add current votes to votemap
+// Add current vote to votemap
 function setVote(proposal) // paris
 {
     console.log('setVote called...');
@@ -1907,7 +1907,7 @@ function ThreeWayVoteViewModel()
 function AddProposalViewModel()
 {
     var self = this;
-    self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 25, message: "Please make sure your title clearly summarizes your proposal!" } });
+    self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
     self.abstract = ko.observable('').extend({ maxLength: 5000 });
     self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength:25 });
 
