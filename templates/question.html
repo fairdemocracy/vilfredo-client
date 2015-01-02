@@ -45,7 +45,7 @@
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
 			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
 			
-			<!-- ko if: author_id() == currentUserViewModel.userid() && questionViewModel.proposal_count() > 1 -->
+			<!-- ko if: author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 		</div>
