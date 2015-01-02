@@ -3814,19 +3814,25 @@ function QuestionViewModel() // hare
 	self.moveOn = function()
 	{
 	    console.log('moveOn called...');
-	    //initPage();
-	    //return;
 	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_on:true}).done(function(data) {
 		    add_page_alert('success', 'Question now in ' + data.question.phase + ' phase');
 		    console.log('Move on question data returned...');
 			console.log(data);
-			/*
+			
     		self.phase(data.question.phase);
     		self.last_move_on(parseInt(data.question.last_move_on));
-    		self.minimum_time(parseInt(data.question.minimum_time));
-    		self.maximum_time(parseInt(data.question.maximum_time));
-    		self.generation(data.question.generation);*/
-    		initPage();
+    		self.generation(data.question.generation);
+    		if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
+			{
+				$('.voting').each(function(){
+					var index = $(this).parents('.panel').siblings('.index')[0].value;
+					var pid = $(this).parents('.panel').siblings('.propId')[0].value;
+					$(this).data('pid', pid).addClass('threeway').data('index', index);
+					console.log('Load triangle into proposal box');
+					$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
+				});
+				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
+			}
 	    });
 	}
 
