@@ -3836,7 +3836,7 @@ function QuestionViewModel() // hare
 	    });
 	}
 
-	self.fetchQuestion = function()
+	self.fetchQuestion = function() 
 	{
 	    console.log('fetchQuestion called...');
 	    return ajaxRequest(self.URI, 'GET').done(function(data) {
@@ -3861,7 +3861,13 @@ function QuestionViewModel() // hare
     		// User permissions will be set if user is question author
     		self.permissions(data.question.user_permissions);
     		self.proposal_count(parseInt(data.question.proposal_count))
-	    });
+	    }).fail(function(jqXHR, textStatus, errorThrown)
+		{
+            var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');
+            $.cookie('vgamessage', message, { path: '/' });
+			$.cookie('vgastatus', 'error', { path: '/' });
+			window.location.replace(VILFREDO_URL);
+        });
 
 	    //
   		// Set selected generation to current generation if not already set
