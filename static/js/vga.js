@@ -2385,7 +2385,7 @@ function ViewProposalViewModel()
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
 			console.log('addcomment: There was an error with add comment. Status: ' + textStatus); // bear
-            var message = getJQXHRMessage(jqXHR, 'There was an problem adding your comment');
+            var message = getJQXHRMessage(jqXHR, 'There was a problem adding your comment');
             $('#viewproposal .alert')
 			.text(message)
 			.setAlertClass('danger')
