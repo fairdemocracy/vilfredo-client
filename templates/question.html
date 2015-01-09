@@ -44,6 +44,11 @@
 			<h5>by <span class="authorname" data-bind="text: author"></span></h5>
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
 			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
+			<br>
+			
+			<!-- ko if: author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length < 2 -->
+			<p class="text-info">Once you have a minimum of two proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
+			<!-- /ko -->
 			
 			<!-- ko if: author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
@@ -668,12 +673,7 @@
 				});
 			});
 			
-			questionViewModel.selected_algorithm(2);
-			
-			
-			//questionViewModel.fetchParticipationTable();
-			
-			
+			questionViewModel.selected_algorithm(2);			
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
