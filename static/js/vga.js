@@ -3065,8 +3065,9 @@ function ProposalsViewModel()
 	}
 
 
-	self.fetchProposals = function(options) {
+	self.fetchProposals = function(options) { // breeze
 	    console.log('fetchProposals() called...');
+	    self.clearData();
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
 		var proposals_list = self.proposals;
 
@@ -3822,6 +3823,19 @@ function QuestionViewModel() // hare
     		self.phase(data.question.phase);
     		self.last_move_on(parseInt(data.question.last_move_on));
     		self.generation(data.question.generation);
+    		
+    		// breeze
+    		if (questionViewModel.phase() == 'writing')
+		    {
+		        console.log('fetchCurrentUser: Fetching user only proposals');
+		        proposalsViewModel.fetchProposals({user_only: true});
+		    }
+		    else if (questionViewModel.phase() == 'voting')
+		    {
+		        console.log('fetchCurrentUser: Fetching all proposals');
+		        proposalsViewModel.fetchProposals();
+		    }
+    		/*
     		if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
 				$('.voting').each(function(){
@@ -3832,7 +3846,9 @@ function QuestionViewModel() // hare
 					$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
 				});
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
-			}
+			}*/
+			
+			
 	    });
 	}
 
