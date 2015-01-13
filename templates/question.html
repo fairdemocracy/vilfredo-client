@@ -46,14 +46,21 @@
 			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
 			<br>
 			
-			<!-- ko if: author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length < 2 -->
+			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length < 2 -->
 			<p class="text-info">Once you have a minimum of two proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
 			<!-- /ko -->
 			
-			<!-- ko if: author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length > 1 -->
+			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length > 1 -->
+			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
+			<!-- /ko -->
+			
+			<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && true -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 		</div>
+		
+		<br>
+		
 		<div class="panel question-info">
 			<div class="well">
 				<span class="blurb" data-bind="html: blurb"></span>
@@ -441,18 +448,16 @@
 	      </div>
 	      <div class="modal-body">
 			<div class="alert alert-danger"></div>
+			<button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Go Back</button>
+			<br>
 			<form class="form-horizontal" role="form" autocomplete="off">
 			
+			<!-- ko if: users().length -->
+			<br/>
 			<div>
-				Select the permissions you wish to grant, then add groups of users either by selection or email.
+				<p>Below is a list of users you have already interacted with on Vilfredo.</p> <p>Select the permissions you wish to grant, then click the checkbox by the users you wish to add and click the <i>Add Users</i> button. All select users will be added to he question.</p>
 			</div>
 			<br/>
-			
-			<div>
-				Invite users you have already interacted with on Vilfredo. Just select the checkbox by their names of the users you wish to invite then click Add Users.
-			</div>
-			<br/>
-			
 			<div class="form-group">
 				<select size=1 data-bind="
     				options: questionPermissions,
@@ -462,6 +467,7 @@
 				</select>
 			</div>	
 			
+			<div class="">
 			<!-- ko foreach: users -->	
 			<div class="form-group">
 				<div data-bind="text: username" class="col-sm-4"></div>
@@ -470,17 +476,18 @@
 				</div>	
 			</div>
 			<!-- /ko -->
+			</div>
 			
 			<!-- Buttons -->
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-			      <button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Done</button>
 				<button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add Users</button>
 			    </div>
 			</div>
+			<!-- /ko -->
 			
 			<div>
-				You can also add email addresses of people you would like to invite, separated by commas. This allows you to invite people who you have not yet interacted with or have not yet signed up to Vilfredo. We will email them instructions on how to participate in the question.
+				You can add email addresses of people you would like to invite, separated by commas. This allows you to invite people who you have not yet interacted with or have not yet signed up to Vilfredo. We will email them instructions on how to participate in the question.
 			</div>
 			<br/>
 			
@@ -576,10 +583,11 @@
 				</div>
 			</div>
 			<!-- /ko -->
+			
 			<!-- Buttons -->
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Done</button>
+			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Close</button>
 				  <button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Invite More Users</button>
 			    </div>
 			</div>
@@ -673,7 +681,7 @@
 				});
 			});
 			
-			questionViewModel.selected_algorithm(2);			
+			questionViewModel.selected_algorithm(2);
 			
 			if (questionViewModel.phase() == 'writing')
 		    {
