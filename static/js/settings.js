@@ -24,7 +24,7 @@ var API_VERSION = 'v1';
 var ALGORITHM_VERSION = 2;
 
 // radius of circle representing a vote
-var radius = 10;
+var RADIUS = 10;
 
 // Don't edit below
 //

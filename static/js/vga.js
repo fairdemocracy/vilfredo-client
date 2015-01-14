@@ -286,9 +286,7 @@ function setVote(proposal) // paris
 	cx = max_x * proposal.mapx;
 	cy = max_y * proposal.mapy;
 
-	var votesgroup = $('.votes', svg.root());
-    var radius = 10;
-    
+	var votesgroup = $('.votes', svg.root());    
     fill_color = setMapColor(proposal.mapx, proposal.mapy);
 
 	// If a vote is already plotted, move it
@@ -304,7 +302,7 @@ function setVote(proposal) // paris
 	else
     {
 	    // Plot vote on votemap
-    	vote = svg.circle(votesgroup, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
+    	vote = svg.circle(votesgroup, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
         $(vote).data('pid', proposal.id());
         // Add event handlers and mak draggable
         $(vote).addClass('draggable');
@@ -325,10 +323,10 @@ function voteHandler(e)
 {
     console.log('vote recorded by voteHandler function...');
 	var posX = $('#map').offset().left;
-	var cx = e.pageX - posX - radius;
+	var cx = e.pageX - posX - RADIUS;
     var posY = $(triangle).offset().top;
-    var cy = e.pageY - posY - radius;
-	//svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
+    var cy = e.pageY - posY - RADIUS;
+	//svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: 'yellow', cursor: 'pointer'});
 	// Endorse with normalised vote coordinates
 	var n_cx = cx / max_x;
 	var n_cy = cy / max_y;
@@ -342,7 +340,6 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
     $('#allvotes').remove();
 
     var g = svg.group(resultsmap, 'alluservotes');
-    var radius = 10;
     var fill_color;
 
     var votex = parseInt($(clicked).attr('cx'));
@@ -409,7 +406,7 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
         // Draw line to connect vote with median
         svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
 
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); // snow storm
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); // snow storm
         $(vote).data('userid', userid);
         $(vote).data('pid', pid);
 
@@ -440,7 +437,7 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
         }
         
 
-        var med = svg.circle(g, medx, medy, radius+1, {fill: med_selected_fill_color, title: prop_title})
+        var med = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title})
         $(med).on( "click", function(e) {
             showProposalVotes(this, svg, threshold, coords['voters']);
         });
@@ -489,12 +486,11 @@ function showProposalVotes(med, svg, threshold, voters) //snow
     //console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
 
     var g = svg.group(resultsmap, 'allvotes');
-    var radius = 10;
     var fill_color;
 
     var med_selected_fill_color = '#7e7e7e';
 
-    //svg.circle(g, threshold.mapx, threshold.mapx, radius+1, {fill: 'yellow', title: 'THRESHOLD ' + threshold.mapx + ', ' +  threshold.mapy});
+    //svg.circle(g, threshold.mapx, threshold.mapx, RADIUS+1, {fill: 'yellow', title: 'THRESHOLD ' + threshold.mapx + ', ' +  threshold.mapy});
 
     jQuery.each(voters, function(userid, coords) {
         cx = container_width * coords.mapx;
@@ -527,7 +523,7 @@ function showProposalVotes(med, svg, threshold, voters) //snow
         // Draw line to connect vote with median
         svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {strokeWidth: 1, stroke: fill_color});
 
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); // snow storm
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); // snow storm
         $(vote).data('userid', userid);
         $(vote).data('pid', $(med).attr('pid'));
 
@@ -559,7 +555,7 @@ function showProposalVotes(med, svg, threshold, voters) //snow
         svg.text(g, txtx, txty, coords.username);  // rel="popover" 
     });
     // Add marker over selected median
-    var c = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), radius+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
+    var c = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), RADIUS+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
     //$(c).popover({ content:"Blah blah blah", container:"body" });
 }
 
@@ -685,7 +681,6 @@ function createResultsMap(svg) // snow
     // Add current threshold point - debugging
     var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
     var g = svg.group(resultsmap, 'votes'); // mapgroup
-    var radius = 10;
 
     $.each(questionViewModel.results, function(pid, coords) {
         if (!coords['median'])
@@ -723,7 +718,7 @@ function createResultsMap(svg) // snow
             title = 'Proposal ID ' + pid
         }
 
-        med = svg.circle(g, cx, cy, radius+1, {class: 'med', fill: med_fill, title: title}); // snow storm
+        med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); // snow storm
         $(med).data('pid', pid);
 
         // Display proposal ID
@@ -897,7 +892,6 @@ function createVoteMap(svg)
 
 
     var g = svg.group(tg, 'votes');
-    var radius = 10;
 
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
@@ -926,7 +920,7 @@ function createVoteMap(svg)
         fill_color = '#BEBEBE';
         cursor_type = 'arrow';
 
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: cursor_type, title: proposal.title()});
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type, title: proposal.title()});
         $(vote).data('pid', proposal.id());
 
         // Display proposal ID
@@ -959,7 +953,7 @@ function createVoteMap(svg)
         cy = triangle_height * proposal.mapy;
         fill_color = setMapColor(proposal.mapx, proposal.mapy);
         cursor_type = 'pointer';
-        vote = svg.circle(g, cx, cy, radius+1, {class: 'vote', fill: fill_color, cursor: cursor_type});
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type});
         $(vote).data('pid', proposal.id());
         $(vote).addClass('draggable');
         $(vote).on( "click", function(e) {
@@ -1025,8 +1019,8 @@ function createVoteMap(svg)
     	var cx, cy;
     	if (typeof $.browser.webkit == 'undefined')
     	{
-    	    cx = e.pageX - posX - radius;
-    	    cy = e.pageY - posY - radius;
+    	    cx = e.pageX - posX - RADIUS;
+    	    cy = e.pageY - posY - RADIUS;
     	}
     	else
     	{
@@ -1072,8 +1066,8 @@ function createVoteMap(svg)
     	var cx, cy;
     	if (typeof $.browser.webkit == 'undefined')
     	{
-    	    cx = e.pageX - posX - radius;
-    	    cy = e.pageY - posY - radius;
+    	    cx = e.pageX - posX - RADIUS;
+    	    cy = e.pageY - posY - RADIUS;
     	}
     	else
     	{
@@ -1138,8 +1132,8 @@ function trackDraggableVote(e)
 	var cx, cy;
 	if (typeof $.browser.webkit == 'undefined')
 	{
-	    cx = e.pageX - posX - radius;
-	    cy = e.pageY - posY - radius;
+	    cx = e.pageX - posX - RADIUS;
+	    cy = e.pageY - posY - RADIUS;
 	}
 	else
 	{
@@ -2793,7 +2787,7 @@ function ProposalsViewModel()
 		$('#votemapwindow').modal('show');
 	}
 
-	self.read = function(index, panel, proposal)
+	self.read = function(index, panel, proposal) // set_color
 	{
 		console.log("ProposalsViewModel.read called with index " + index);
 		viewProposalViewModel.setProposal(proposal);
