@@ -6697,6 +6697,9 @@ a.plain {
   margin-bottom: 5px;
   color: blue;
 }
+.panel-title.proposal {
+  cursor: pointer;
+}
 .all-questions .panel-title {
   text-align: center;
   font-size: 1.1em;
