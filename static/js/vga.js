@@ -3124,7 +3124,7 @@ function ProposalsViewModel()
 					//console.log('check if pid added ==> ' + $(this).data('pid'));
 					console.log('Load triangle into proposal box');
 					//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
-					$(this).svg({loadURL: STATIC_FILES + '/images/triangle.svg'});//,
+					$(this).svg({loadURL: STATIC_FILES + '/images/triangle_b.svg'});//,
 					//			 onLoad: init3WayTriangle});
 				});
 				//self.fetchKeyPlayers();
