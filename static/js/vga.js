@@ -3505,6 +3505,11 @@ function QuestionViewModel() // hare
         redoResultsMap();
     }
     
+    self.is_author = function()
+    {
+        return self.author_id() == currentUserViewModel.userid();
+    }
+    
     self.show_pareto_results = ko.computed(function() {
         if (self.results_pf_only())
         {
