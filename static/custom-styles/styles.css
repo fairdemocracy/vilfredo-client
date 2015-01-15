@@ -6713,6 +6713,11 @@ a.plain {
 .all-questions .panel-heading a {
   margin-top: 10px;
 }
+.assoc_list .selected {
+  color: green;
+  font-weight: bold;
+  background: #A6D785;
+}
 .all-questions .item {
   padding: 10px;
   cursor: pointer;

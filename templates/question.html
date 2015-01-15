@@ -466,9 +466,9 @@
 				</select>
 			</div>	
 			
-			<div class="">
+			<div class="assoc_list">
 			<!-- ko foreach: users -->	
-			<div class="form-group">
+			<div class="form-group" data-bind="css: { selected: selected() }">
 				<div data-bind="text: username" class="col-sm-4"></div>
 				<div class="col-sm-1">
 					<input data-bind="checked: selected" type="checkbox">
