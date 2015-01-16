@@ -3469,6 +3469,7 @@ function QuestionViewModel() // hare
 	self.can_propose = false;
 	self.can_propose_ob = ko.observable(false);
 	self.can_not_propose = false;
+	self.completed_voter_count = ko.observable();
 
 	self.key_players = ko.observableArray();
 
@@ -3876,6 +3877,7 @@ function QuestionViewModel() // hare
     		// User permissions will be set if user is question author
     		self.permissions(data.question.user_permissions);
     		self.proposal_count(parseInt(data.question.proposal_count))
+    		self.completed_voter_count(parseInt(data.question.completed_voter_count));
 	    }).fail(function(jqXHR, textStatus, errorThrown)
 		{
             var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');

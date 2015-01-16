@@ -54,7 +54,7 @@
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 			
-			<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && true -->
+			<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && questionViewModel.completed_voter_count() > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 		</div>
@@ -449,7 +449,7 @@
 	      <div class="modal-body">
 			<div class="alert alert-danger"></div>
 			<button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Go Back</button>
-			<br><br/>
+			<br><br>
 			<form class="form-horizontal" role="form" autocomplete="off">
 			
 			<!-- ko if: users().length -->
