@@ -56,6 +56,16 @@ var triangle_offset_y = 0;
 var voting_triangle_width;
 var voting_triangle_height;
 
+function get_api_info()
+{
+    var URI = VILFREDO_API +'/';
+	return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+	    console.log('get_api_info: Success: Current API = ' + data.current_api_url);
+	}).fail(function(jqXHR) {
+        console.log('get_api_info: There was an error. Status ' + jqXHR.status);
+    });
+}
+
 function getKeys(object)
 {
     //return ["5", "6", "7", "8"];
