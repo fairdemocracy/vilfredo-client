@@ -50,7 +50,7 @@
 			<p class="text-info">Once you have a minimum of two proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
 			<!-- /ko -->
 			
-			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length > 1 -->
+			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && questionViewModel.proposal_count() > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 			
