@@ -23,7 +23,7 @@
 			var doReturn = false;
 		}
 		var defaults = {
-			message: 'We use cookies. <a href="/privacy" title="Privacy Policy">Lean more about Privacy</a>', //Message displayed on bar
+			message: 'We use cookies. <a href="/privacy" title="Privacy Policy">Learn more about Privacy.</a>', //Message displayed on bar
 			acceptButton: true, //Set to true to show accept/enable button
 			acceptText: 'OK', //Text on accept/enable button
 			declineButton: false, //Set to true to show decline/disable button
