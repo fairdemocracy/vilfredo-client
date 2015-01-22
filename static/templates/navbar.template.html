@@ -17,7 +17,7 @@
 						<a href="https://github.com/fairdemocracy/vilfredo-core/wiki">About</a>
 					</li>
 					<li data-bind="visible: isLoggedOut"> 	
-					   <a class="btn btn-info btn-lg navbutton" role="button" data-toggle="modal" data-target="#register" href="#register">Register</a>
+					   <a id="reg_button" data-bind="click: registerViewModel().open" class="btn btn-info btn-lg navbutton" role="button">Register</a>
 					</li>
 					<li data-bind="visible: isLoggedOut"> 	
 					   <a class="btn btn-primary btn-lg navbutton" role="button" data-toggle="modal" data-target="#login" href="#login">Login</a>

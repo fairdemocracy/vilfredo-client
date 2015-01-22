@@ -36,10 +36,25 @@
 	
 	<div class="container main">
 		
-		<div class="jumbotron intro">
-		  <h1>Welcome to Vilfredo</h1>
-		  <p>...</p>
-		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a> </p>
+		<div id="main_intro" class="jumbotron intro">
+		<span class="title"><h1>Welcome to Vilfredo</h1></span>
+		<span class="subtitle"><h2>You must log in or register to use this site.</h2></span>
+		<span class="blurb"></span>
+		</div>
+		
+		<div id="invited_intro" class="jumbotron intro">
+		<span class="title"><h1>Welcome to Vilfredo</h1></span>
+		<span class="subtitle"><h2>You have been invited to participate in a question!</h2></span>
+		<br>
+		<span class="blurb">
+			<p>You got here by clicking on an invitation link emailed to you by a Vilfredo user.</p>
+			<p>If you are new to Vilfredo please click the Register button and sign up to participate.</p>
+			<p>If you are already a member just log in to begin participating.</p>
+			<br>
+			<span class="emphasisze">New User?</span> <button data-bind="click: registerViewModel().open" type="button" class="btn btn-success btn-lg navbutton">Register</button>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<span class="emphasisze">Existing user?</span> <button data-bind="click: loginViewModel().open" type="button" class="btn btn-primary btn-lg navbutton">Login</button>
+		</span>
 		</div>
 		
 		<!-- <div class="votesmap"></div> -->
@@ -52,12 +67,8 @@
 			<a data-bind="click: beginNewQuestion" class="btn btn-success btn-md" role="button">Ask a Question</a>
 		</div>
 	
-		<h1>Active Questions</h1>
 		
 		<div class="notloggedin">
-			<div data-bind="visible: currentUserViewModel.isLoggedOut">	
-				<h3>You must log in or register to use Vilfredo.</h3>
-			</div>
 			<div data-bind="visible: currentUserViewModel.isLoggedIn() && questionsViewModel.questions().length == 0">
 				<h3>You are not currently participating in any questions.</h3>
 			</div>
@@ -65,6 +76,8 @@
 		
 		
 		<div data-bind="visible: questionsViewModel.questions().length" class="all-questions">
+		<br>
+		<h1>Active Questions</h1>
 		<div class="row">
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
@@ -356,6 +369,15 @@
 			}
 			
 			checkVGAMessages();
+			
+			if (getQueryVariable('eit'))
+			{
+				$('#invited_intro').show();
+			}
+			else
+			{
+				$('#main_intro').show();
+			}
 		});
 	}
 	
@@ -411,6 +433,8 @@
 		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
 		
 		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
+		
+		ko.applyBindings(loginViewModel, $('#invited_intro')[0]);
 		
 		//ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(currentUserViewModel, $('.intro')[0]);

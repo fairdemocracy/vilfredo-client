@@ -715,6 +715,10 @@
 			var qid = questionViewModel.id();
 			var gid = questionViewModel.generation();
 			$('.alglink').attr('href', VILFREDO_URL + '/domination/' + qid + '/gen/' + gid);
+			
+			$('#invited_intro').show();
+			
+			checkVGAMessages();
 				
 			//
 			$( window ).resize(function() {

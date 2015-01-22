@@ -85,6 +85,13 @@ function getJQXHRMessage(jqXHR, default_message)
     return message;
 }
 
+function getJQXHRUserMessage(jqXHR, default_message)
+{
+    default_message = (default_message) ? default_message : 'There was a problem';
+    var message = (jqXHR.responseJSON && jqXHR.responseJSON.user_message) ? jqXHR.responseJSON.user_message : default_message;
+    return message;
+}
+
 function getItemIndexFromArrayWithID(itemArray, item_id)
 {
     console.log("getItemIndexFromArrayWithID called with pid = " + item_id);
@@ -128,10 +135,10 @@ function checkVGAMessages()
     	    {
     	        status = 'danger';
     	    }
-    	    $.cookie('vgastatus', null);
+    	    $.cookie('vgastatus', null, { path: '/' });
     	}
     	add_page_alert(status, $.cookie('vgamessage'));
-    	$.cookie('vgamessage', null);
+    	$.cookie('vgamessage', null, { path: '/' });
     }
 }
 
@@ -152,7 +159,6 @@ function getQuerySegment(variable)
 }
 function getQueryVariable(variable)
 {
-    //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
 	return $.url().param(variable);
 }
 
@@ -1488,20 +1494,35 @@ function CurrentUserViewModel()
         });
 	}
 
-	self.getAuthToken = function()
+	self.getAuthToken = function() // winter
 	{
 		var URI = VILFREDO_API +'/authtoken';
 		$.cookie('vgaclient', null, { path: '/' });
 		self.authToken = '';
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		var email_invite_token = getQueryVariable('eit');
+		params = {};
+		if (email_invite_token)
+		{ 
+		    params = { 'eit': email_invite_token };
+		}
+		
+		return ajaxRequest(URI, 'POST', params).done(function(data, textStatus, jqXHR) {
 		    self.authToken = data.token;
 			loginViewModel().close();
 			console.log('CurrentUserViewModel.getAuthToken:: Authtoken returned...');
 			console.log(data);
 			// Always remember login - for now
 			$.cookie('vgaclient', data.token, {expires: 365, path: '/'});
-			// Make sure we're on the home page wgen we log in
-			if (window.location.pathname != '/')
+			
+			// Make sure we're on the question page or the home page wgen we log in
+			if (typeof(data.question_url) != 'undefined')
+			{
+			    var message = 'You can now participate in this question!';
+                $.cookie('vgamessage', message, { path: '/' });
+    			$.cookie('vgastatus', 'success', { path: '/' });
+			    window.location.replace(VILFREDO_URL + data.question_url);
+			}
+			else if (window.location.pathname != '/')
     		{
     		    window.location.replace(VILFREDO_URL);
     		}
@@ -1648,7 +1669,7 @@ function RegisterViewModel()
         $('#register').modal('show');
     }
 
-    self.open = function() // herring
+    self.open = function()
 	{
 		console.log("RegisterViewModel.open() called...")
 		if(jQuery.cookieBar('cookies') == false)
@@ -1661,12 +1682,19 @@ function RegisterViewModel()
 		self.username('');
 		self.password('');
 		self.email('');
+		var email = getQueryVariable('email');
+		// winter
+		if (email)
+		{
+		    self.email(email);
+		}
 		self.username.isModified(false);
 		self.password.isModified(false);
 		self.email.isModified(false);
 		$('#register').modal('show');
 	}
 
+    // winter
     self.register = function() {
 		$('#register .message').text('').fadeOut(100);
 		if (self.username() == '' || self.password() == '' || self.email() == '')
@@ -1677,16 +1705,53 @@ function RegisterViewModel()
 			return;
 		}
         var new_user = {username: self.username(), password: self.password(), email: self.email()};
+        
+        // Add an email_invite_token if available
+        var email_invite_token = getQueryVariable('eit');
+		if (email_invite_token)
+		{ 
+		    new_user['eit'] = email_invite_token;
+		}
+        
         ajaxRequest(VILFREDO_API + '/users', 'POST', new_user).done(function(data, textStatus, jqXHR)
 		{
-		    console.log('toggleCommentSupport data returned...');
+		    console.log('Register: data returned...');
 			console.log(data);
 
 			if (jqXHR.status == 201)
 			{
-				console.log(data.message);
 				registerViewModel().close();
-				add_page_alert('success', 'Thank you. An email with an account activation link has been sent to your address.');
+
+				if (typeof(data.token) != 'undefined')
+				{
+				    currentUserViewModel.authToken = data.token;
+        			console.log('RegisterViewModel.register:: Authtoken returned...');
+        			console.log(data);
+        			$.cookie('vgaclient', data.token, {expires: 365, path: '/'});
+        			
+        			// Make sure we're on the question page or the home page wgen we log in
+        			if (typeof(data.question_url) != 'undefined')
+        			{
+        			    var message = 'You can now participate in this question!';
+                        $.cookie('vgamessage', message, { path: '/' });
+            			$.cookie('vgastatus', 'success', { path: '/' });
+        			    window.location.replace(VILFREDO_URL + data.question_url);
+        			}
+        			else if (window.location.pathname != '/')
+            		{
+            		    window.location.replace(VILFREDO_URL);
+            		}
+            		currentUserViewModel.fetchCurrentUser();
+            		add_page_alert('success', 'Welcome to Vilfredo. You can now participate in this question!');
+				}
+				else if (typeof(data.activation_email_sent) != 'undefined' && data.activation_email_sent == true) 
+				{
+				    add_page_alert('success', 'Thank you. An email with an account activation link has been sent to your address.');
+				}
+				else
+				{
+				    add_page_alert('info', 'Something odd seems to have happened. Please be patient while we look into it.');
+				}
 			}
 			else
 			{
@@ -1800,7 +1865,7 @@ function PasswordResetViewModel() // wolf
 			if (jqXHR.status == 201)
 			{
 	  		    self.done();
-	  		    add_page_alert('success', 'An email has been sent.', 'reset-email-sent');
+	  		    add_page_alert('success', 'An email has been sent to your address with instructions on how to reset your password.', 'reset-email-sent');
 	  		}
 	  		else
 			{
@@ -1860,7 +1925,7 @@ function LoginViewModel()
 		self.password.isModified(false);
 		window.location.replace('index.html');
 	}
-	self.open = function() // herring
+	self.open = function() // winter
 	{
 		console.log("LoginViewModel.open() called...")
 		if(jQuery.cookieBar('cookies') == false)
@@ -3234,7 +3299,7 @@ var questionViewModel = function(data) {
 	};
 }*/
 
-function InviteUsersViewModel() // shark
+function InviteUsersViewModel() // haha
 {
     var self = this;
     // Update subscribers after 50 microseconds
@@ -3334,15 +3399,17 @@ function InviteUsersViewModel() // shark
 	}
 	*/
 
-	self.add_users = function()
+	self.add_users = function() //haha
 	{
 	    console.log("InviteUsersViewModel.add_users called...");
 	    var invite_user_ids = new Array();
+	    var invite_user = new Array();
 	    ko.utils.arrayForEach(self.users(), function(user)
 	    {
             if (user.selected())
             {
                 invite_user_ids.push(user.user_id);
+                invite_user.push(user.username);
             }
         });
         console.log('Selected Users = [' + invite_user_ids + ']');
@@ -3352,6 +3419,7 @@ function InviteUsersViewModel() // shark
 		    console.log('Users added to list of participants...');
 		    // Remove the added users from the list of uninvited users
 			self.users.remove(function(user) { return user.selected(); });
+			// Feedback
 		});
 	}
 	self.open_add_users = function()
@@ -3456,7 +3524,7 @@ function PermissionsViewModel() // wolf
 	}
 }
 
-function QuestionViewModel() // hare
+function QuestionViewModel() // winter
 {
 	var self = this;
 	self.URI = VILFREDO_API + '/questions/' + question_id;

@@ -6713,6 +6713,17 @@ a.plain {
 .all-questions .panel-heading a {
   margin-top: 10px;
 }
+#main_intro,
+#invited_intro {
+  display: none;
+}
+.emphasisze {
+  font-size: 1.3em;
+  font-weight: bold;
+}
+.right {
+  float: right;
+}
 .assoc_list .selected {
   color: green;
   font-weight: bold;
