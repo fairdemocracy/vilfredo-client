@@ -23,14 +23,14 @@
 			var doReturn = false;
 		}
 		var defaults = {
-			message: 'We use cookies to track when a user is logged in.', //Message displayed on bar
+			message: 'We use cookies. <a href="/privacy" title="Privacy Policy">Lean more about Privacy</a>', //Message displayed on bar
 			acceptButton: true, //Set to true to show accept/enable button
-			acceptText: 'I Understand', //Text on accept/enable button
+			acceptText: 'OK', //Text on accept/enable button
 			declineButton: false, //Set to true to show decline/disable button
 			declineText: 'Disable Cookies', //Text on decline/disable button
 			policyButton: false, //Set to true to show Privacy Policy button
 			policyText: 'Privacy Policy', //Text on Privacy Policy button
-			policyURL: '/privacy-policy/', //URL of Privacy Policy
+			policyURL: '/privacy', //URL of Privacy Policy
 			autoEnable: false, //Set to true for cookies to be accepted automatically. Banner still shows
 			acceptOnContinue: false, //Set to true to silently accept cookies when visitor moves to another page
 			expireDays: 365, //Number of days for cookieBar cookie to be stored for
