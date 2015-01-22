@@ -422,7 +422,7 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
         // Draw line to connect vote with median
         svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
 
-        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); // snow storm
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); 
         $(vote).data('userid', userid);
         $(vote).data('pid', pid);
 
@@ -539,7 +539,7 @@ function showProposalVotes(med, svg, threshold, voters) //snow
         // Draw line to connect vote with median
         svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {strokeWidth: 1, stroke: fill_color});
 
-        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); // snow storm
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); 
         $(vote).data('userid', userid);
         $(vote).data('pid', $(med).attr('pid'));
 
@@ -734,7 +734,7 @@ function createResultsMap(svg) // snow
             title = 'Proposal ID ' + pid
         }
 
-        med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); // snow storm
+        med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
         $(med).data('pid', pid);
 
         // Display proposal ID
@@ -3095,7 +3095,7 @@ function ProposalsViewModel()
 		});
 	}
 
-	self.fetchInheritedProposals = function() {
+	self.fetchInheritedProposals = function() { // storm
 	    console.log('fetchInheritedProposals() called...');
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
 		proposalsURI = proposalsURI + '?inherited_only=true';
@@ -3129,7 +3129,7 @@ function ProposalsViewModel()
 					box_color: ko.observable(color)
 		  		});
 			}
-			self.proposals(fetched_proposals);
+			self.inherited_proposals(fetched_proposals);
 		});
 	}
 
@@ -3548,6 +3548,8 @@ function QuestionViewModel() // winter
 	self.can_propose_ob = ko.observable(false);
 	self.can_not_propose = false;
 	self.completed_voter_count = ko.observable();
+	self.new_proposal_count = ko.observable();
+    self.new_proposer_count = ko.observable();
 
 	self.key_players = ko.observableArray();
 
@@ -3577,6 +3579,52 @@ function QuestionViewModel() // winter
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
+    
+    // storm
+    self.fetchQuestion = function() 
+	{
+	    console.log('fetchQuestion called...');
+	    return ajaxRequest(self.URI, 'GET').done(function(data) {
+		    console.log('Question data returned...');
+			console.log(data);
+			self.id(data.question.id);
+			self.title(data.question.title);
+    		self.blurb(data.question.blurb);
+    		self.author(data.question.author);
+    		self.author_id(data.question.author_id);
+    		self.phase(data.question.phase);
+    		self.last_move_on(parseInt(data.question.last_move_on));
+    		self.minimum_time(parseInt(data.question.minimum_time));
+    		self.maximum_time(parseInt(data.question.maximum_time));
+    		self.generation(parseInt(data.question.generation));
+    		self.created = parseInt(data.question.created);
+    		self.mapx = parseFloat(data.question.mapx);
+    		self.mapy = parseFloat(data.question.mapy);
+    		self.can_vote = data.question.can_vote;
+    		self.can_propose = data.question.can_propose;
+    		self.can_propose_ob(data.question.can_propose);
+    		// User permissions will be set if user is question author
+    		self.permissions(data.question.user_permissions);
+    		self.proposal_count(parseInt(data.question.proposal_count))
+    		self.completed_voter_count(parseInt(data.question.completed_voter_count));
+    		self.new_proposal_count(parseInt(data.question.new_proposal_count));
+    		self.new_proposer_count(parseInt(data.question.new_proposer_count));
+	    }).fail(function(jqXHR, textStatus, errorThrown)
+		{
+            var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');
+            $.cookie('vgamessage', message, { path: '/' });
+			$.cookie('vgastatus', 'error', { path: '/' });
+			window.location.replace(VILFREDO_URL);
+        });
+
+	    //
+  		// Set selected generation to current generation if not already set
+  		//
+  		if (typeof(generation_id == 'undefined'))
+  		{
+  		    generation_id = parseInt(data.question.generation);
+  		}
+    }
     
     self.select_pf_only = function(pf_only, $data)
     {
@@ -3902,11 +3950,24 @@ function QuestionViewModel() // winter
     		self.last_move_on(parseInt(data.question.last_move_on));
     		self.generation(data.question.generation);
     		
-    		// breeze
+    		// storm
     		if (questionViewModel.phase() == 'writing')
 		    {
-		        console.log('fetchCurrentUser: Fetching user only proposals');
-		        proposalsViewModel.fetchProposals({user_only: true});
+		        //proposalsViewModel.fetchInheritedProposals();
+		        //proposalsViewModel.fetchProposals({user_only: true});
+		        
+		        $.when(proposalsViewModel.fetchInheritedProposals(), 
+		               questionViewModel.fetchQuestion(),
+			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
+			    {
+					//$('#resultstriangle').svg({onLoad: createResultsMap});
+					fetchGraphs(questionViewModel.selected_algorithm()); // boots
+					if (currentUserViewModel.isLoggedIn())
+					{
+						resetGraphsForUser();
+					}
+				});
+		        
 		    }
 		    else if (questionViewModel.phase() == 'voting')
 		    {
@@ -3929,49 +3990,6 @@ function QuestionViewModel() // winter
 			
 	    });
 	}
-
-	self.fetchQuestion = function() 
-	{
-	    console.log('fetchQuestion called...');
-	    return ajaxRequest(self.URI, 'GET').done(function(data) {
-		    console.log('Question data returned...');
-			console.log(data);
-			self.id(data.question.id);
-			self.title(data.question.title);
-    		self.blurb(data.question.blurb);
-    		self.author(data.question.author);
-    		self.author_id(data.question.author_id);
-    		self.phase(data.question.phase);
-    		self.last_move_on(parseInt(data.question.last_move_on));
-    		self.minimum_time(parseInt(data.question.minimum_time));
-    		self.maximum_time(parseInt(data.question.maximum_time));
-    		self.generation(parseInt(data.question.generation));
-    		self.created = parseInt(data.question.created);
-    		self.mapx = parseFloat(data.question.mapx);
-    		self.mapy = parseFloat(data.question.mapy);
-    		self.can_vote = data.question.can_vote;
-    		self.can_propose = data.question.can_propose;
-    		self.can_propose_ob(data.question.can_propose);
-    		// User permissions will be set if user is question author
-    		self.permissions(data.question.user_permissions);
-    		self.proposal_count(parseInt(data.question.proposal_count))
-    		self.completed_voter_count(parseInt(data.question.completed_voter_count));
-	    }).fail(function(jqXHR, textStatus, errorThrown)
-		{
-            var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');
-            $.cookie('vgamessage', message, { path: '/' });
-			$.cookie('vgastatus', 'error', { path: '/' });
-			window.location.replace(VILFREDO_URL);
-        });
-
-	    //
-  		// Set selected generation to current generation if not already set
-  		//
-  		if (typeof(generation_id == 'undefined'))
-  		{
-  		    generation_id = parseInt(data.question.generation);
-  		}
-    }
 }
 
 function fetchGraph2(map_type, generation, algorithm)

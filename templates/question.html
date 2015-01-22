@@ -50,7 +50,7 @@
 			<p class="text-info">Once you have a minimum of two proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
 			<!-- /ko -->
 			
-			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && questionViewModel.proposal_count() > 1 -->
+			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && questionViewModel.new_proposal_count() > 1 -->
 			<p>You can now move this question on to the next phase: <button data-bind="click: moveOn" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
 			
@@ -75,10 +75,8 @@
 		<!-- question-view end -->
 
 		
-		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1)">
-		
-			<h2>Results</h2>
-		
+		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll)">
+				
 			<!--
 			<div class="btn-group" role="group">
 	 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -93,6 +91,7 @@
 			<br><br>
 			-->
 	
+			<h2>Results Map</h2>
 			<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
 		
 			<div id="resultstriangle"></div>
@@ -105,6 +104,7 @@
 		<!-- Graphs -->
 		<div id="voting_graphs" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1)">
 			<br><br>
+		<h2>Voting Graph</h2>
 		<p>The proposal graph shows how each proposal dominates another according to the voting pattern. The winners are shown in blue at the top.</p>
 		<div class="controls text-center">	
 			  <button id="vgonly" type="button" class="btn btn-md btn-info">All Proposals</button>
