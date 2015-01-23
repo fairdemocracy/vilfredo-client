@@ -3944,7 +3944,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   padding: 9px 10px;
   margin-top: 8px;
   margin-bottom: 8px;
-  /* background-color: transparent; */
+  background-color: transparent;
   background-image: none;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -6215,6 +6215,14 @@ body {
   /*border-top: solid 1px #cccccc;*/
   /*background-color: #eeeeee;*/
 }
+#cookie-bar a {
+  line-height: 30px;
+}
+.btn-lg,
+.btn-group-lg > .btn,
+.btn-group-lg > .btn {
+  padding: 7px 16px;
+}
 .question-view,
 .voting-graphs,
 .current-proposals {
@@ -6223,6 +6231,11 @@ body {
 @media (min-width: 1200px) {
   .container {
     max-width: 970px;
+  }
+}
+@media screen and (min-width: 768px) {
+  .jumbotron {
+    padding: 20px 0px;
   }
 }
 .pointer {
@@ -6742,16 +6755,16 @@ a.plain {
 		margin: 0;*/
 }
 .all-questions .icons.new {
-  background-color: #cdffcc;
+  background-color: #c5edc5;
 }
 .all-questions .icons.writing {
-  background-color: #FAF0E6;
+  background-color: #f0c1bb;
 }
 .all-questions .icons.voting {
-  background-color: #c5e0fb;
+  background-color: #c0d2d7;
 }
 .all-questions .icons.consensus {
-  background-color: #ffffcb;
+  background-color: #eeeeee;
 }
 .all-questions .icons.panel {
   min-height: 100px;
