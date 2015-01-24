@@ -20,10 +20,10 @@
 #
 ****************************************************************************
 -->
-<html lang="en"> 
+<html> 
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>Vilfredo - Fair Decision-Making</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,65 +34,39 @@
 
 	<div class="container main">
 		
-		<div id="completed_box" data-bind="visible: phase() == 'results'">
-		<h1>This Question has Now Completed!</h1>
-		<p>Click on the button below to view the final results.</p>
-		<button data-bind="click: show_results" class="btn btn-primary">Show Results</button>
+		<button id="goto_btn" data-bind="click: goto_question.bind()" type="button" class="btn btn-primary btn-lg navbutton">Back to question page</button>
 		<br><br><br>
-		</div>
-		
 		
 		<div class="author_controls">
-		<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() -->
-		<h2>Move to Results Phase</h2>
-		<p>Move the question to the results phase. This will end the writing and voting cycle and create a results page.</p>
-		<button data-bind="click: move_to_results" class="btn btn-primary">Move to Results</button>
-		<br><br>
-		<!-- /ko -->
-		<h2>Participants</h2>
-		<p>View current Participants and invite new people.</p>
 		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary">Participants</button>
-		<br>
 		</div>
-		
+
 		<div class="question-view" data-bind="visible: currentUserViewModel.isLoggedIn()">
 		<div class="page-header question-info">
-			<h1 data-bind="text: title"></h1>
+			<h1>Results for: <span data-bind="text: title"></span></h1>
+			
 			<h5>by <span class="authorname" data-bind="text: author"></span></h5>
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
-			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
+			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since question ended.</p>
 			<br>
-			
-			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length < 2 -->
-			<p class="text-info">Once you have a minimum of two proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
-			<!-- /ko -->
-			
-			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && questionViewModel.new_proposal_count() > 1 -->
-			<p>You can now move this question on to the next phase: <button data-bind="click: move_on" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
-			<!-- /ko -->
-			
-			<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && questionViewModel.completed_voter_count() > 1 && false -->
-			<p>You can now move this question on to the next phase: <button class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
-			<!-- /ko -->
-			
-			
-			
 		</div>
 		
 		<br>
 		
-		<div class="panel question-info">
-			<div class="well">
-				<span class="blurb" data-bind="html: blurb"></span>
-				<br>
-				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
-				<br><br>
-				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit an Answer</a>
-				</div>	
-			</div>
+		<div id="final_results" class="panel">
+		  <div class="well">
+				<h2>Results</h2>
+				<p>There are <span data-bind="text: proposalsViewModel.pareto().length"></span> winning proposals. They are listed in order of preference by the group.</p>
+				<ul>
+				<!-- ko foreach: final_results -->
+				<li>
+				<p><span data-bind="text: title"></span> by <span data-bind="text: author"></span> which was <span data-bind="visible: relations.understood == false">not</span> fully understood by everyone. Median Like <span data-bind="text: (medx * 100).toFixed(2)"></span>%</p>	
+				</li>
+				<!-- /ko -->
+				</ul>
+		  </div>
 		</div>
-		</div>
-		<!-- question-view end -->
+		<!-- final_results end -->
 
 		
 		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll)">
@@ -122,7 +96,7 @@
 		
 		
 		<!-- Graphs -->
-		<div id="voting_graphs" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1) || (questionViewModel.phase() == 'results')">
+		<div id="voting_graphs" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1)">
 			<br><br>
 		<h2>Voting Graph</h2>
 		<p>The proposal graph shows how each proposal dominates another according to the voting pattern. The winners are shown in blue at the top.</p>
@@ -155,29 +129,7 @@
 			<h3>These proposals were inherited from the previous generation:</h3>
 		</div>
 			
-		<div class="proposal_list row">
-			<!-- ko foreach: inherited_proposals -->
-			<div class="proposal col-md-4">
-			<input data-bind="value: id" type="hidden" class="propId" value="">
-			<input data-bind="value: $index" type="hidden" class="index" value="">
-     		<input data-bind="value: author" type="hidden" class="author" value="">
-			<input data-bind="value: uri" type="hidden" class="uri" value="">
-			<div data-bind="css: endorse_type" class="panel">
-				<div class="panel-heading">
-					<h3 class="panel-title" data-bind="text: title, click: $parent.read.bind($data, $index(), 'content')"></h3>
-				</div>
-				<div class="panel-body proposal-blurb">
-					<span data-bind="html: blurb"></span>
-				</div>
-				<div class="panel-footer proposal-footer">
-					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
-					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
-					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
-					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
-				</div>
-			</div>
-			</div><!-- /ko -->
-		</div>
+
 		</div>
 		<!-- 
 		Inherited Proposals End
@@ -212,8 +164,9 @@
 		</div>
 		
 		<div class="proposal_list row">
-			<!-- ko foreach: proposals -->
-			<div class="proposal col-md-4" data-bind="attr: { pid: id, index: $index }">
+			<!-- ko foreach: pareto -->
+			<div class="col-md-1" data-bind="text: $index() + 1"></div>
+			<div class="proposal col-md-11" data-bind="attr: { pid: id, index: $index }">
 			<input data-bind="value: id" type="hidden" class="propId" value="">
 			<input data-bind="value: $index" type="hidden" class="index" value="">
      		<input data-bind="value: author" type="hidden" class="author" value="">
@@ -229,7 +182,7 @@
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
-					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
+					<div data-bind="click: $parent.openvotemap.bind($data, $index())" class="voting"></div>
 				</div>
 			</div>
 			</div><!-- /ko -->
@@ -654,8 +607,9 @@
 		console.log('initPage called...');
 		
 		$.when(currentUserViewModel.loadUser(), 
-			   questionViewModel.fetchQuestion(), 
-			   questionViewModel.fetchVotingData()).done(function()
+			   questionViewModel.fetchQuestion(),
+			   proposalsViewModel.fetchPareto(),
+			   questionViewModel.fetchFinalResults()).done(function()
 		{
 			console.log('User and question loaded...');
 			$('.question-view, .current-proposals').show();
@@ -701,35 +655,14 @@
 			
 			questionViewModel.selected_algorithm(2);
 			
-			if (questionViewModel.phase() == 'writing')
-		    {
-				//proposalsViewModel.fetchInheritedProposals();
-				//proposalsViewModel.fetchProposals({user_only: true});
-				$.when(proposalsViewModel.fetchInheritedProposals(), 
-			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
-			    {
-					$('#resultstriangle').svg({onLoad: createResultsMap});
-					fetchGraphs(questionViewModel.selected_algorithm()); // boots
-					if (currentUserViewModel.isLoggedIn())
-					{
-						resetGraphsForUser();
-					}
-				});
-
-		    }
-		    else if (questionViewModel.phase() == 'voting' || questionViewModel.phase() == 'results')
-		    {
-		        //proposalsViewModel.fetchProposals();
-				$.when(proposalsViewModel.fetchProposals()).done(function()
-			    {
-					$('#resultstriangle').svg({onLoad: createResultsMap});
-					fetchGraphs(questionViewModel.selected_algorithm()); // boots
-					if (currentUserViewModel.isLoggedIn())
-					{
-						resetGraphsForUser();
-					}
-				});
-		    }
+			if (questionViewModel.phase() == 'results')
+			{
+				console.log("Welcome to the results page...");
+			}
+			else
+			{
+				window.location.replace(VILFREDO_URL);
+			}
 		
 			var qid = questionViewModel.id();
 			var gid = questionViewModel.generation();
@@ -802,14 +735,16 @@
 		
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 		
+		
+		ko.applyBindings(questionViewModel, $('#final_results')[0]);
+		
+		
+		
 		$(".question-info").each(function(){
 		    ko.applyBindings(questionViewModel, $(this)[0]);
 		});
 		
 		ko.applyBindings(questionViewModel, $('.author_controls')[0]);
-		
-		ko.applyBindings(questionViewModel, $('#completed_box')[0]);
-		
 	
 		//ko.applyBindings(loginViewModel, $('#login')[0]);
 		
@@ -818,12 +753,11 @@
 		});
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
 		
-		//ko.applyBindings(proposalsViewModel, $('.winning_proposals')[0]);
-		
-		
 		//ko.applyBindings(questionViewModel, $('#participationtable')[0]);
 		ko.applyBindings(questionViewModel, $('#results_map')[0]);
 		ko.applyBindings(questionViewModel, $('#voting_graphs')[0]);
+		
+		ko.applyBindings(questionViewModel, $('#goto_btn')[0]);
 		
 		
 		ko.applyBindings(permissionsViewModel, $('#participants')[0]); //shark

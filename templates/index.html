@@ -150,7 +150,7 @@
                 <div class="panel-body">
 				<div class="">
 					<!-- ko foreach: questions -->
-					<!-- ko if: consensus_found() -->
+					<!-- ko if: phase() == 'results' -->
 					
 					<div class="item">
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">

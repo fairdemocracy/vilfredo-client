@@ -66,6 +66,11 @@ function get_api_info()
     });
 }
 
+function SortByMedx(x, y) 
+{
+    return y.medx - x.medx; 
+}
+
 function getKeys(object)
 {
     //return ["5", "6", "7", "8"];
@@ -83,6 +88,11 @@ function getJQXHRMessage(jqXHR, default_message)
     default_message = (default_message) ? default_message : 'There was a problem';
     var message = (jqXHR.responseJSON && jqXHR.responseJSON.message) ? jqXHR.responseJSON.message : default_message;
     return message;
+}
+
+function goto_question()
+{
+    window.location.replace(VILFREDO_URL+"/question/"+question_id);
 }
 
 function getJQXHRUserMessage(jqXHR, default_message)
@@ -380,7 +390,7 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
         txty = votey - 20;
     }
     //svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username);
-    var username = questionViewModel.results[parseInt($(med).data('pid'))].voters[parseInt(userid)].username;
+    var username = questionViewModel.voting_data[parseInt($(med).data('pid'))].voters[parseInt(userid)].username;
     var label = "All " + username + "'s votes";
     svg.text(g, txtx, txty, label);
 
@@ -394,7 +404,7 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
     var container_width = dimensions.width;
     var container_height = dimensions.height;
 
-    jQuery.each(questionViewModel.results, function(pid, coords) {
+    jQuery.each(questionViewModel.voting_data, function(pid, coords) {
         medx = container_width * coords['median']['medx'];
         medy = container_height * coords['median']['medy'];
 
@@ -596,7 +606,7 @@ function drawVoteNowTriangle(svg)
 function redoResultsMap()
 {
     console.log('redoResultsMap called...');
-    $.when(questionViewModel.fetchVotingResults()).done(function()
+    $.when(questionViewModel.fetchVotingData()).done(function()
     {
 	    //var results = $('#resultstriangle');
 	    $('#resultsmap').remove();
@@ -698,7 +708,7 @@ function createResultsMap(svg) // snow
     var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
     var g = svg.group(resultsmap, 'votes'); // mapgroup
 
-    $.each(questionViewModel.results, function(pid, coords) {
+    $.each(questionViewModel.voting_data, function(pid, coords) {
         if (!coords['median'])
         {
             return;
@@ -2720,6 +2730,7 @@ function ProposalsViewModel()
 	self.key_players = ko.observableArray();
 	// Writing phase only
 	self.inherited_proposals = ko.observableArray();
+	self.pareto = ko.observableArray(); // winning proposals / pareto front
 
 	self.clearData = function()
 	{
@@ -3094,6 +3105,45 @@ function ProposalsViewModel()
 			}
 		});
 	}
+	
+	self.fetchPareto = function() { // final
+	    console.log('fetchWinningProposals() called...');
+		//var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
+		//proposalsURI = proposalsURI + '?pareto_only=true';
+		var URI = VILFREDO_API + '/questions/'+ question_id +'/pareto';
+
+		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Proposals data returned...');
+			console.log(data);
+			self.pareto([]);
+			fetched_proposals = [];
+			for (var i = 0; i < data.proposals.length; i++) {
+		  		
+		  		var mapx = parseFloat(data.proposals[i].mapx);
+		  		var mapy = parseFloat(data.proposals[i].mapy);
+		  		var background = setMapColor(mapx, mapy);
+		  		var color = getContrastYIQ(background);
+		  		
+		  		fetched_proposals.push({
+		      		id: ko.observable(parseInt(data.proposals[i].id)),
+					title: ko.observable(data.proposals[i].title),
+		      		blurb: ko.observable(data.proposals[i].blurb.replace(/\r?\n/g, '<br>')),
+		      		abstract: ko.observable(data.proposals[i].abstract.replace(/\r?\n/g, '<br>')),
+		      		author: ko.observable(data.proposals[i].author),
+					endorse_type: ko.observable(data.proposals[i].endorse_type),
+					uri: ko.observable(data.proposals[i].uri),
+					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
+					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
+					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+					mapx: mapx,
+					mapy: mapy,
+					box_background: ko.observable(background), 
+					box_color: ko.observable(color)
+		  		});
+			}
+			self.pareto(fetched_proposals);
+		});
+	}
 
 	self.fetchInheritedProposals = function() { // storm
 	    console.log('fetchInheritedProposals() called...');
@@ -3291,7 +3341,7 @@ var questionViewModel = function(data) {
         return this.name().length;
     }, this);
 
-    this.canMoveOn = ko.computed(function() {
+    this.can_move_on = ko.computed(function() {
 	    var currentdate = new Date();
 	    var currentSeconds = currentdate.getSeconds();
 	    console.log(this.minimum_time());
@@ -3473,7 +3523,7 @@ function PermissionsViewModel() // wolf
 		self.permissions([]); // haha
 		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Question results returned...');
+		    console.log('Question permissions returned...');
 			//self.permissions(data.permissions);
 			var fetched_permissions = [];
 			for (var i = 0; i < data.permissions.length; i++) {
@@ -3550,6 +3600,7 @@ function QuestionViewModel() // winter
 	self.completed_voter_count = ko.observable();
 	self.new_proposal_count = ko.observable();
     self.new_proposer_count = ko.observable();
+    self.consensus_found = ko.observable();
 
 	self.key_players = ko.observableArray();
 
@@ -3570,7 +3621,10 @@ function QuestionViewModel() // winter
 
 	self.permissions = ko.observable([]);
 
-	self.results;
+	self.voting_data = null; // final
+	self.final_results = ko.observableArray([]);
+	
+	
 	self.results_pf_only = ko.observable(false); // lava
 
 	self.questionPermissions = ko.observableArray([
@@ -3609,6 +3663,7 @@ function QuestionViewModel() // winter
     		self.completed_voter_count(parseInt(data.question.completed_voter_count));
     		self.new_proposal_count(parseInt(data.question.new_proposal_count));
     		self.new_proposer_count(parseInt(data.question.new_proposer_count));
+    		self.consensus_found(data.question.consensus_found);
 	    }).fail(function(jqXHR, textStatus, errorThrown)
 		{
             var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');
@@ -3696,17 +3751,17 @@ function QuestionViewModel() // winter
 	{
 		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Question results returned...');
+		    console.log('Question permissions returned...');
 			self.permissions(data.permissions);
 		});
 	}
 
-	// jazz
-	self.fetchVotingResults = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/results';
+	// final
+	self.fetchVotingData = function() {
+		var URI = VILFREDO_API + '/questions/' + question_id + '/voting_data';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Question results returned...');
-			self.results = data.results;
+		    console.log('Question voting data returned...');
+			self.voting_data = data.voting_data;
 		});
 	}
 
@@ -3846,6 +3901,21 @@ function QuestionViewModel() // winter
 	    console.log("fetchDomMap: using algorithm: " + self.dom_table_algorithm());
         self.fetchDominationMap(self.selected_generation(), algorithm);
     }
+    
+    // final
+    self.fetchFinalResults = function()
+    {
+        var URI = VILFREDO_API + '/questions/' + question_id + '/results';
+        return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Final results returned!...');
+		    console.log(data.message);
+		    results = data.results
+		    self.final_results(data.results.sort(SortByMedx));
+		}).fail(function(jqXHR)
+    	{
+    		console.log('fetch_final_results: There was an error fetching the final results. Error ' + jqXHR.status);
+        });
+    }
 
 	self.fetchDominationMap = function(algorithm) {
 		// Set the current domination table algorithm
@@ -3904,7 +3974,7 @@ function QuestionViewModel() // winter
 	    return title;
     }
 
-	self.canMoveOn = ko.computed(function() {
+	self.can_move_on = ko.computed(function() {
 	    var currentdate = new Date();
 	    var currentSeconds = currentdate.getSeconds();
 	    return self.minimum_time();
@@ -3937,10 +4007,27 @@ function QuestionViewModel() // winter
 	    alert('here');
 	    permissionsViewModel.open();
 	}
-
-	self.moveOn = function()
+	
+	// final
+	self.show_results = function()
 	{
-	    console.log('moveOn called...');
+	    console.log('show_results called...');
+	    window.location.replace(VILFREDO_URL+"/question/"+ question_id +"/results");
+	}
+	
+	// final
+	self.move_to_results = function()
+	{
+	    console.log('moveToResults called...');
+	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_to_results:true}).done(function(data) {
+		    questionViewModel.phase(data.phase);
+		    add_page_alert('success', 'Question now in ' + questionViewModel.phase() + ' phase');
+		});
+	}
+
+	self.move_on = function()
+	{
+	    console.log('move_on called...');
 	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_on:true}).done(function(data) {
 		    add_page_alert('success', 'Question now in ' + data.question.phase + ' phase');
 		    console.log('Move on question data returned...');
@@ -3960,7 +4047,6 @@ function QuestionViewModel() // winter
 		               questionViewModel.fetchQuestion(),
 			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
 			    {
-					//$('#resultstriangle').svg({onLoad: createResultsMap});
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
 					if (currentUserViewModel.isLoggedIn())
 					{
