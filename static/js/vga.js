@@ -1771,11 +1771,11 @@ function RegisterViewModel()
 				.setAlertClass('danger')
 				.fadeIn();
 			}
-		}).fail(function(jqXHR)
+		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
-			console.log('register: There was an error with register. Error ' + jqXHR.status);
-			$('#register .alert')
-			.html("Oops, there was a server problem! We'll look into it.")
+            var message = getJQXHRMessage(jqXHR, 'There was a problem with your registrations');
+            $('#register .alert')
+			.text(message)
 			.setAlertClass('danger')
 			.fadeIn();
         });
