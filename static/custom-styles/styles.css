@@ -7043,6 +7043,9 @@ a {
 a.disabled {
   color: grey;
 }
+#add_users.modal {
+  overflow: scroll;
+}
 .clearfix:before,
 .clearfix:after,
 .dl-horizontal dd:before,
