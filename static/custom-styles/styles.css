@@ -6291,8 +6291,9 @@ td.green {
   margin-left: auto;
   padding-left: 15px;
   padding-right: 15px;
-  border-radius: 5px;
-  border: 1px solid #668B8B;
+  /*border-radius: 5px;
+	border: 1px solid #668B8B;*/
+  border: none;
 }
 .graphs .graphcontainer .leftgraph {
   height: 550px;
