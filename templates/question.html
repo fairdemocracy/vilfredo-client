@@ -49,10 +49,12 @@
 		<button data-bind="click: move_to_results" class="btn btn-primary">Move to Results</button>
 		<br><br>
 		<!-- /ko -->
+		<!-- ko if: author_id() == currentUserViewModel.userid() -->
 		<h2>Participants</h2>
 		<p>View current Participants and invite new people.</p>
 		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary">Participants</button>
 		<br>
+		<!-- /ko -->
 		</div>
 		
 		<div class="question-view" data-bind="visible: currentUserViewModel.isLoggedIn()">
