@@ -104,6 +104,11 @@
 		{
 			console.log('loadUser completed...');
 			
+			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
+			{
+				$('head').append( template );
+			});
+			
 			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( data ) 
 			{
 				$( "#navbar" ).html( data );
