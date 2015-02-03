@@ -71,6 +71,11 @@ function SortByMedx(x, y)
     return y.medx - x.medx; 
 }
 
+function sortProposalsByLike(left, right) 
+{ 
+    return left.mapx == right.mapx ? 0 : (left.mapx < right.mapx ? 1 : -1) 
+}
+
 function getKeys(object)
 {
     //return ["5", "6", "7", "8"];
@@ -2939,8 +2944,8 @@ function ProposalsViewModel()
 
 	
 
-	// Add endorsement using normalised votemap coordinates
-	self.mapEndorseWithIndex = function(mapx, mapy, index) // eel
+	// Add vote using normalised votemap coordinates
+	self.mapEndorseWithIndex = function(mapx, mapy, index) // bingo
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
 		{
@@ -3016,6 +3021,8 @@ function ProposalsViewModel()
 				// reset participation table
 				//questionViewModel.fetchParticipationTable();
 				redoResultsMap();
+				
+				proposalsViewModel.proposals.sort(sortProposalsByLike);
 			}
 			else
 			{
@@ -3232,6 +3239,8 @@ function ProposalsViewModel()
 		  		});
 			}
 			proposals_list(fetched_proposals);
+			console.log("***** sort proposals by mapx *****");
+			proposals_list.sort(sortProposalsByLike);
 
 			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
