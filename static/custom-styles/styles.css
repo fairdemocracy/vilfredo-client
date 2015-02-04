@@ -6286,6 +6286,9 @@ td.green {
 .well .blurb {
   font-size: 1.1em;
 }
+.guide {
+  font-size: 1.2em;
+}
 .graphs {
   margin-right: auto;
   margin-left: auto;
