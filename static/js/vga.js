@@ -3013,6 +3013,7 @@ function ProposalsViewModel()
 					author_id: ko.observable(parseInt(data.proposal.author_id)),
 					question_count: ko.observable(parseInt(data.proposal.question_count)),
 					comment_count: ko.observable(parseInt(data.proposal.comment_count)),
+					vote_count: ko.observable(parseInt(data.proposal.vote_count)),
 					mapx: mapx,
 					mapy: mapy,
 					box_background: ko.observable(background),
