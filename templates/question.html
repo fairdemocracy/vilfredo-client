@@ -232,6 +232,8 @@
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+					&nbsp;
+					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
@@ -241,7 +243,6 @@
 		<!-- 
 		Current Proposals End
 		-->
-		
 		
 	</div><!-- /container -->
 
@@ -414,7 +415,50 @@
 	  </div><!-- modal-dialog -->
 	</div><!-- modal -->
 	
-	
+	<!-- Edit Proposal Modal -->
+	<div id="editproposal" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="EditProposalBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Edit Proposal</h4>
+			<p><b>Proposals may be edited until they receive a vote.</b></p>
+	      </div>
+	      <div class="modal-body">
+			<div class="alert alert-danger"></div>
+			<form autocomplete="off" class="form-horizontal" role="form">
+		  	<div class="form-group">
+		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
+		    <div class="col-sm-10">
+			  <span class="errormsg" data-bind="validationMessage: title"></span>
+		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputEditProposalTitle" placeholder="Title">
+		    </div>
+		  </div>
+		<div class="form-group">
+		    <label for="inputAbstract" class="col-sm-2 control-label">Abstract (optional)</label>
+		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: abstract"></span>
+			<textarea data-bind="value: abstract" id="inputEditProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text"></textarea>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputBlurb" class="col-sm-2 control-label">Proposal Text</label>
+		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: blurb"></span>
+			<textarea data-bind="value: blurb" id="inputEditProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text"></textarea>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button data-bind="click: updateProposal, enable: isValid()" type="button" class="btn btn-primary">Save Changes</button>
+			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+		    </div>
+		  </div>
+		</form>
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- modal -->
 	
 	<!-- New Proposal Modal -->
 	<div id="addproposal" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="AddProposalBox" aria-hidden="true">
@@ -756,6 +800,7 @@
 		currentUserViewModel = new CurrentUserViewModel();
 		proposalsViewModel = new ProposalsViewModel();
 		addProposalViewModel = ko.validatedObservable( new AddProposalViewModel() );
+		editProposalViewModel = ko.validatedObservable( new EditProposalViewModel() );
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		voteMapViewModel = new VoteMapViewModel();
@@ -844,6 +889,7 @@
 		
 		//ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(addProposalViewModel, $('#addproposal')[0]);
+		ko.applyBindings(editProposalViewModel, $('#editproposal')[0]);
 		ko.applyBindings(threeWayVoteViewModel, $('#vote3waywindow')[0]);
 		
 		ko.applyBindings(voteMapViewModel, $('#votemapwindow')[0]);
@@ -860,6 +906,10 @@
 		});	
 		$('#viewproposal').on('shown.bs.modal', function () {
 			viewProposalViewModel.displayProposalContent();
+		});
+		
+		$('#editproposal').on('shown.bs.modal', function () {
+			$("#inputEditProposalBlurb, #inputEditProposalAbstract, #inputEditProposalTitle").trigger('setcharcount');
 		});
 		
 		
@@ -906,6 +956,24 @@
 		$('body').on('hidden.bs.popover', function () {
   			console.log('popover hidden...');
 		});	
+		
+		$("#inputEditProposalTitle").charCount({
+			allowed: 120,		
+			warning: 10,
+			counterText: "Characters Left" + " "
+		});
+		
+		$("#inputEditProposalBlurb").charCount({
+			allowed: 10000,		
+			warning: 9950,
+			counterText: "Characters left" + " "
+		});
+		
+		$("#inputEditProposalAbstract").charCount({
+			allowed: 5000,		
+			warning: 4950,
+			counterText: "Characters left" + " "
+		});
 		
 		$("#inputProposalTitle").charCount({
 			allowed: 120,		

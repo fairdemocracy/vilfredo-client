@@ -42,6 +42,7 @@ var viewProposalViewModel;
 var loginViewModel;
 var passwordResetViewModel;
 var addProposalViewModel;
+var editProposalViewModel;
 var newQuestionViewModel;
 var svggraph;
 var userid = false;
@@ -1997,6 +1998,7 @@ function ThreeWayVoteViewModel()
 	}
 }
 
+// maison
 function AddProposalViewModel()
 {
     var self = this;
@@ -2004,7 +2006,7 @@ function AddProposalViewModel()
     self.abstract = ko.observable('').extend({ maxLength: 5000 });
     self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
 
-    self.addProposal = function() { //now
+    self.addProposal = function() { 
         $('#addproposal .alert').text('').fadeOut(100);
 		if (self.title() == '' || self.blurb() == '')
 		{
@@ -2119,6 +2121,77 @@ function NewCommentViewModel()
 
 }
 
+// maison
+function EditProposalViewModel()
+{
+    var self = this;
+    self.proposal;
+	self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
+    self.abstract = ko.observable('').extend({ maxLength: 5000 });
+    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
+	self.index;
+	self.proposal_id;
+	
+	self.setProposal = function(proposal)
+	{
+		self.proposal = proposal;
+		self.title(proposal.title());
+		self.abstract(proposal.abstract());
+		self.blurb(proposal.blurb());
+		self.proposal_id = proposal.id();
+	}
+	self.close = function()
+	{
+	    self.proposal = null;
+		self.title('');
+		self.abstract('');
+		self.blurb('');
+	    $('#editproposal').modal('hide');
+	}
+	self.show = function()
+	{
+	    $('#editproposal').modal('show');
+	}
+	self.updateProposal = function() 
+	{
+        $('#editproposal .alert').text('').fadeOut(100);
+		if (self.title() == '' || self.blurb() == '')
+		{
+			$('#editproposal .alert').text('You have not completed all the required fields.')
+			.fadeIn(500);
+			return;
+		}
+		
+		var EDIT_URL = VILFREDO_API + '/questions/' + question_id + '/proposals/' + self.proposal.id();
+		var updates = {'title': self.title(), 'abstract': self.abstract(), 'blurb': self.blurb(), 'user_id': currentUserViewModel.userid()}
+	    console.log('updateProposal called...');
+	    ajaxRequest(EDIT_URL, 'PATCH', updates).done(function(data) {
+		    console.log(data);
+		    self.proposal.title(self.title());
+		    self.proposal.abstract(self.abstract());
+		    self.proposal.blurb(self.blurb());
+		    self.close();
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+			console.log('editproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
+            $('#editproposal .alert')
+			.text(message)
+			.setAlertClass('danger')
+			.fadeIn();
+        });
+
+		/*
+        proposalsViewModel.update({
+            index: self.index(),
+            title: self.title(),
+			abstract: self.abstract(),
+            blurb: self.blurb()
+        });
+        */
+    }
+}
+
 function ViewProposalViewModel()
 {
 	var self = this;
@@ -2165,7 +2238,8 @@ function ViewProposalViewModel()
 			}
         });
         return count;
-	};
+	}
+	
 	self.getQuestionCount = function()
 	{
 		var count = 0
@@ -2177,7 +2251,7 @@ function ViewProposalViewModel()
 			}
         });
         return count;
-	};
+	}
 
 	self.getAnswer = function(id)
     {
@@ -2189,7 +2263,8 @@ function ViewProposalViewModel()
             return 'No answer yet';
         else
             return match.comment();
-    };
+    }
+    
 	self.getAnswerObject = function(id)
     {
 		var match = ko.utils.arrayFirst(self.comments(), function (comment)
@@ -2200,7 +2275,7 @@ function ViewProposalViewModel()
             return false;
         else
             return match;
-    };
+    }
 
 	self.userSupports = function(comment)
     {
@@ -2216,7 +2291,7 @@ function ViewProposalViewModel()
             return false;
         else
             return true;
-    };
+    }
 
     self.addNewComment = function(comment, type, reply_to) // eating
 	{
@@ -2890,8 +2965,17 @@ function ProposalsViewModel()
 		$('#votemap-thisprop').html(proposal.title());
 		$('#votemapwindow').modal('show');
 	}
+	
+	// maison
+	self.edit = function(index, proposal)
+	{
+		console.log("ProposalsViewModel.edit called with index " + index);
+		editProposalViewModel().setProposal(proposal);
+		editProposalViewModel().index = index;
+		editProposalViewModel().show();
+	}
 
-	self.read = function(index, panel, proposal) // set_color
+	self.read = function(index, panel, proposal)
 	{
 		console.log("ProposalsViewModel.read called with index " + index);
 		viewProposalViewModel.setProposal(proposal);
@@ -3155,6 +3239,7 @@ function ProposalsViewModel()
 					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
 					mapx: mapx,
 					mapy: mapy,
 					box_background: ko.observable(background), 
@@ -3193,6 +3278,7 @@ function ProposalsViewModel()
 					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
 					mapx: mapx,
 					mapy: mapy,
 					box_background: ko.observable(background), 
@@ -3245,6 +3331,7 @@ function ProposalsViewModel()
 					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
 					mapx: mapx,
 					mapy: mapy,
 					box_background: ko.observable(background), 
