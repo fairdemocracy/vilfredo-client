@@ -95,6 +95,13 @@ function getJQXHRMessage(jqXHR, default_message)
     return message;
 }
 
+function getJQXHRUserMessage(jqXHR, default_message)
+{
+    default_message = (default_message) ? default_message : 'There was a problem';
+    var message = (jqXHR.responseJSON && jqXHR.responseJSON.user_message) ? jqXHR.responseJSON.user_message : getJQXHRMessage(jqXHR, default_message);
+    return message;
+}
+
 function goto_question()
 {
     window.location.replace(VILFREDO_URL+"/question/"+question_id);
@@ -1509,9 +1516,11 @@ function CurrentUserViewModel()
         });
 	}
 
-	self.getAuthToken = function() // winter
+	self.getAuthToken = function() // jumpx
 	{
 		var URI = VILFREDO_API +'/authtoken';
+		//var URI = 'http://test.vilfredo.org'+ '/api/' + API_VERSION + '/authtoken';
+		
 		$.cookie('vgaclient', null, { path: '/' });
 		self.authToken = '';
 		var email_invite_token = getQueryVariable('eit');
@@ -2645,7 +2654,11 @@ function QuestionsViewModel()
     self.fetchQuestions = function() {
 		if (currentUserViewModel.isLoggedOut()) return false;
 		console.log("Fetching questions...");
+		
 		var url = VILFREDO_API + '/questions';
+		// Test CORS
+	    //var url = 'http://test.vilfredo.org' + '/questions';
+		
 		var room_query = (room) ? '?room=' + room : '';
 		ajaxRequest(url+room_query, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Questions data returned...');
@@ -3647,6 +3660,7 @@ function QuestionViewModel() // winter
     self.fetchQuestion = function() 
 	{
 	    console.log('fetchQuestion called...');
+
 	    return ajaxRequest(self.URI, 'GET').done(function(data) {
 		    console.log('Question data returned...');
 			console.log(data);
@@ -4298,7 +4312,42 @@ var ajaxRequest = function(uri, method, data) {
      };
      return $.ajax(request);
 }
-var ajaxRequest_xd = function(uri, method) {
+
+// jumpx
+var ajaxRequest_xd = function(uri, method, data) {
+	console.log('ajaxRequest: request made... ' + uri);
+	console.log('ajaxRequest: method... ' + method);
+    var request = {
+		url: uri,
+        type: method,
+        crossDomain: true,
+        contentType: "application/json",
+        accepts: "application/json",
+        cache: false,
+        xhrFields: { withCredentials: true },
+        dataType: 'jsonp',
+        data: JSON.stringify(data),
+        beforeSend: function (xhr) {
+			if (currentUserViewModel.authToken != '')
+			{
+				//console.log("Use the auth token " + currentUserViewModel.authToken);
+				xhr.setRequestHeader('Authorization',
+					"Basic " + btoa(currentUserViewModel.authToken + ":" + ''));
+			}
+			else if (currentUserViewModel.username() != '' && currentUserViewModel.password != '')
+			{
+				//console.log("Use login details");
+				xhr.setRequestHeader("Authorization",
+                	"Basic " + btoa(currentUserViewModel.username() + ":" + currentUserViewModel.password));
+			}
+        },
+        error: function(jqXHR) {
+            console.log("ajax error " + jqXHR.status);
+        }
+     };
+     return $.ajax(request);
+   }
+var ajaxRequest_xd_1 = function(uri, method) {
 	console.log('ajaxRequest: request made... ' + uri);
     var request = {
 		url: uri,
@@ -4307,6 +4356,7 @@ var ajaxRequest_xd = function(uri, method) {
         contentType: "application/json",
         accepts: "application/json",
         cache: false,
+        xhrFields: { withCredentials: true },
         dataType: 'jsonp',
         //data: JSON.stringify(data),
         beforeSend: function (xhr) {
