@@ -2180,15 +2180,6 @@ function EditProposalViewModel()
 			.setAlertClass('danger')
 			.fadeIn();
         });
-
-		/*
-        proposalsViewModel.update({
-            index: self.index(),
-            title: self.title(),
-			abstract: self.abstract(),
-            blurb: self.blurb()
-        });
-        */
     }
 }
 
@@ -2818,12 +2809,13 @@ function ProposalsViewModel()
 {
     var self = this;
 
-	// Voting phase only
+	// Voting and writing phase
 	self.proposals = ko.observableArray();
+	// Voting phase only
 	self.key_players = ko.observableArray();
 	// Writing phase only
 	self.inherited_proposals = ko.observableArray();
-	self.pareto = ko.observableArray(); // winning proposals / pareto front
+	self.pareto = ko.observableArray(); // winning proposals (pareto front)
 
 	self.clearData = function()
 	{
@@ -2964,6 +2956,27 @@ function ProposalsViewModel()
 		voteMapViewModel.endorse_type(proposal.endorse_type());
 		$('#votemap-thisprop').html(proposal.title());
 		$('#votemapwindow').modal('show');
+	}
+	
+	// maison
+	self.delete = function(index, proposal)
+	{
+		console.log("ProposalsViewModel.delete called with index " + index);
+		var delete_proposal = confirm('Are you sure you want to delete this proposal?');
+		if (!delete_proposal) return;
+		
+		var DELETE_URL = VILFREDO_API + '/questions/' + question_id + '/proposals/' + proposal.id();
+	    console.log('delete propoal called...');
+	    ajaxRequest(DELETE_URL, 'DELETE').done(function(data) {
+		    console.log(data);
+		    self.proposals.remove(proposal);
+		    add_page_alert('success', 'Proposal "' + proposal.title() + '" deleted.');
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+			console.log('editproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
+            add_page_alert('danger', message);
+        });
 	}
 	
 	// maison

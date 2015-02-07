@@ -234,6 +234,8 @@
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 					&nbsp;
 					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
+					&nbsp;
+					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
 					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
