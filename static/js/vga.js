@@ -43,6 +43,7 @@ var loginViewModel;
 var passwordResetViewModel;
 var addProposalViewModel;
 var editProposalViewModel;
+var editQuestionViewModel;
 var newQuestionViewModel;
 var svggraph;
 var userid = false;
@@ -2121,6 +2122,62 @@ function NewCommentViewModel()
 
 }
 
+// chat
+function EditQuestionViewModel()
+{
+    var self = this;
+    self.question;
+    self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength:1 });
+    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 1 });
+	
+	self.setQuestion = function(question)
+	{
+		self.question = question;
+		self.title(question.title());
+		self.blurb(question.blurb());
+	}
+	self.close = function()
+	{
+	    self.question = null;
+		self.title('');
+		self.blurb('');
+	    $('#editquestion').modal('hide');
+	}
+	self.show = function()
+	{
+	    $('#editquestion').modal('show');
+	}
+	self.updateQuestion = function() 
+	{
+        $('#editquestion .alert').text('').fadeOut(100);
+		if (self.title() == '' || self.blurb() == '')
+		{
+			$('#editquestion .alert').text('You have not completed all the required fields.')
+			.fadeIn(500);
+			return;
+		}
+		
+		var EDIT_URL = VILFREDO_API + '/questions/' + self.question.id();
+		var updates = {'title': self.title(), 'blurb': self.blurb()}
+	    console.log('updateQuestion called...');
+	    ajaxRequest(EDIT_URL, 'PATCH', updates).done(function(data) {
+		    console.log(data);
+		    self.question.title(self.title());
+		    self.question.blurb(self.blurb());
+		    self.close();
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+			console.log('editproposal: There was an error editing the question. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your question');
+            $('#editquestion .alert')
+			.text(message)
+			.setAlertClass('danger')
+			.fadeIn();
+        });
+    }
+}
+
+
 // maison
 function EditProposalViewModel()
 {
@@ -2758,6 +2815,37 @@ function QuestionsViewModel()
 			self.questions(fetched_qustions);
 		});
 	}
+	
+	// chat
+	self.delete = function(index, question)
+	{
+		console.log("QuestionsViewModel.delete called with index " + index);
+		var delete_question = confirm('Are you sure you want to delete this question?');
+		if (!delete_question) return;
+		
+		var DELETE_URL = VILFREDO_API + '/questions/' + question.id();
+	    console.log('delete question called...');
+	    ajaxRequest(DELETE_URL, 'DELETE').done(function(data) {
+		    console.log(data);
+		    self.questions.remove(question);
+		    add_page_alert('success', 'Question "' + question.title() + '" deleted.');
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+			console.log('editproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
+            add_page_alert('danger', message);
+        });
+	}
+	
+	// chat
+	self.edit = function(index, question)
+	{
+		console.log("QuestionsViewModel.edit called with index " + index);
+		editQuestionViewModel().setQuestion(question);
+		editQuestionViewModel().show();
+	}
+	
+	
 	self.beginNewQuestion = function()
 	{
 	    console.log('begin_new_question');
@@ -2994,8 +3082,8 @@ function ProposalsViewModel()
 		    add_page_alert('success', 'Proposal "' + proposal.title() + '" deleted.');
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
-			console.log('editproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
-            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
+			console.log('delete: There was an error deleting the proposal. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem deleting your proposal');
             add_page_alert('danger', message);
         });
 	}
