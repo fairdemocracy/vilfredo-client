@@ -2747,6 +2747,9 @@ function QuestionsViewModel()
 					proposal_count: ko.observable(parseInt(data.questions[i].proposal_count)),
 					new_proposal_count: ko.observable(parseInt(data.questions[i].new_proposal_count)),
 					new_proposer_count: ko.observable(parseInt(data.questions[i].new_proposer_count)),
+            		participant_count: ko.observable(parseInt(data.questions[i].participant_count)),
+            		voters_voting_count: ko.observable(parseInt(data.questions[i].voters_voting_count)),
+            		completed_voter_count: ko.observable(parseInt(data.questions[i].completed_voter_count)),
 					consensus_found: ko.observable(data.questions[i].consensus_found),
 					inherited_proposal_count: ko.observable(parseInt(data.questions[i].inherited_proposal_count)),
 					link: VILFREDO_URL + "/question/" + data.questions[i].id
@@ -2769,21 +2772,39 @@ function QuestionsViewModel()
 	    html = "<div>";
 	    html = html + question.blurb().substr(0, 150) + '...</div>';
 	    html = html + "<strong>Generation: " + question.generation() + "</strong>";
-	    if (question.new_proposal_count() > 0)
+	    
+	    if (question.phase() == 'writing')
 	    {
-	        html = html + "<br>Recently "
-	            + question.new_proposer_count() + " users proposed "
-	            + question.new_proposal_count() + " proposals";
+    	    if (question.new_proposal_count() > 0)
+    	    {
+    	        html = html + "<br>This question has " + question.participant_count() + " participants."
+    	            + "<br>Recently "
+    	            + question.new_proposer_count() + " users proposed "
+    	            + question.new_proposal_count() + " proposals";
+    	    }
+    	    else
+    	    {
+    	        html = html + "<br>No new proposals so far.";
+    	    }
+    	    if (question.inherited_proposal_count() > 0)
+    	    {
+    	        html = html + "<br>There are "
+    		        + question.inherited_proposal_count()
+    		        + " inherited from the previous generation";
+    	    }
 	    }
-	    else
+	    else if (question.phase() == 'voting')
 	    {
-	        html = html + "<br>No new proposals so far.";
-	    }
-	    if (question.inherited_proposal_count() > 0)
-	    {
-	        html = html + "<br>There are "
-		        + question.inherited_proposal_count()
-		        + " inherited from the previous generation";
+	        // Display how many have voted
+	        html = html + "<br>This question has " + question.participant_count() + " participants."
+	                + "<br>Out of "
+	                + question.voters_voting_count() + " users voting "
+    	            + question.completed_voter_count() + " users have finished.";
+	        // Check if everyone has voted
+	        if (question.completed_voter_count() == question.participant_count())
+	        {
+	            html = html + "<br>Everyone has voted!"
+	        }
 	    }
 	    return html;
 	}
@@ -3723,6 +3744,8 @@ function QuestionViewModel() // winter
 	self.completed_voter_count = ko.observable();
 	self.new_proposal_count = ko.observable();
     self.new_proposer_count = ko.observable();
+    self.participant_count = ko.observable();
+    self.voters_voting_count = ko.observable();
     self.consensus_found = ko.observable();
 
 	self.key_players = ko.observableArray();
@@ -3783,7 +3806,9 @@ function QuestionViewModel() // winter
     		self.can_propose_ob(data.question.can_propose);
     		// User permissions will be set if user is question author
     		self.permissions(data.question.user_permissions);
-    		self.proposal_count(parseInt(data.question.proposal_count))
+    		self.proposal_count(parseInt(data.question.proposal_count));
+    		self.participant_count(parseInt(data.question.participant_count));
+    		self.voters_voting_count(parseInt(data.question.voters_voting_count));
     		self.completed_voter_count(parseInt(data.question.completed_voter_count));
     		self.new_proposal_count(parseInt(data.question.new_proposal_count));
     		self.new_proposer_count(parseInt(data.question.new_proposer_count));
