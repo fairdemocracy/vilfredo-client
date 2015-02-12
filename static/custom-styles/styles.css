@@ -7047,6 +7047,9 @@ a.disabled {
 #add_users.modal {
   overflow: scroll;
 }
+#propdetails {
+  overflow: auto;
+}
 .clearfix:before,
 .clearfix:after,
 .dl-horizontal dd:before,
