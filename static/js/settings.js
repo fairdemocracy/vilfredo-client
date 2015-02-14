@@ -19,7 +19,7 @@
 ****************************************************************************/
 var VILFREDO_URL = 'http://0.0.0.0:8080';
 
-var API_VERSION = 'v1';
+var API_VERSION = 'v2';
 
 var ALGORITHM_VERSION = 2;
 
