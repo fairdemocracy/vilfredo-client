@@ -375,7 +375,7 @@ function voteHandler(e)
 }
 
 
-function showUserVotes(clicked, svg, userid, threshold) // snow
+function showUserVotes(clicked, svg, userid, username, threshold) // snow
 {
     $('#allvotes').remove();
 
@@ -404,7 +404,7 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
         txty = votey - 20;
     }
     //svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username);
-    var username = questionViewModel.voting_data[parseInt($(med).data('pid'))].voters[parseInt(userid)].username;
+    //var username = questionViewModel.voting_data[parseInt($(med).data('pid'))].voters[parseInt(userid)].username;//fixme
     var label = "All " + username + "'s votes";
     svg.text(g, txtx, txty, label);
 
@@ -422,6 +422,11 @@ function showUserVotes(clicked, svg, userid, threshold) // snow
         medx = container_width * coords['median']['medx'];
         medy = container_height * coords['median']['medy'];
 
+        if (typeof coords['voters'][parseInt(userid)] == 'undefined')
+        {
+            return true;
+        }
+        
         cx = container_width * coords['voters'][parseInt(userid)]['mapx'];
         cy = container_height * coords['voters'][parseInt(userid)]['mapy'];
 
@@ -537,27 +542,6 @@ function showProposalVotes(med, svg, threshold, voters) //snow
         cy = container_height * coords.mapy;
         console.log("showProposalVotes: Draw " + coords.username + "'s vote at (" + cx + ", " + cy +")");
 
-        /*
-        // Set fill colour
-        if (cy > threshold.mapy)
-        {
-            //console.log(cy + ' > ' + threshold.mapy + ' == True');
-            //console.log('Set to blue');
-            fill_color = 'blue';
-        }
-        else if (cx < threshold.mapx)
-        {
-            //console.log(cy + ' > ' + threshold.mapy + ' == False AND ' + cx + ' < ' + threshold.mapx);
-            //console.log('Set to red');
-            fill_color = 'red';
-        }
-        else
-        {
-            //console.log('Else set to green');
-            fill_color = 'green';
-        }
-        */
-
         fill_color = setMapColor(coords.mapx, coords.mapy);
 
         // Draw line to connect vote with median
@@ -565,12 +549,13 @@ function showProposalVotes(med, svg, threshold, voters) //snow
 
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); 
         $(vote).data('userid', userid);
+        $(vote).data('username', coords.username);
         $(vote).data('pid', $(med).attr('pid'));
 
         $(vote).on( "click", function(e) {
             e.stopPropagation();
             console.log('click on user vote...');
-            showUserVotes(this, svg, userid, threshold);
+            showUserVotes(this, svg, userid, coords.username, threshold);
         });
 
 
