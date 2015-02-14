@@ -54,6 +54,12 @@
 		<p>View current Participants and invite new people.</p>
 		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary">Participants</button>
 		<br>
+		<div id="edit_question_buttons" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0">
+		<h2>Edit Question</h2>
+		<p>You can edit or delete this question so long as no-one has written any proposals for it.</p>
+		<button data-bind="click: questionViewModel.edit" class="btn btn-primary">Edit Question</button>
+		<button data-bind="click: questionViewModel.delete" class="btn btn-primary">Delete Question</button>
+		</div>
 		<!-- /ko -->
 		</div>
 		
@@ -282,6 +288,46 @@
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
+	
+	
+	<!-- Edit Question Modal -->
+	<div id="editquestion" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="EditQuestionBox" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Edit a Question</h4>
+			<p><b>Questions may be edited until they receive a proposal.</b></p>
+	      </div>
+	      <div class="modal-body">
+		<div class="message alert alert-danger"></div>
+		
+		<form autocomplete="off" class="form-horizontal" role="form"> 
+		<div class="form-group">
+		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>
+		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: title"></span>
+		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputEditQuestionTitle" placeholder="Title">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputQuestionBlurb" class="col-sm-2 control-label">Question Text</label>
+		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: blurb"></span>
+			<textarea data-bind="value: blurb" id="inputEditQuestionBlurb" class="form-control" rows="6" placeholder="Type your question here"></textarea>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button data-bind="click: updateQuestion" type="button" class="btn btn-primary">Save Changes</button>
+			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
+		    </div>
+		  </div>
+		</form>
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	  </div><!-- modal-dialog -->
+	</div><!-- modal -->
 
 	
 	<!-- View Proposal Modal -->
@@ -807,6 +853,8 @@
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		voteMapViewModel = new VoteMapViewModel();
 		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
+		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
+
 		
 		//newCommentViewModel = new NewCommentViewModel();
 		newCommentViewModel = ko.validatedObservable( new NewCommentViewModel() );
@@ -859,7 +907,8 @@
 		ko.applyBindings(questionViewModel, $('.author_controls')[0]);
 		
 		ko.applyBindings(questionViewModel, $('#completed_box')[0]);
-		
+		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
+		//ko.applyBindings(questionViewModel, $('#edit_question_buttons')[0]);
 	
 		//ko.applyBindings(loginViewModel, $('#login')[0]);
 		

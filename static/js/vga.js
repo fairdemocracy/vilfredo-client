@@ -2831,7 +2831,7 @@ function QuestionsViewModel()
 		    add_page_alert('success', 'Question "' + question.title() + '" deleted.');
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
-			console.log('editproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
+			console.log('deleteproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
             var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
             add_page_alert('danger', message);
         });
@@ -3917,6 +3917,34 @@ function QuestionViewModel() // winter
   		    generation_id = parseInt(data.question.generation);
   		}
     }
+    
+    // chat
+	self.delete = function()
+	{
+		console.log("QuestionViewModel.delete called...");
+		var delete_question = confirm('Are you sure you want to delete this question?');
+		if (!delete_question) return;
+		
+		var DELETE_URL = VILFREDO_API + '/questions/' + self.id();
+	    console.log('delete question called...');
+	    ajaxRequest(DELETE_URL, 'DELETE').done(function(data) {
+		    alert("Question deleted!");
+		    window.location.replace(VILFREDO_URL);
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+			console.log('deleteproposal: There was an error editing the proposal. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
+            add_page_alert('danger', message);
+        });
+	}
+	
+	// chat
+	self.edit = function()
+	{
+		console.log("QuestionViewModel.edit called...");
+		editQuestionViewModel().setQuestion(self);
+		editQuestionViewModel().show();
+	}
     
     self.select_pf_only = function(pf_only, $data)
     {
