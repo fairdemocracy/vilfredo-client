@@ -64,10 +64,6 @@
 		<!-- <div id="cvtriangle"></div> -->
 		
 		
-		<div id="askquestion" data-bind="visible: currentUserViewModel.isLoggedIn()">
-			<h3>Ask a new question</h3>
-			<a data-bind="click: beginNewQuestion" class="btn btn-success btn-md" role="button">Ask a Question</a>
-		</div>
 	
 		
 		<div class="notloggedin">
@@ -87,6 +83,7 @@
                 </div>
                 <div class="panel-body">
 				<div class="">
+					<a data-bind="click: beginNewQuestion" class="btn btn-success btn-md pull-right" role="button">Ask a Question</a>
 					<!-- ko foreach: questions -->
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
@@ -464,7 +461,6 @@
 		
 		ko.applyBindings(passwordResetViewModel, $('#reset_pwd')[0]);
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
-		ko.applyBindings(questionsViewModel, $('#askquestion')[0]);
 		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
 		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
 		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
