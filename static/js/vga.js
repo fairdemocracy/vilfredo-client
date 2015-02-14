@@ -1991,6 +1991,12 @@ function AddProposalViewModel()
     self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
     self.abstract = ko.observable('').extend({ maxLength: 5000 });
     self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
+    self.abstract_length_pc = ko.computed(function() {
+        return '' + Math.round(self.abstract().length / 50) + '%';
+    });
+    self.blurb_length_pc = ko.computed(function() {
+        return '' + Math.round(self.blurb().length / 100) + '%';
+    });
 
     self.addProposal = function() { 
         $('#addproposal .alert').text('').fadeOut(100);
@@ -2171,6 +2177,12 @@ function EditProposalViewModel()
 	self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
     self.abstract = ko.observable('').extend({ maxLength: 5000 });
     self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
+    self.abstract_length_pc = ko.computed(function() {
+        return '' + Math.round(self.abstract().length / 50) + '%';
+    });
+    self.blurb_length_pc = ko.computed(function() {
+        return '' + Math.round(self.blurb().length / 100) + '%';
+    });
 	self.index;
 	self.proposal_id;
 	
