@@ -3077,6 +3077,7 @@ function ProposalsViewModel()
 		    console.log(data);
 		    self.proposals.remove(proposal);
 		    add_page_alert('success', 'Proposal "' + proposal.title() + '" deleted.');
+		    questionViewModel.fetchQuestion();
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
 			console.log('delete: There was an error deleting the proposal. Status: ' + textStatus); // maison
@@ -3139,6 +3140,7 @@ function ProposalsViewModel()
 					box_color: ko.observable(color)
 		  		});
 		  		addProposalViewModel().close();
+		  		questionViewModel.fetchQuestion();
 	  		}
 	  		else
 			{
