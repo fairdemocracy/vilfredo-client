@@ -428,7 +428,7 @@
 			{
 				$('#invited_intro').show();
 			}
-			else
+			else if (currentUserViewModel.isLoggedOut())
 			{
 				$('#main_intro').show();
 			}
