@@ -2836,6 +2836,7 @@ function QuestionsViewModel()
             		minimum_time : ko.observable(parseInt(data.question.minimum_time)),
             		maximum_time : ko.observable(parseInt(data.question.maximum_time)),
 					author_id: ko.observable(parseInt(data.question.author_id)),
+					avatar_url:ko.observable(data.question.avatar_url),
 					generation: ko.observable(parseInt(data.question.generation)),
 					proposal_count: ko.observable(parseInt(data.question.proposal_count)),
 					new_proposal_count: ko.observable(parseInt(data.question.new_proposal_count)),
@@ -3911,6 +3912,7 @@ function QuestionViewModel() // winter
 	self.blurb = ko.observable();
 	self.author = ko.observable();
 	self.author_id = ko.observable();
+	self.avatar_url = ko.observable();
 	self.phase = ko.observable();
 	self.generation = ko.observable();
 	self.last_move_on = ko.observable();
@@ -3977,6 +3979,7 @@ function QuestionViewModel() // winter
     		self.blurb(data.question.blurb);
     		self.author(data.question.author);
     		self.author_id(data.question.author_id);
+    		self.avatar_url(data.question.avatar_url);
     		self.phase(data.question.phase);
     		self.last_move_on(parseInt(data.question.last_move_on));
     		self.minimum_time(parseInt(data.question.minimum_time));
