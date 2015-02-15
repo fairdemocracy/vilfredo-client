@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+****************************************************************************
+#
+# This file is part of the Vilfredo Client.
+#
+# Copyright © 2009-2014 Pietro Speroni di Fenizio / Derek Paterson.
+#
+# VilfredoReloadedCore is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation version 3 of the License.
+#
+# VilfredoReloadedCore is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License
+# for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with VilfredoReloadedCore.  If not, see <http://www.gnu.org/licenses/>.
+#
+****************************************************************************
+-->
+<html> 
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Vilfredo - Fair Decision-Making</title>
+        <meta name="description" content="Vilfredo allows groups from 5 to 20 people to ask open questions and reach consensus in a easy and fair way.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--
+		<link rel="stylesheet" type="text/css" href="static/bootstrap/dist/css/bootstrap.css"/>
+		-->
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.css') }}">
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/fileinput.min.css') }}">
+    </head>
+    <body>
+	
+	<div id="navbar"></div>
+
+	<div id="user_settings" class="container main">
+		<h1>Upload your avatar</h1>
+		
+		<div id="upload_avatar">
+			<p>Choose your avatar.</p>
+			<div class="container">
+			  <div class="message-container col-sm-6">
+			   <div class="message alert alert-danger">
+			   </div>
+			  </div>
+			</div>
+			
+			<div id="avatar_placeholder"></div>
+			<img id="selected_image" src="" alt="" />
+			<br>
+			<form autocomplete="on" class="form-horizontal" role="form" enctype="multipart/form-data">
+			<label class="btn btn-primary" for="avatar_file_selector">
+			    <input id="avatar_file_selector" type="file" style="display:none;" onchange="readURL(this);">
+			    Select Image
+			</label>
+			<button id="uploadbtn" type="button" class="btn btn-primary">Upload Avatar</button>
+			</form>
+		</div>
+	</div><!-- container -->
+
+
+	<div id="footer">
+	    <div class="container">
+	      <p class="text-muted credit">&copy; 2009-2013 Pietro Speroni &amp; Derek Paterson </p>
+	    </div>
+	</div>
+	
+	<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
+    	<!--[if lt IE 9]>
+      	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    	<![endif]-->
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.2.0.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/fileinput.min.js') }}"></script>
+		{{ flask_util_js.js }}
+
+	<script type="text/javascript">
+	function initPage()
+	{
+		console.log('initPage called...');
+		$('.current-questions').show();
+		
+		$.when(currentUserViewModel.loadUser()).then(function()
+		{
+			console.log('loadUser completed...');
+			
+			// Load Templates
+			//
+			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
+			{
+				$('head').prepend( template );
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( data ) 
+			{
+				$( "#navbar" ).html( data );
+				ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
+				$('.home').attr('href', VILFREDO_URL);
+				$('.navbar-brand').attr('href', VILFREDO_URL);
+			});
+			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( data ) 
+			{
+				$( "#footer" ).html( data );
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/login.template.html", function( template ) 
+			{
+				//$( "#login-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(loginViewModel, $('#login')[0]);
+				$('#login').on('hide.bs.modal', function(e) {
+					loginViewModel().clear();
+				});
+				$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/register.template.html", function( template ) 
+			{
+				//$( "#register-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(registerViewModel, $('#register')[0]);
+				$('#register').on('hide.bs.modal', function(e) {
+					registerViewModel().clear();
+				});
+			});
+			
+		});
+	}
+	
+	$(function() {
+		currentUserViewModel = new CurrentUserViewModel();
+		questionsViewModel = new QuestionsViewModel();
+		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
+		loginViewModel = ko.validatedObservable( new LoginViewModel() );
+		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
+		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
+		
+		$.cookieBar({
+			fixed: true, bottom: true,
+			forceShow: false, zindex: '1040',
+			effect: 'slide', autoEnable: false
+		});
+		
+		initPage();
+		
+		$("#imageBox").html($("<img>").attr("src", this.href));
+		
+		/*
+		$(document).on('change', '#upload_avatar :file', function() {
+		    var input = $(this),
+		    numFiles = input.get(0).files ? input.get(0).files.length : 1,
+			value = input.val();
+			$("#imageBox").html($("<img>").attr("src", value));
+	    });
+		
+	    $(document).on('change', '.btn-file :file', function() {
+		    var input = $(this),
+		    numFiles = input.get(0).files ? input.get(0).files.length : 1,
+		    label = input.val().replace(/\\/g, '/').replace(/.*\//, ''),
+			value = input.val();
+		    input.trigger('fileselect', [numFiles, label, value]);
+	    });
+		
+		$(document).ready( function() {
+		    $('.btn-file :file').on('fileselect', function(event, numFiles, label, value) {
+			    console.log(numFiles);
+			    console.log(label);
+				console.log(value);
+		    });
+	    });*/
+		
+		//$('.votesmap').svg({onLoad: createVotesMap});
+		
+		$('#votenowwindow').on('show.bs.modal', function() {
+			//console.log('votenowwindow modal shown...');
+			$('.modalvotesmap').svg({onLoad: createVoteMap});
+		})
+		
+		
+		$('#login').on('hide.bs.modal', function(e) {
+			loginViewModel().clear();
+		})
+		$('#register').on('hide.bs.modal', function(e) {
+			registerViewModel().clear();
+		})
+			
+		
+		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
+		ko.applyBindings(passwordResetViewModel, $('#reset_pwd')[0]);
+				
+		$('#uploadbtn').on('click', function (e) {
+			e.stopPropagation();
+			currentUserViewModel.uploadAvatar();
+		});
+		
+		//ko.applyBindings(currentUserViewModel, $('#user_settings')[0]);
+		
+		
+		// initialize with defaults
+		//$("#input_avatar").fileinput();
+		
+		/*
+		$("#input_avatar").fileinput({
+			uploadUrl: 'http://0.0.0.0:8080/upload_avatar',
+			allowedFileExtensions: ["jpg", "gif", "png"],
+			maxFileSize: 100
+		});*/
+		
+		// Scenario 1: AJAX based uploads using drag and drop functionality. 
+		// Just set the `uploadUrl` data property and `multiple` 
+		// to `true`. Modify files before upload i.e. append or delete. For this example below, 
+		// you can read the uploaded files on
+		// your server for the input name `kartik-input-700`.
+			
+	});
+	</script>
+	</body>
+</html>

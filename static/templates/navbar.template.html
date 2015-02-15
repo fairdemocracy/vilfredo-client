@@ -20,15 +20,16 @@
 					<li data-bind="visible: isLoggedOut"> 	
 					   <a class="btn btn-primary btn-lg navbutton" role="button" data-toggle="modal" data-target="#login" href="#login">Login</a>
 					</li>
+						<li data-bind="visible: userid">
+						<img data-bind="attr: { src: avatar_url }" width="40px" height="40px" class="img-circle"/> &nbsp;</li>
 						<!-- Account dropdown begin -->
 						<li data-bind="visible: userid" class="userdata dropdown">
-						
 						<div class="btn-group">
 						  <button type="button" class="btn btn-success btn-lg dropdown-toggle navbutton" data-toggle="dropdown">
 						    <span data-bind="text: username" id="currentuser"></span> <span class="caret"></span>
 						  </button>
 						  <ul class="dropdown-menu" role="menu">
-						    <li class="disabled" title="Comming soon"><a href="#">My Details</a></li>
+						    <li title="Comming soon"><a data-bind="attr: { href: VILFREDO_URL+'/mysettings' }">My Details</a></li>
 						    <li class="disabled" title="Comming soon"><a href="#">Change Password</a></li>
 							<li class="disabled" title="Comming soon"><a href="#">My Questions</a></li>
 							<li class="disabled" title="Comming soon"><a class="alglink" href="#">Algorithms</a></li>

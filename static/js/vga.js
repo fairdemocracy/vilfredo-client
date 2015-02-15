@@ -58,6 +58,43 @@ var triangle_offset_y = 0;
 var voting_triangle_width;
 var voting_triangle_height;
 
+
+function readURL(input) 
+{
+    if (input.files && input.files[0]) 
+    {
+        $('#avatar_placeholder').hide();
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#selected_image')
+                .attr('src', e.target.result)
+                .width(200)
+                .height(200);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function updateProgress(evt) 
+{
+    console.log('updateProgress');
+    $('.progress').show();
+    console.log('evt.lengthComputable = '+evt.lengthComputable);
+    if (evt.lengthComputable) 
+    {
+            var percentComplete = evt.loaded / evt.total;
+            $('.progress-bar').attr('width', percentComplete+'%');
+            console.log(percentComplete);
+    } else 
+    {
+            // Unable to compute progress information since the total size is unknown
+            console.log('unable to complete');
+            $('.progress-bar').attr('width', '100%');
+    }
+}
+
 function get_api_info()
 {
     var URI = VILFREDO_API +'/';
@@ -1396,7 +1433,7 @@ function CurrentUserViewModel()
 	self.authToken = '';
 	self.user = false
 	self.remember = false;
-
+	self.avatar_url = ko.observable('');
 	
 	self.isLoggedIn = ko.computed(function() {
         console.log('isLoggedIn...' + this.userid());
@@ -1486,6 +1523,65 @@ function CurrentUserViewModel()
 			return false;
 		}
 	}
+	
+	self.uploadAvatar = function()
+	{
+        var data = new FormData();
+        var file = $('#avatar_file_selector')[0].files[0];
+        if (typeof(file) == 'undefined')
+        {
+            return;
+        }
+        data.append('avatar', file);
+
+        var URI = VILFREDO_API +'/upload_avatar';
+        var request = {
+		    url: URI,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            async: false,
+            cache: false,
+            data: data,
+            xhr: function() 
+            { 
+                myXhr = $.ajaxSettings.xhr();
+                // check if upload property exists
+                if(myXhr.upload){ 
+                    // for handling the progress of the upload
+                    myXhr.upload.addEventListener('progress', updateProgress, false);
+                }
+                return myXhr;
+            },
+            beforeSend: function (xhr) {
+    			if (self.authToken != '')
+    			{
+    				//console.log("Use the auth token " + currentUserViewModel.authToken);
+    				xhr.setRequestHeader('Authorization',
+    					"Basic " + btoa(currentUserViewModel.authToken + ":" + ''));
+    			}
+    			else if (self.username() != '' && currentUserViewModel.password != '')
+    			{
+    				//console.log("Use login details");
+    				xhr.setRequestHeader("Authorization",
+                    	"Basic " + btoa(self.username() + ":" + self.password));
+    			}
+            },
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+            }
+        };
+        
+        $.ajax(request).done(function(data, textStatus, jqXHR) {
+			console.log('CurrentUserViewModel.uploadAvatar');
+			console.log(data);
+			add_page_alert('success', 'Avatar set!');
+			currentUserViewModel.avatar_url(data.url);
+		}).fail(function(jqXHR) {
+           var message = getJQXHRMessage(jqXHR, 'There was a problem uploading your file.');
+           add_page_alert('danger', message);
+        });
+	}
 
 	self.requestPasswordReset = function(email)
 	{
@@ -1560,6 +1656,7 @@ function CurrentUserViewModel()
 			console.log('fetchCurrentUser:: User ID set ==> ' + self.userid());
 			self.user = data.user;
 			self.username(data.user.username);
+			self.avatar_url(data.user.avatar_url)
 
 			if (typeof(questionsViewModel) != 'undefined')
 			{

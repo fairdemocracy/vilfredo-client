@@ -7050,6 +7050,18 @@ a.disabled {
 #propdetails {
   overflow: auto;
 }
+/*
+.progress {
+	display: none;
+}*/
+#avatar_placeholder {
+  width: 200px;
+  height: 200px;
+  background-color: grey;
+}
+#selected_image {
+  margin-bottom: 10px;
+}
 .clearfix:before,
 .clearfix:after,
 .dl-horizontal dd:before,

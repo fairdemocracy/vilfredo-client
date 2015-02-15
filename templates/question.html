@@ -68,7 +68,7 @@
 		<div class="question-view" data-bind="visible: currentUserViewModel.isLoggedIn()">
 		<div class="page-header question-info">
 			<h1 data-bind="text: title"></h1>
-			<h5>by <span class="authorname" data-bind="text: author"></span></h5>
+			<h5><img data-bind="attr: { src: currentUserViewModel.avatar_url }" width="50px" height="50px" class="img-rounded"/> by <span class="authorname" data-bind="text: author"></span></h5>
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
 			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
 			<br>
