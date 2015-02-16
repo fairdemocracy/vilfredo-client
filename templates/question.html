@@ -86,6 +86,44 @@
 			<!-- /ko -->
 			
 			
+		<!-- Participation table start -->
+		<br>
+		<div id="participationtable" data-bind="visible: questionViewModel.is_author() && questionViewModel.phase() == 'writing'">
+			
+			<h1>
+				Participation Table
+			</h1>
+			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
+			
+		<table class="table" width="647">
+		<thead>
+		<tr>
+		<th>User</th>
+		<th>Proposals Written</th>
+		<th>Proposals Evaluated</th>
+		</tr>
+		<tr>
+		<th></th>
+		<th><span data-bind="text: num_proposals"></span> proposals in total</th>
+		<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- ko foreach: participation_table -->
+		<tr>
+			<td class="verthdr" data-bind="text: username"></td>
+			<td data-bind="text: proposals_written"></td>
+			<td data-bind="text: $parent.proposalsEvaluatedText(evaluations), css: $parent.proposalsEvaluatedClass(evaluations)"></td>
+		</tr>
+		<!-- /ko -->
+		</tbody>
+		</table>
+			
+		</div>
+		<!-- Participation table end -->
+
+			
+			
 			
 		</div>
 		
@@ -843,6 +881,7 @@
 					{
 						resetGraphsForUser();
 					}
+					questionViewModel.fetchParticipationTable();
 				});
 
 		    }

@@ -3239,6 +3239,7 @@ function ProposalsViewModel()
 		  		});
 		  		addProposalViewModel().close();
 		  		questionViewModel.fetchQuestion();
+		  		questionViewModel.fetchParticipationTable();
 	  		}
 	  		else
 			{
@@ -3380,6 +3381,7 @@ function ProposalsViewModel()
 				{
 					console.log('Refreshing graphs after vote...');
 					fetchVotingGraphs(); // boots
+					questionViewModel.fetchParticipationTable();
 				}
 				// reset key players
 				//self.fetchKeyPlayers();
@@ -4141,9 +4143,16 @@ function QuestionViewModel() // winter
     // Participation Table colors and text
     //
     self.proposalsEvaluatedClass = function(evaluations) {
-        if (evaluations == 0) return 'red';
-        else if (evaluations == self.num_proposals()) return 'green';
-        else return 'amber';
+        if (self.phase() == 'voting')
+        {
+            if (evaluations == 0) return 'red';
+            else if (evaluations == self.num_proposals()) return 'green';
+            else return 'amber';
+        }
+        else
+        {
+            return 'grey';
+        }
     }
     self.keyPlayerClass = function(key_player) {
         if (key_player) return 'red';
