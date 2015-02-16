@@ -45,7 +45,7 @@
 		
 		
 		<div class="author_controls">
-		<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && completed_voter_count() > 2 -->
+		<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && completed_voter_count() > 1 -->
 		<h2>Move to Results Phase</h2>
 		<p>Move the question to the results phase. This will end the writing and voting cycle and create a results page.</p>
 		<button data-bind="click: move_to_results" class="btn btn-primary">Move to Results</button>
