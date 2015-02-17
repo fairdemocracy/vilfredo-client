@@ -7003,6 +7003,7 @@ a {
 }
 .navlogout {
   background-color: black;
+  border: none;
 }
 .questicon {
   font-size: 1.8em;
