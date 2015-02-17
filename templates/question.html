@@ -624,166 +624,7 @@
 	  </div><!-- modal-dialog -->
 	</div><!-- modal -->
 	
-	
-	<!-- Add users -->
-	<div id="add_users" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title">Invite Users</h4>
-	      </div>
-	      <div class="modal-body">
-			<div class="alert alert-danger"></div>
-			<button data-bind="click: close_add_users.bind(), enable: true" type="button" class="btn btn-primary">Go Back</button>
-			<br><br>
-			<form class="form-horizontal" role="form" autocomplete="off">
-			
-			<!-- ko if: users().length -->
-			<div>
-				<p>Below is a list of users you have already interacted with on Vilfredo.</p> <p>Select the permissions you wish to grant, then click the checkbox by the users you wish to add and click the <i>Add Users</i> button. All select users will be added to he question.</p>
-			</div>
-			<br/>
-			<div class="form-group">
-				<select size=1 data-bind="
-    				options: questionPermissions,
-				    optionsText: 'name',
-				    optionsValue: 'id',
-					value: selectedPermissions">
-				</select>
-			</div>	
-			
-			<div class="assoc_list">
-			<!-- ko foreach: users -->	
-			<div class="form-group" data-bind="css: { selected: selected() }">
-				<div data-bind="text: username" class="col-sm-4"></div>
-				<div class="col-sm-1">
-					<input data-bind="checked: selected" type="checkbox">
-				</div>	
-			</div>
-			<!-- /ko -->
-			</div>
-			
-			<!-- Buttons -->
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-				<button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Add Selected Users</button>
-			    </div>
-			</div>
-			<!-- /ko -->
-			
-			<div>
-				You can add email addresses of people you would like to invite, separated by commas. This allows you to invite people who you have not yet interacted with or have not yet signed up to Vilfredo. We will email them instructions on how to participate in the question.
-			</div>
-			<br/>
-			
-			<div class="form-group">
-				<select size=1 data-bind="
-    				options: questionEmailPermissions,
-				    optionsText: 'name',
-				    optionsValue: 'id',
-					value: selectedPermissions">
-				</select>
-			</div>
-			
-			<div data-bind="visible: emails_sent().length > 0">
-			Emails Sent:
-			<div data-bind="text: emails_sent" class="emails_semt"></div>
-			</div>
-			
-			<div data-bind="visible: emails_already_sent().length > 0">
-			Emails Already Sent:
-			<div data-bind="text: emails_already_sent" class="emails_already_sent"></div>
-			</div>
-			
-			<div data-bind="visible: emails_rejected().length > 0">
-			Emails Rejected:
-			<div data-bind="text: emails_rejected" class="emails_rejected"></div>
-			</div>
-			
-			<div class="form-group">
-				<input data-bind="value: user_emails" type="text" class="form-control input-md" id="inputEmails" placeholder="Add email addresses of people you would like to invite, seperated by commas">
-			</div>
-			
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-			      
-				<button data-bind="click: invite_by_email.bind(), enable: true" type="button" class="btn btn-default">Send Email Invitations</button>
-			    </div>
-			</div>
-			
-			</form>		
-		</div><!-- /.modal-body -->
-	    </div><!-- modal-content -->
-	  </div><!-- modal-dialog stopped -->
-	</div><!-- add_users modal -->
-	
-	<!-- Participants -->
-	<div id="participants" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title">Participants</h4>
-	      </div>
-	      <div class="modal-body">
-			<div class="alert alert-danger"></div>
-			
-			
-			<form class="form-horizontal" role="form" autocomplete="off">
-				
-			<div class="form-group">
-				<div class="col-sm-4">
-				
-			</div>
-			<div class="col-sm-3">
-				Propose
-			</div>
-			<div class="col-sm-3">
-				Vote
-			</div>
-			<div class="col-sm-2">
-				Author
-			</div>
-			</div>
-				
-			<!-- ko foreach: permissions -->
-			<div class="form-group">
-				<div data-bind="text: username" class="col-sm-4"></div>
-				<div class="col-sm-3">
-					<!-- Can Propose -->					
-					<div data-bind="if: $parent.userPerms($data, Q_PROPOSE)">
-						<span class="glyphicon glyphicon-ok"></span>
-					</div>
-				</div>
-				<div class="col-sm-3">
-					<!-- Can Vote -->
-					<div data-bind="if: $parent.userPerms($data, Q_VOTE)">
-						<span class="glyphicon glyphicon-ok"></span>
-					</div>
-				</div>
-				<div class="col-sm-2">
-					<div data-bind="if: questionViewModel.author_id() == user_id">
-						<span class="glyphicon glyphicon-ok"></span>
-					</div>
-				</div>
-			</div>
-			<!-- /ko -->
-			
-			<!-- Buttons -->
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Close</button>
-				  <button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Invite More Users</button>
-			    </div>
-			</div>
-			</form>		
-		</div><!-- /.modal-body -->
-	    </div><!-- modal-content -->
-	</div><!-- modal-dialog -->
-	
-	
-	</div><!-- modal -->
+	</div>
 	
 
 	
@@ -849,7 +690,6 @@
 			
 			$.get( VILFREDO_URL + "/static/templates/login.template.html", function( template ) 
 			{
-				//$( "#login-box" ).html( template );
 				$('body').append( template )
 				ko.applyBindings(loginViewModel, $('#login')[0]);
 				$('#login').on('hide.bs.modal', function(e) {
@@ -860,12 +700,23 @@
 			
 			$.get( VILFREDO_URL + "/static/templates/register.template.html", function( template ) 
 			{
-				//$( "#register-box" ).html( template );
 				$('body').append( template )
 				ko.applyBindings(registerViewModel, $('#register')[0]);
 				$('#register').on('hide.bs.modal', function(e) {
 					registerViewModel().clear();
 				});
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/participants.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(permissionsViewModel, $('#participants')[0]);
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/add_users.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]);
 			});
 			
 			questionViewModel.selected_algorithm(2);
@@ -1000,8 +851,8 @@
 		ko.applyBindings(questionViewModel, $('#voting_graphs')[0]);
 		
 		
-		ko.applyBindings(permissionsViewModel, $('#participants')[0]); //shark
-		ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]); //shark
+		//ko.applyBindings(permissionsViewModel, $('#participants')[0]); //shark
+		//ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]); //shark
 		
 		
 		//ko.applyBindings(proposalsViewModel, $('#keyplayer_info')[0]);

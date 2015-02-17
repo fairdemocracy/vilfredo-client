@@ -205,7 +205,6 @@ function checkVGAMessages()
 
 function getQuerySegment(variable)
 {
-    //var params = $.url('0.0.0.0:8080/room/vilfredo/question/2').segment();
 	var params = $.url().segment();
 	var match = params.indexOf(variable);
 	//console.log('getQueryVariable: match index = ' + match);
@@ -2845,6 +2844,13 @@ function QuestionsViewModel()
 					inherited_proposal_count: ko.observable(parseInt(data.question.inherited_proposal_count)),
 					link: VILFREDO_URL + "/question/" + data.question.id
 		  		});
+		  		
+		  		// Question added - show permissions modal
+		  		question_id = data.question.id;
+		  		$.when(questionViewModel.fetchQuestion()).done(function()
+		        {
+		  		    permissionsViewModel.open_permissions();
+		  		});
 			}
 			else
 			{
@@ -3705,11 +3711,10 @@ function InviteUsersViewModel() // haha
     ]);
 
     self.selectedPermissions = 7;
-
+    
     self.invite_by_email = function()
 	{
 	    console.log("invite_by_email called...");
-
         var URI = VILFREDO_API + '/questions/' + question_id + '/emailinvitations';
         var invite_users = {'user_emails': self.user_emails(), 'permissions': self.selectedPermissions};
 		return ajaxRequest(URI, 'POST', invite_users).done(function(data, textStatus, jqXHR) {
@@ -3762,24 +3767,6 @@ function InviteUsersViewModel() // haha
 		});
 	}
 
-    /*
-	self.fetched_non_participants = function()
-	{
-		self.users([]);
-		var URI = VILFREDO_API + '/questions/' + question_id + '/not_invited';
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Not invited list returned...');
-			for (var i = 0; i < data.not_invited.length; i++) {
-				self.users.push({
-		      		user_id: data.not_invited[i].user_id,
-					username: data.not_invited[i].username,
-		      		selected: ko.observable(false)
-		  		});
-			}
-		});
-	}
-	*/
-
 	self.add_users = function() //haha
 	{
 	    console.log("InviteUsersViewModel.add_users called...");
@@ -3805,7 +3792,7 @@ function InviteUsersViewModel() // haha
 	}
 	self.open_add_users = function()
 	{
-	    console.log("open_permissions.open called...");
+	    console.log("open_add_users.open called...");
 	    self.permissions(questionViewModel.permissions());
 	    $('#participants').modal('show');
 	}
@@ -3849,8 +3836,8 @@ function PermissionsViewModel() // wolf
         }, user);
     };
 
-	self.fetchParticipantPermissions = function() // jaws
-	{
+	self.fetchParticipantPermissions = function()
+	{   
 		self.permissions([]); // haha
 		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
@@ -3972,8 +3959,9 @@ function QuestionViewModel() // winter
     self.fetchQuestion = function() 
 	{
 	    console.log('fetchQuestion called...');
+	    var URL = VILFREDO_API + '/questions/' + question_id;
 
-	    return ajaxRequest(self.URI, 'GET').done(function(data) {
+	    return ajaxRequest(URL, 'GET').done(function(data) {
 		    console.log('Question data returned...');
 			console.log(data);
 			self.id(data.question.id);
@@ -4111,15 +4099,6 @@ function QuestionViewModel() // winter
 	    // remove permissions for user
 	    console.log("Remove permisions for user " + this.user_id);
 	    self.permissions.remove(this);
-	}
-
-	self.fetchParticipantPermissions_off = function()
-	{
-		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('Question permissions returned...');
-			self.permissions(data.permissions);
-		});
 	}
 
 	// final

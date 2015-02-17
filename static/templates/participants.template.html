@@ -1,0 +1,63 @@
+<!-- Participants -->
+	<div id="participants" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Participants</h4>
+	      </div>
+	      <div class="modal-body">
+			<div class="alert alert-danger"></div>
+			
+			
+			<form class="form-horizontal" role="form" autocomplete="off">
+				
+			<div class="form-group">
+				<div class="col-sm-4">
+				
+			</div>
+			<div class="col-sm-3">
+				Propose
+			</div>
+			<div class="col-sm-3">
+				Vote
+			</div>
+			<div class="col-sm-2">
+				Author
+			</div>
+			</div>
+				
+			<!-- ko foreach: permissions -->
+			<div class="form-group">
+				<div data-bind="text: username" class="col-sm-4"></div>
+				<div class="col-sm-3">
+					<!-- Can Propose -->					
+					<div data-bind="if: $parent.userPerms($data, Q_PROPOSE)">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<!-- Can Vote -->
+					<div data-bind="if: $parent.userPerms($data, Q_VOTE)">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
+				</div>
+				<div class="col-sm-2">
+					<div data-bind="if: questionViewModel.author_id() == user_id">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
+				</div>
+			</div>
+			<!-- /ko -->
+			
+			<!-- Buttons -->
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Close</button>
+				  <button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Invite More Users</button>
+			    </div>
+			</div>
+			</form>		
+		</div><!-- /.modal-body -->
+	    </div><!-- modal-content -->
+	</div><!-- modal-dialog -->

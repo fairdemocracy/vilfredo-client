@@ -416,6 +416,20 @@
 				});
 			});
 			
+			
+			$.get( VILFREDO_URL + "/static/templates/participants.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(permissionsViewModel, $('#participants')[0]);
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/add_users.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]);
+			});
+			
+			
 			if (currentUserViewModel.isLoggedIn())
 			{
 				console.log("User logged in: call fetchQuestions");
@@ -443,6 +457,10 @@
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
+
+		questionViewModel = new QuestionViewModel();
+		permissionsViewModel = new PermissionsViewModel();
+		inviteUsersViewModel = new InviteUsersViewModel();
 		
 		$.cookieBar({
 			fixed: true, bottom: true, 
