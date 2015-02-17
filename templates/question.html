@@ -827,6 +827,8 @@
 			console.log('User and question loaded...');
 			$('.question-view, .current-proposals').show();
 			
+			$('html head title').text('Vilfredo - ' + questionViewModel.title())
+			
 			// Load Templates
 			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
 			{
