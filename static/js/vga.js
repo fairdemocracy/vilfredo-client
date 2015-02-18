@@ -4611,7 +4611,7 @@ var ajaxRequestPR = function(uri, method, data) {
      return $.ajax(request);
 }
 
-var ajaxRequest = function(uri, method, data) {
+var ajaxRequest_v1 = function(uri, method, data) {
 	console.log('ajaxRequest: request made... ' + uri);
 	var request = {
 		url: uri,
@@ -4643,7 +4643,7 @@ var ajaxRequest = function(uri, method, data) {
 }
 
 // jumpx
-var ajaxRequest_xd = function(uri, method, data) {
+var ajaxRequest = function(uri, method, data) {
 	console.log('ajaxRequest: request made... ' + uri);
 	console.log('ajaxRequest: method... ' + method);
     var request = {
@@ -4654,7 +4654,7 @@ var ajaxRequest_xd = function(uri, method, data) {
         accepts: "application/json",
         cache: false,
         xhrFields: { withCredentials: true },
-        dataType: 'jsonp',
+        dataType: 'json',
         data: JSON.stringify(data),
         beforeSend: function (xhr) {
 			if (currentUserViewModel.authToken != '')
@@ -4669,28 +4669,6 @@ var ajaxRequest_xd = function(uri, method, data) {
 				xhr.setRequestHeader("Authorization",
                 	"Basic " + btoa(currentUserViewModel.username() + ":" + currentUserViewModel.password));
 			}
-        },
-        error: function(jqXHR) {
-            console.log("ajax error " + jqXHR.status);
-        }
-     };
-     return $.ajax(request);
-   }
-var ajaxRequest_xd_1 = function(uri, method) {
-	console.log('ajaxRequest: request made... ' + uri);
-    var request = {
-		url: uri,
-        type: method,
-        crossDomain: true,
-        contentType: "application/json",
-        accepts: "application/json",
-        cache: false,
-        xhrFields: { withCredentials: true },
-        dataType: 'jsonp',
-        //data: JSON.stringify(data),
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization",
-                "Basic " + btoa(self.username + ":" + self.password));
         },
         error: function(jqXHR) {
             console.log("ajax error " + jqXHR.status);

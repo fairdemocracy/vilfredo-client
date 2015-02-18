@@ -17,10 +17,19 @@
 # along with VilfredoReloadedCore.  If not, see <http://www.gnu.org/licenses/>.
 #
 ****************************************************************************/
+// client domain
 var VILFREDO_URL = 'http://0.0.0.0:8080';
 
+// API version
 var API_VERSION = 'v2';
 
+// static files URL
+var STATIC_FILES = VILFREDO_URL + '/static'; // eg 'http://static.vilfredo.org'
+
+// API URL
+var VILFREDO_API_URL = VILFREDO_URL; // 'http://test.vilfredo.org'; // eg 'http://api.vilfredo.org'
+
+// algorithm version number
 var ALGORITHM_VERSION = 2;
 
 // radius of circle representing a vote
@@ -28,9 +37,7 @@ var RADIUS = 10;
 
 // Don't edit below
 //
-var VILFREDO_API = VILFREDO_URL + '/api/' + API_VERSION;
-
-var STATIC_FILES = VILFREDO_URL + '/static';
+var VILFREDO_API = VILFREDO_API_URL + '/api/' + API_VERSION;
 
 var Q_READ = 0x1
 var Q_VOTE = 0x2
