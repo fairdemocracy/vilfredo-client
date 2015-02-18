@@ -1433,6 +1433,7 @@ function CurrentUserViewModel()
 	self.user = false
 	self.remember = false;
 	self.avatar_url = ko.observable('');
+	self.login_jqXHR = null;
 	
 	self.isLoggedIn = ko.computed(function() {
         console.log('isLoggedIn...' + this.userid());
@@ -1461,7 +1462,7 @@ function CurrentUserViewModel()
 	self.login = function(username, password, remember) {
 		self.username(username);
 		self.password = password;
-		self.getAuthToken();
+		self.login_jqXHR = self.getAuthToken();
     }
 
     self.home = function()
@@ -1600,9 +1601,7 @@ function CurrentUserViewModel()
 
 	self.getAuthToken = function() // jumpx
 	{
-		var URI = VILFREDO_API +'/authtoken';
-		//var URI = 'http://test.vilfredo.org'+ '/api/' + API_VERSION + '/authtoken';
-		
+		var URI = VILFREDO_API +'/authtoken';		
 		$.cookie('vgaclient', null, { path: '/' });
 		self.authToken = '';
 		var email_invite_token = getQueryVariable('eit');
@@ -1612,8 +1611,11 @@ function CurrentUserViewModel()
 		    params = { 'eit': email_invite_token };
 		}
 		
+		$('#login_btn').prop('disabled', true);
+		
 		return ajaxRequest(URI, 'POST', params).done(function(data, textStatus, jqXHR) {
 		    self.authToken = data.token;
+		    $('#login_btn').prop('disabled', false);
 			loginViewModel().close();
 			console.log('CurrentUserViewModel.getAuthToken:: Authtoken returned...');
 			console.log(data);
@@ -1630,10 +1632,16 @@ function CurrentUserViewModel()
 			}
 			else if (window.location.pathname != '/')
     		{
-    		    window.location.replace(VILFREDO_URL);
+    		    window.location.replace(VILFREDO_URL); // jumpx
     		}
     		self.fetchCurrentUser();
-		}).fail(function(jqXHR) {
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+		    $('#login_btn').prop('disabled', false);
+		    if (errorThrown == 'abort')
+		    {
+		        console.log("Login aborted...");
+		        return;
+		    }
 		    if (jqXHR.responseJSON && jqXHR.responseJSON.user_message)
 		    {
 		        $('#login .message').text(jqXHR.responseJSON.user_message).fadeIn(500);
@@ -1742,12 +1750,13 @@ function NewQuestionViewModel()
 	}
 }
 
-function RegisterViewModel()
+function RegisterViewModel() //jumpx
 {
     var self = this;
     self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
     self.password = ko.observable('').extend({ required: true, maxLength: 60, minLength:6 });
     self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
+    self.register_jqXHR = null;
 
     self.clear = function()
     {
@@ -1763,6 +1772,13 @@ function RegisterViewModel()
         self.username.isModified(false);
         self.password.isModified(false);
         self.email.isModified(false);
+        $('#register_btn').prop('disabled', false);
+        // Abort ajax call if started
+		if (self.register_jqXHR)
+		{
+		    self.register_jqXHR.abort();
+		    self.register_jqXHR = null;
+		}
     }
     self.close = function()
     {
@@ -1811,6 +1827,7 @@ function RegisterViewModel()
 			.fadeIn(500);
 			return;
 		}
+		$('#register_btn').prop('disabled', true);
         var new_user = {username: self.username(), password: self.password(), email: self.email()};
         
         // Add an email_invite_token if available
@@ -1820,10 +1837,11 @@ function RegisterViewModel()
 		    new_user['eit'] = email_invite_token;
 		}
         
-        ajaxRequest(VILFREDO_API + '/users', 'POST', new_user).done(function(data, textStatus, jqXHR)
+        self.register_jqXHR = ajaxRequest(VILFREDO_API + '/users', 'POST', new_user).done(function(data, textStatus, jqXHR)
 		{
 		    console.log('Register: data returned...');
 			console.log(data);
+			$('#register_btn').prop('disabled', false);
 
 			if (jqXHR.status == 201)
 			{
@@ -1870,6 +1888,12 @@ function RegisterViewModel()
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
+		    $('#register_btn').prop('disabled', false);
+		    if (errorThrown == 'abort')
+		    {
+		        console.log("Register aborted...");
+		        return;
+		    }
             var message = getJQXHRMessage(jqXHR, 'There was a problem with your registrations');
             $('#register .alert')
 			.text(message)
@@ -2058,13 +2082,20 @@ function LoginViewModel()
 	}
 	self.close = function()
 	{
-		console.log("LoginViewModel close called...");
+		console.log("LoginViewModel close called..."); // jumpx
 		$('#login .message').text('').hide();
 		self.username('');
 		self.password('');
 		self.username.isModified(false);
 		self.password.isModified(false);
+		$('#login_btn').prop('disabled', false);
 		$('#login').modal('hide');
+		// Abort ajax call if started
+		if (currentUserViewModel.login_jqXHR)
+		{
+		    currentUserViewModel.login_jqXHR.abort();
+		    currentUserViewModel.login_jqXHR = null;
+		}
 	}
 }
 
@@ -4675,7 +4706,7 @@ var ajaxRequest = function(uri, method, data) {
         }
      };
      return $.ajax(request);
-   }
+}
 
 var enterShow = function() {
     console.log('enterShow')
