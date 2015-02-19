@@ -24,10 +24,10 @@ var VILFREDO_URL = 'http://0.0.0.0:8080';
 var API_VERSION = 'v2';
 
 // static files URL
-var STATIC_FILES = VILFREDO_URL + '/static'; // eg 'http://static.vilfredo.org'
+var STATIC_FILES = VILFREDO_URL + '/static';
 
 // API URL
-var VILFREDO_API_URL = VILFREDO_URL; // 'http://test.vilfredo.org'; // eg 'http://api.vilfredo.org'
+var VILFREDO_API_URL = VILFREDO_URL;
 
 // algorithm version number
 var ALGORITHM_VERSION = 2;
