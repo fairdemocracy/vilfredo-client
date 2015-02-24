@@ -2381,7 +2381,7 @@ function ViewProposalViewModel()
 	self.question = ko.observable('');
 	self.answer = ko.observable('');
 
-	self.addcommentanswer = function(comment_id)
+	self.addcommentanswer = function(comment_id) // today
 		{
 			console.log("addcommentanswer called with id " + comment_id);
 			var answer = $.trim($('.inputAnswerComment').filter(function() {
@@ -2664,7 +2664,7 @@ function ViewProposalViewModel()
         }
     }
 
-	self.addComment = function(comment) // bang
+	self.addComment = function(comment) // today
 	{
 		console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';
@@ -2685,6 +2685,7 @@ function ViewProposalViewModel()
 					supporters: ko.observableArray(JSON.parse(data.comment.supporters))
 		  		});
 
+		  		console.log("Clear comment input box");
 		  		// Clear comment input box
 		  		switch (data.comment.comment_type)
 		  		{
@@ -2698,6 +2699,10 @@ function ViewProposalViewModel()
 		  		        self.question('');
 		  		        break;
 		  		}
+		  		
+		  		$('#viewproposal .alert')
+			    .text('')
+    			.fadeOut();
 
 		  		// Update counts
 		  		var index = getItemIndexFromArrayWithID(proposalsViewModel.proposals(), self.id());
@@ -2724,14 +2729,12 @@ function ViewProposalViewModel()
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
-			console.log('addcomment: There was an error with add comment. Status: ' + textStatus); // bear
+			console.log('addcomment: There was an error with add comment. Status: ' + textStatus); // today
             var message = getJQXHRMessage(jqXHR, 'There was a problem adding your comment');
             $('#viewproposal .alert')
 			.text(message)
 			.setAlertClass('danger')
-			.slideDown('slow')
-			.delay(2000)
-			.slideUp('slow');
+			.fadeIn();
         });
 	}
 
