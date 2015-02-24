@@ -67,7 +67,7 @@
 		<h2>Welcome to Vilfredo</h2>
 		<h2>You have been invited to participate in a question!</h2>
 		<br>
-		<span class="blurb">
+		<div class="blurb">
 			<p>You got here by clicking on an invitation link emailed to you by a Vilfredo user.</p>
 			<p>If you are new to Vilfredo please click the Register button and sign up to participate.</p>
 			<p>If you are already a member just log in to begin participating.</p>
@@ -75,7 +75,7 @@
 			<span class="emphasisze">New User?</span> <button data-bind="click: registerViewModel().open" type="button" class="btn btn-success btn-lg navbutton">Register</button>
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<span class="emphasisze">Existing user?</span> <button data-bind="click: loginViewModel().open" type="button" class="btn btn-primary btn-lg navbutton">Login</button>
-		</span>
+		</div>
 
 		</div>
 		
@@ -110,6 +110,7 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
+					</a>
 					&nbsp;
 					<a title="Edit question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					<a title="Delete question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
@@ -134,7 +135,7 @@
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					
+					</a>
 					</div>
 					
 					<!-- /ko -->
@@ -154,7 +155,7 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					
+					</a>
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
@@ -176,7 +177,7 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					
+					</a>
 					</div>
 					
 					<!-- /ko -->
@@ -195,7 +196,7 @@
 
 
 <!-- Edit Question Modal -->
-	<div id="editquestion" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="EditQuestionBox" aria-hidden="true">
+	<div id="editquestion" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" role="dialog" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -235,7 +236,7 @@
 	
 	
 <!-- New Question Modal -->
-	<div id="addquestion" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="AddQuestionBox" aria-hidden="true">
+	<div id="addquestion" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" role="dialog" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -275,7 +276,7 @@
 	
 	
 	<!-- Tri Voting Modal -->
-	<div id="vote3waywindow" class="modal fade" tabindex="1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
+	<div id="vote3waywindow" class="modal fade" tabindex="1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -294,7 +295,7 @@
 	
 
 	<!-- Continuous Voting Modal -->
-	<div id="votenowwindow" class="modal fade" tabindex="1" role="dialog" aria-labelledby="VoteNowBox" aria-hidden="true">
+	<div id="votenowwindow" class="modal fade" tabindex="1" role="dialog" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -309,7 +310,7 @@
 	</div><!-- /.modal -->
 	
 	<!-- reset-pwd Modal shark -->
-	<div id="reset_pwd" class="modal fade" tabindex="1" role="dialog" aria-labelledby="ResetBox" aria-hidden="true">
+	<div id="reset_pwd" class="modal fade" tabindex="1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
