@@ -25,11 +25,12 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Vilfredo - Fair Decision-Making</title>
-        <meta name="description" content="">
+        <meta name="description" content="Vilfredo allows groups from 5 to 20 people to ask open questions and reach consensus in a easy and fair way.">
+        <meta name="keywords" content="decision-making, voting, consensus, consensus building, open questions, eParticipation, eGovernment, fair decision">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-title" content="Vilfredo">
-		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="Vilfredo">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
     </head>
     <body>
 	<div id="navbar"></div>
@@ -84,15 +85,27 @@
 			<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && questionViewModel.completed_voter_count() > 1 && false -->
 			<p>You can now move this question on to the next phase: <button class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
 			<!-- /ko -->
-			
-			
+
+		</div>
+		
+		<br>
+		<div class="panel question-info">
+			<div class="well">
+				<span class="blurb" data-bind="html: blurb"></span>
+				<br>
+				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
+				<br><br>
+				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit a Propoal</a>
+				</div>	
+			</div>
+		</div>
+
+
 		<!-- Participation table start -->
 		<br>
 		<div id="participationtable" data-bind="visible: questionViewModel.is_author() && questionViewModel.phase() == 'writing'">
 			
-			<h1>
-				Participation Table
-			</h1>
+			<h2>Participation Table</h2>
 			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
 			
 		<table class="table" width="647">
@@ -122,23 +135,7 @@
 		</div>
 		<!-- Participation table end -->
 
-			
-			
-			
-		</div>
-		
-		<br>
-		
-		<div class="panel question-info">
-			<div class="well">
-				<span class="blurb" data-bind="html: blurb"></span>
-				<br>
-				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
-				<br><br>
-				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit a Propoal</a>
-				</div>	
-			</div>
-		</div>
+
 		</div>
 		<!-- question-view end -->
 
