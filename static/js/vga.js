@@ -3216,6 +3216,7 @@ function ProposalsViewModel()
 		    self.proposals.remove(proposal);
 		    add_page_alert('success', 'Proposal "' + proposal.title() + '" deleted.');
 		    questionViewModel.fetchQuestion();
+		    questionViewModel.fetchParticipationTable();
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
 			console.log('delete: There was an error deleting the proposal. Status: ' + textStatus); // maison
