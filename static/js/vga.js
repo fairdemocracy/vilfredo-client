@@ -2141,9 +2141,9 @@ function AddProposalViewModel()
     }
     self.clear = function()
 	{
-		//self.title('');
-		//self.abstract('');
-		//self.blurb('');
+		self.title('');
+		self.abstract('');
+		self.blurb('');
 		self.title.isModified(false);
 		self.abstract.isModified(false);
 		self.blurb.isModified(false);
