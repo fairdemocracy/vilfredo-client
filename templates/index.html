@@ -99,7 +99,7 @@
 		<div class="row">
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
-					<span rel="tooltip" title="Please Register or Log In to Ask a Question" class="pointer"></span>
+					<span data-toggle="tooltip" title="Please Register or Log In to Ask a Question" class="pointer"></span>
                 </div>
                 <div class="panel-body">
 				<div class="">
@@ -107,7 +107,7 @@
 					<!-- ko foreach: questions -->
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
-					<a rel="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
+					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					&nbsp;
@@ -131,7 +131,7 @@
 					<!-- ko if: !consensus_found() && phase() == "writing" && !$root.is_new_question($data) -->
 					
 					<div class="item">
-					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.settooltip($data) }">
+					<a data-toggle="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
@@ -150,7 +150,7 @@
 					<!-- ko foreach: questions -->
 					<!-- ko if: phase() == "voting" -->
 					<div class="item">
-					<a rel="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
+					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
@@ -171,7 +171,7 @@
 					<!-- ko if: phase() == 'results' -->
 					
 					<div class="item">
-					<a rel="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
+					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
@@ -531,7 +531,7 @@
 		})
 		
 		$('body').tooltip({
-		    selector: '[rel=tooltip]',
+		    selector: "[data-toggle='tooltip']",
 			html: true,
 			container: 'body'
 		});
