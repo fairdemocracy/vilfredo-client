@@ -2990,7 +2990,7 @@ function QuestionsViewModel()
 	{
 	    return question.generation() == 1 && question.proposal_count() == 0;
 	}
-	self.tooltip = function(question)
+	self.settooltip = function(question)
 	{
 	    html = "<div>";
 	    html = html + question.blurb().substr(0, 150) + '...</div>';

@@ -107,7 +107,7 @@
 					<!-- ko foreach: questions -->
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
-					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<a rel="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					&nbsp;
@@ -131,7 +131,7 @@
 					<!-- ko if: !consensus_found() && phase() == "writing" && !$root.is_new_question($data) -->
 					
 					<div class="item">
-					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
@@ -150,7 +150,7 @@
 					<!-- ko foreach: questions -->
 					<!-- ko if: phase() == "voting" -->
 					<div class="item">
-					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<a rel="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
@@ -171,10 +171,9 @@
 					<!-- ko if: phase() == 'results' -->
 					
 					<div class="item">
-					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
+					<a rel="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					</a>
 					</div>
 					
 					<!-- /ko -->
