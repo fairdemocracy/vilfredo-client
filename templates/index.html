@@ -110,7 +110,6 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					</a>
 					&nbsp;
 					<a title="Edit question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					<a title="Delete question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
@@ -135,7 +134,6 @@
 					<a rel="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					</a>
 					</div>
 					
 					<!-- /ko -->
@@ -155,7 +153,6 @@
 					<a rel="tooltip" title="not yet implemented" data-bind="attr: { href: link, title: $root.tooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					</a>
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
