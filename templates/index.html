@@ -103,6 +103,9 @@
 	
 	<div class="container main">
 		
+		<div id="displaycookiebar"></div>
+		<br><br>
+		
 		<div id="main_intro" class="jumbotron intro" data-bind="visible: currentUserViewModel.isLoggedOut()">
 		<h2>Fair Decision-Making</h2>
 		  <p>Vilfredo allows groups from 5 to 20 people to ask open questions and reach consensus in an easy and fair way.</p>
@@ -506,9 +509,10 @@
 		inviteUsersViewModel = new InviteUsersViewModel();
 		
 		$.cookieBar({
-			fixed: true, bottom: true, 
+			fixed: false, bottom: false, 
 			forceShow: false, zindex: '1040', 
-			effect: 'slide', autoEnable: false
+			effect: 'slide', autoEnable: false, 
+			element: '#displaycookiebar'
 		});
 		
 		initPage();
