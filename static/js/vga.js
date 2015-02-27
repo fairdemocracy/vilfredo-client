@@ -185,6 +185,13 @@ function arrayDiff(arr1, arr2)
     return diff;
 }
 
+function viewFullText(item)
+{
+    console.log('viewFullText called...');
+    $("#full_text .modal-body").html(item.comment());
+    $("#full_text").modal('show');
+}
+
 function checkVGAMessages()
 {
     if ($.cookie('vgamessage'))
@@ -2823,7 +2830,7 @@ function ViewProposalViewModel()
 		  		var supporters = JSON.parse(data.comments[i].supporters)
 				fetched_comments.push({
 		      		id: ko.observable(data.comments[i].id),
-					comment: ko.observable(data.comments[i].comment),
+					comment: ko.observable(data.comments[i].comment.replace(/\r?\n/g, '<br>')),
 		      		comment_type: ko.observable(data.comments[i].comment_type),
 		      		created: ko.observable(data.comments[i].created),
 					reply_to: ko.observable(data.comments[i].reply_to),

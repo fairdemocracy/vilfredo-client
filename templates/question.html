@@ -396,7 +396,7 @@
 			<div id="showcomments">
 				<div class="col-md-6">
 					<h4>Points For</h4>
-					<div class="comments">
+					<div class="comments for">
 					<!-- ko foreach: comments -->
 					<!-- ko if: comment_type() == 'for' -->
 					<div class="comment for">
@@ -415,7 +415,7 @@
 				</div>
 				<div class="col-md-6">
 					<h4>Points Against</h4>
-					<div class="comments">
+					<div class="comments against">
 					<!-- ko foreach: comments -->
 					<!-- ko if: comment_type() == 'against' -->
 					<div class="comment against">
@@ -446,16 +446,16 @@
 					<div class="qabox row">
 						<div class="col-md-6">
 							<div class="comment question">
-								<span data-bind="html: comment"></span>
+								<div data-bind="html: ($data.comment().length <= 200) ? $data.comment() : comment().substr(0, 200) + '...'"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 								<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-6 ans">
 							<!-- ko if: $parent.getAnswerObject(id) -->
 							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
-								<span data-bind="html: $data.comment"></span>
+								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: ($data.comment().length <= 200) ? $data.comment() : $data.comment().substr(0, 200) + '...' + ' ( <a>click to read more</a> )'"></div>
 								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
 								<button data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like</button>
 								</div>
@@ -620,6 +620,23 @@
 	    </div><!-- modal-content -->
 	  </div><!-- modal-dialog -->
 	</div><!-- modal -->
+	
+	<!-- FullText Modal -->
+	<div id="full_text" class="modal fade" tabindex="=1" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title">
+						Full Text
+					</h4>
+				</div>
+				<div class="modal-body">
+					Hi there baby!!!
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- FullText modal -->
 	
 	</div>
 
@@ -821,6 +838,10 @@
 			$('#votemap-thisprop').html('');
 		})
 		
+		$('#fullt_text').on('hide.bs.modal', function() {
+			$("#full_text .modal-body").html('');
+		})
+		
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 		
 		$(".question-info").each(function(){
@@ -964,6 +985,30 @@
 		$("#inputProposalAbstract").charCount({
 			allowed: 5000,		
 			warning: 4950,
+			counterText: "Characters left" + " "
+		});
+		
+		$(".ans textarea").charCount({
+			allowed: 1000,		
+			warning: 900,
+			counterText: "Characters left" + " "
+		});
+		
+		$("#inputQuestionComment").charCount({
+			allowed: 1000,		
+			warning: 900,
+			counterText: "Characters left" + " "
+		});
+		
+		$(".comments.for textarea").charCount({
+			allowed: 1000,		
+			warning: 900,
+			counterText: "Characters left" + " "
+		});
+		
+		$(".comments.against textarea").charCount({
+			allowed: 1000,		
+			warning: 900,
 			counterText: "Characters left" + " "
 		});
 		

@@ -6683,10 +6683,10 @@ fieldset[disabled] .select_comment.supports button.active {
 #showcomments .comments {
   height: 270px;
   overflow: scroll;
-  /*background-color: yellow;*/
 }
 #showquestions .comments {
-  /*height: 90%;*/
+  height: 270px;
+  overflow-y: scroll;
 }
 .qabox {
   margin-bottom: 5px;
@@ -6794,12 +6794,24 @@ a.plain {
 .all-questions .col-md-12.icons.consensus {
   min-height: 100px;
 }
+/*
+.comments .comment {
+	border-radius: 5px;
+	margin-bottom: 5px;
+	padding: 3px;
+	min-height: 50px;
+    max-height: 70px !important;
+	overflow: hidden;
+	width: 85%;
+	position: relative;
+	padding-bottom: 20px;
+}*/
 .comments .comment {
   border-radius: 5px;
   margin-bottom: 5px;
   padding: 3px;
   min-height: 50px;
-  height: auto !important;
+  height: 70px !important;
   width: 85%;
   position: relative;
   padding-bottom: 20px;
