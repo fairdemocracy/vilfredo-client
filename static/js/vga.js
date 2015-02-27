@@ -668,7 +668,7 @@ function calculateTriangleDimensions(svg)
 	var map_width, map_height;
 
 	var container_width = $(svg._container).innerWidth();
-	var container_height = $(svg._container).innerHeight();
+	var container_height = $(svg._container).innerHeight() - 10;
 	//console.log('container_width = ' + container_width);
     //console.log('container_height = ' + container_height);
 
