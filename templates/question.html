@@ -410,7 +410,7 @@
 					<textarea data-bind="textInput: comment_for" id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'for')" id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</div>
-					<!-- for comments end bang -->
+					<!-- for comments end -->
 				
 				</div>
 				<div class="col-md-6">
@@ -466,7 +466,7 @@
 							<!-- ko ifnot: $parent.getAnswerObject(id) -->
 							
 							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id -->
-							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment" class="form-control" rows="3" placeholder="Answer Question"></textarea>
+							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment form-control" rows="3" placeholder="Answer Question"></textarea>
 							<button data-bind="click: function() { $root.addcommentanswer(id()) }" type="button" class="btn btn-default btn-xs">answer</button>
 							<!-- /ko -->
 							
@@ -988,11 +988,14 @@
 			counterText: "Characters left" + " "
 		});
 		
-		$(".ans textarea").charCount({
-			allowed: 1000,		
-			warning: 900,
-			counterText: "Characters left" + " "
+		$('.inputAnswerComment').live('click', function(e) {
+			$(this).charCount({
+				allowed: 1000,		
+				warning: 900,
+				counterText: "Characters left" + " "
+			});
 		});
+		
 		
 		$("#inputQuestionComment").charCount({
 			allowed: 1000,		
