@@ -989,11 +989,15 @@
 		});
 		
 		$('.inputAnswerComment').live('click', function(e) {
-			$(this).charCount({
-				allowed: 1000,		
-				warning: 900,
-				counterText: "Characters left" + " "
-			});
+			if ($(this).data('charcount') == undefined)
+			{
+				$(this).data('charcount', true);
+				$(this).charCount({
+					allowed: 1000,		
+					warning: 900,
+					counterText: "Characters left" + " "
+				});
+			}
 		});
 		
 		
