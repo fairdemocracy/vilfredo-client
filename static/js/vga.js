@@ -95,6 +95,21 @@ function updateProgress(evt)
     }
 }
 
+function displayCommentText(str, len)
+{
+    var len = (len == undefined) ? MAX_COMMENT_DISAPLAY_CHARS : len;
+    return (str.length <= len) ? str : str.substr(0, len) + '...' + ' ( <a>read more</a> )';
+}
+
+function viewFullText(item)
+{
+    if (item.comment().length > MAX_COMMENT_DISAPLAY_CHARS)
+    {
+        $("#full_text .modal-body").html(item.comment());
+        $("#full_text").modal('show');
+    }
+}
+
 function get_api_info()
 {
     var URI = VILFREDO_API +'/';
@@ -183,13 +198,6 @@ function arrayDiff(arr1, arr2)
         }
     });
     return diff;
-}
-
-function viewFullText(item)
-{
-    console.log('viewFullText called...');
-    $("#full_text .modal-body").html(item.comment());
-    $("#full_text").modal('show');
 }
 
 function checkVGAMessages()
@@ -2671,7 +2679,7 @@ function ViewProposalViewModel()
         }
     }
 
-	self.addComment = function(comment) // today
+	self.addComment = function(comment) // vienna
 	{
 		console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';

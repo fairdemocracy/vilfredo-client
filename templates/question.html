@@ -400,7 +400,7 @@
 					<!-- ko foreach: comments -->
 					<!-- ko if: comment_type() == 'for' -->
 					<div class="comment for">
-						<span data-bind="html: comment"></span>
+						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 						</div>
@@ -419,7 +419,7 @@
 					<!-- ko foreach: comments -->
 					<!-- ko if: comment_type() == 'against' -->
 					<div class="comment against">
-						<span data-bind="html: comment"></span>
+						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 						</div>
@@ -446,7 +446,7 @@
 					<div class="qabox row">
 						<div class="col-md-6">
 							<div class="comment question">
-								<div data-bind="html: ($data.comment().length <= 200) ? $data.comment() : comment().substr(0, 200) + '...'"></div>
+								<div data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 								<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 								</div>
@@ -455,7 +455,7 @@
 						<div class="col-md-6 ans">
 							<!-- ko if: $parent.getAnswerObject(id) -->
 							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
-								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: ($data.comment().length <= 200) ? $data.comment() : $data.comment().substr(0, 200) + '...' + ' ( <a>click to read more</a> )'"></div>
+								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
 								<button data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like</button>
 								</div>
