@@ -2997,20 +2997,25 @@ function QuestionsViewModel()
 	{
 	    return question.generation() == 1 && question.proposal_count() == 0;
 	}
+	
+	
+	/*
+	"X out of Y participants submitted N proposals" for proposals and
+    "X out of Y participants already voted" for voting and
+    "X out of Y participants contributed" for results area.
+	*/
 	self.settooltip = function(question)
 	{
 	    html = "<div>";
 	    html = html + question.blurb().substr(0, 150) + '...</div>';
-	    html = html + "<strong>Generation: " + question.generation() + "</strong>";
+	    html = html + "<strong>Generation: " + question.generation() + "</strong><br>";
 	    
 	    if (question.phase() == 'writing')
 	    {
     	    if (question.new_proposal_count() > 0)
     	    {
-    	        html = html + "<br>This question has " + question.participant_count() + " participants."
-    	            + "<br>Recently "
-    	            + question.new_proposer_count() + " users proposed "
-    	            + question.new_proposal_count() + " proposals";
+    	        html = html + question.new_proposer_count() + ' out of ' + question.participant_count()
+    	            + ' participants submitted ' + question.new_proposal_count() + ' proposals';
     	    }
     	    else
     	    {
@@ -3026,7 +3031,8 @@ function QuestionsViewModel()
 	    else if (question.phase() == 'voting')
 	    {
 	        // Display how many have voted
-	        html = html + "<br>This question has " + question.participant_count() + " participants."
+	        /*
+	        html = html + "This question has " + question.participant_count() + " participants."
 	                + "<br>Out of "
 	                + question.voters_voting_count() + " users voting "
     	            + question.completed_voter_count() + " users have finished.";
@@ -3034,8 +3040,17 @@ function QuestionsViewModel()
 	        if (question.completed_voter_count() == question.participant_count())
 	        {
 	            html = html + "<br>Everyone has voted!"
-	        }
+	        }*/
+	        
+	        html = html + question.completed_voter_count() + ' out of ' + question.participant_count()
+    	            + ' participants already voted';
+	        
 	    }
+	    else if (question.phase() == 'results')
+	    {
+    	    html = html + question.completed_voter_count() + ' out of ' + question.participant_count()
+    	            + ' participants contributed';
+        }
 	    return html;
 	}
 	self.minimum_time_passed = function(question)
