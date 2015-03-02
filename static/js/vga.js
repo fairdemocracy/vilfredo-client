@@ -1926,7 +1926,7 @@ function NewPasswordViewModel()
         required: true,
         minlength: 6,
         message: "Password is required",
-        maxLength: 12
+        maxLength: 60
     });
 
     self.confirmpassword = ko.observable('');
