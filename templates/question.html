@@ -31,6 +31,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-title" content="Vilfredo">
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/multi-columns-row.css') }}">
     </head>
     <body>
 	<div id="navbar"></div>
@@ -257,9 +258,10 @@
 		<p>You have not written any proposals so far. If you think you have a possible solution, why not propose an answer?</p>
 		</div>
 		
-		<div class="proposal_list row">
+		<div class="container">
+		<div class="proposal_list row multi-columns-row">
 			<!-- ko foreach: proposals -->
-			<div class="proposal col-md-4" data-bind="attr: { pid: id, index: $index }">
+			<div class="proposal col-xs-6 col-sm-4 col-md-4 col-lg-4" data-bind="attr: { pid: id, index: $index }">
 			<input data-bind="value: id" type="hidden" class="propId" value="">
 			<input data-bind="value: $index" type="hidden" class="index" value="">
      		<input data-bind="value: author" type="hidden" class="author" value="">
@@ -283,6 +285,7 @@
 				</div>
 			</div>
 			</div><!-- /ko -->
+		</div>
 		</div>
 		</div>
 		<!-- 
@@ -667,6 +670,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		{{ flask_util_js.js }}
 	
