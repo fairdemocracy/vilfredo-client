@@ -201,9 +201,9 @@
 			<h3>These proposals were inherited from the previous generation:</h3>
 		</div>
 			
-		<div class="proposal_list row">
+		<div class="proposal_list row multi-columns-row">
 			<!-- ko foreach: inherited_proposals -->
-			<div class="proposal col-md-4">
+			<div class="proposal col-xs-6 col-sm-4 col-md-4 col-lg-4">
 			<input data-bind="value: id" type="hidden" class="propId" value="">
 			<input data-bind="value: $index" type="hidden" class="index" value="">
      		<input data-bind="value: author" type="hidden" class="author" value="">
@@ -258,7 +258,7 @@
 		<p>You have not written any proposals so far. If you think you have a possible solution, why not propose an answer?</p>
 		</div>
 		
-		<div class="container">
+		
 		<div class="proposal_list row multi-columns-row">
 			<!-- ko foreach: proposals -->
 			<div class="proposal col-xs-6 col-sm-4 col-md-4 col-lg-4" data-bind="attr: { pid: id, index: $index }">
@@ -285,7 +285,6 @@
 				</div>
 			</div>
 			</div><!-- /ko -->
-		</div>
 		</div>
 		</div>
 		<!-- 
