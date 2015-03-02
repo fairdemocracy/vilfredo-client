@@ -6404,7 +6404,7 @@ td.green {
   margin: 10px auto;
   background-color: #E0EEEE;
   border: #C0D9D9	1px solid;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   width: 600px;
   padding: 10px;
 }
@@ -6415,7 +6415,7 @@ td.green {
 .keyplayer .votegroup {
   margin: 10px 0;
   border: 1px solid #E0FFFF;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   padding: 5px;
   padding-left: 15px;
 }
@@ -6795,7 +6795,7 @@ a.plain {
   min-height: 100px;
 }
 .comments .comment {
-  border-radius: 5px;
+  /* border-radius: 5px; */
   margin-bottom: 5px;
   padding: 3px;
   min-height: 50px;
@@ -6824,7 +6824,7 @@ a.plain {
   margin-top: -20px;
 }
 #showcomments .comments .comment {
-  border-radius: 5px;
+  /* border-radius: 5px; */
   margin-bottom: 10px;
   padding: 10px;
 }
