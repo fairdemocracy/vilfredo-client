@@ -3039,22 +3039,6 @@ function QuestionsViewModel()
 	    else if (question.phase() == 'voting')
 	    {
 	        // Display how many have voted
-	        /*
-	        html = html + "This question has " + question.participant_count() + " participants."
-	                + "<br>Out of "
-	                + question.voters_voting_count() + " users voting "
-    	            + question.completed_voter_count() + " users have finished.";
-	        // Check if everyone has voted
-	        if (question.completed_voter_count() == question.participant_count())
-	        {
-	            html = html + "<br>Everyone has voted!"
-	        }*/
-	        
-	        /*
-	        html = html + question.completed_voter_count() + ' out of ' + question.participant_count()
-    	            + ' participants already voted';
-    	      */      
-
             var not_finished = question.voters_voting_count() - question.completed_voter_count();
     	    html = html + "Out of " + question.participant_count() + ' participants';
     	    if (question.voters_voting_count() == 0)
