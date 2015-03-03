@@ -258,9 +258,14 @@
 		<p>You have not written any proposals so far. If you think you have a possible solution, why not propose an answer?</p>
 		</div>
 		
-		
+		<div data-bind="visible: hasVotedAll() == false">
+		<h2>Still to Vote</h2>
+		<p>Below are the proposals you have not yet voted for.</p>
+		<br>
+		</div>
 		<div class="proposal_list row multi-columns-row">
 			<!-- ko foreach: proposals -->
+			<!-- ko if: isNaN(mapx()) -->
 			<div class="proposal col-xs-6 col-sm-4 col-md-4 col-lg-4" data-bind="attr: { pid: id, index: $index }">
 			<input data-bind="value: id" type="hidden" class="propId" value="">
 			<input data-bind="value: $index" type="hidden" class="index" value="">
@@ -284,7 +289,50 @@
 					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
-			</div><!-- /ko -->
+			</div>
+			<!-- /ko -->
+			<!-- /ko -->
+		</div>
+		</div>
+		<!-- 
+		Current Proposals End
+		-->
+		
+		<div data-bind="visible: hasVoted()">
+		<h2>Voted Proposals</h2>
+		<p>Below are the proposals you have voted for, ordered by how much you like them. You can change your vote for any of these proposals at any time during the voting phase.</p>
+		<br>
+		</div>
+		
+		<div class="proposal_list row multi-columns-row">
+			<!-- ko foreach: proposals -->
+			<!-- ko if: isNaN(mapx()) == false -->
+			<div class="proposal col-xs-6 col-sm-4 col-md-4 col-lg-4" data-bind="attr: { pid: id, index: $index }">
+			<input data-bind="value: id" type="hidden" class="propId" value="">
+			<input data-bind="value: $index" type="hidden" class="index" value="">
+     		<input data-bind="value: author" type="hidden" class="author" value="">
+			<input data-bind="value: uri" type="hidden" class="uri" value="">
+			<div data-bind="css: endorse_type" class="panel">
+				<div class="panel-heading" data-bind="style: {color: box_color(), background: box_background(), border: box_background()}">
+					<h3 class="panel-title proposal" data-bind="text: title, click: $parent.read.bind($data, $index(), 'content')"></h3>
+				</div>
+				<div class="panel-body proposal-blurb">
+					<span data-bind="html: blurb"></span>
+				</div>
+				<div class="panel-footer proposal-footer">
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
+					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+					&nbsp;
+					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
+					&nbsp;
+					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
+					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
+				</div>
+			</div>
+			</div>
+			<!-- /ko -->
+			<!-- /ko -->
 		</div>
 		</div>
 		<!-- 

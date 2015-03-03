@@ -127,7 +127,7 @@ function SortByMedx(x, y)
 
 function sortProposalsByLike(left, right) 
 { 
-    return left.mapx == right.mapx ? 0 : (left.mapx < right.mapx ? 1 : -1) 
+    return left.mapx() == right.mapx() ? 0 : (left.mapx() < right.mapx() ? 1 : -1) 
 }
 
 function getKeys(object)
@@ -374,11 +374,11 @@ function setVote(proposal) // paris
     max_y = 0.7 * max_x;
     //console.log('container_height = ' + max_y);
 
-	cx = max_x * proposal.mapx;
-	cy = max_y * proposal.mapy;
+	cx = max_x * proposal.mapx();
+	cy = max_y * proposal.mapy();
 
 	var votesgroup = $('.votes', svg.root());    
-    fill_color = setMapColor(proposal.mapx, proposal.mapy);
+    fill_color = setMapColor(proposal.mapx(), proposal.mapy());
 
 	// If a vote is already plotted, move it
 	var vote = $('.vote', svg.root()).filter(function() {
@@ -976,7 +976,7 @@ function createVoteMap(svg)
     // Add the other proposals first
     $.each(proposalsViewModel.proposals(), function(i, proposal)
     {
-        if (!proposal.mapx || !proposal.mapy)
+        if (!proposal.mapx() || !proposal.mapy())
         {
             console.log('no map coords');
             return true;
@@ -989,8 +989,8 @@ function createVoteMap(svg)
             return true;
         }
 
-        cx = triangle_width * proposal.mapx;
-        cy = triangle_height * proposal.mapy;
+        cx = triangle_width * proposal.mapx();
+        cy = triangle_height * proposal.mapy();
         console.log("Draw vote at (" + cx + ", " + cy +")");
         
         fill_color = '#BEBEBE';
@@ -1023,11 +1023,11 @@ function createVoteMap(svg)
     });
     // Add active vote last
     var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()];
-    if (proposal.mapx && proposal.mapy)
+    if (proposal.mapx() && proposal.mapy())
     {
-        cx = triangle_width * proposal.mapx;
-        cy = triangle_height * proposal.mapy;
-        fill_color = setMapColor(proposal.mapx, proposal.mapy);
+        cx = triangle_width * proposal.mapx();
+        cy = triangle_height * proposal.mapy();
+        fill_color = setMapColor(proposal.mapx(), proposal.mapy());
         cursor_type = 'pointer';
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type});
         $(vote).data('pid', proposal.id());
@@ -3102,6 +3102,38 @@ function ProposalsViewModel()
 	    self.key_players([]);
 	    self.inherited_proposals([]);
 	};
+	
+	self.hasVoted = ko.pureComputed(function() {
+		var proposals = self.proposals();
+		if (proposals.length == 0)
+		{
+		    return false;
+		}
+		for (var i = 0, j = proposals.length; i < j; i++)
+		{
+		    if (isNaN(proposals[i].mapx()) == false)
+		    {
+		        return true;
+		    }
+		}
+		return false;
+    });
+	
+	self.hasVotedAll = ko.pureComputed(function() {
+		var proposals = self.proposals();
+		if (proposals.length == 0)
+		{
+		    return false;
+		}
+		for (var i = 0, j = proposals.length; i < j; i++)
+		{
+		    if (isNaN(proposals[i].mapx()))
+		    {
+		        return false;
+		    }
+		}
+		return true;
+    });
     
     self.votedAll = ko.pureComputed(function() {
 		var proposals = self.proposals();
@@ -3308,8 +3340,8 @@ function ProposalsViewModel()
 					question_count: ko.observable(parseInt(data.proposal.question_count)),
 					comment_count: ko.observable(parseInt(data.proposal.comment_count)),
 					vote_count: ko.observable(parseInt(data.proposal.vote_count)),
-					mapx: mapx,
-					mapy: mapy,
+					mapx: ko.observable(mapx),
+					mapy: ko.observable(mapy),
 					box_background: ko.observable(background),
 					box_color: ko.observable(color)
 		  		});
@@ -3387,8 +3419,8 @@ function ProposalsViewModel()
 
 				// Update vote coordinates and endorsement type
 				proposal.endorse_type(data.endorsement_type);
-				proposal.mapx = mapx;
-				proposal.mapy = mapy;
+				proposal.mapx(mapx);
+				proposal.mapy(mapy);
 				
 				proposal.box_background(setMapColor(mapx, mapy));
 		  		proposal.box_color(getContrastYIQ(proposal.box_background()));
@@ -3416,51 +3448,19 @@ function ProposalsViewModel()
 				//questionViewModel.fetchParticipationTable();
 				redoResultsMap();
 				
+				$('.voting').each(function(){
+					var index = $(this).parents('.panel').siblings('.index')[0].value;
+					var pid = $(this).parents('.panel').siblings('.propId')[0].value;
+					//console.log('adding pid ' + pid + ' and threeway class to voting container...');
+					$(this).data('pid', pid).addClass('threeway').data('index', index);
+					//console.log('check if pid added ==> ' + $(this).data('pid'));
+					console.log('Load triangle into proposal box');
+					//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
+					$(this).svg({loadURL: STATIC_FILES + '/images/triangle_b.svg'});//,
+					//			 onLoad: init3WayTriangle});
+				});
+				
 				proposalsViewModel.proposals.sort(sortProposalsByLike);
-			}
-			else
-			{
-				console.log(jqXHR.status);
-			}
-		});
-	}
-
-	self.endorseWithIndex = function(endorsement_type, index)
-	{
-		if (currentUserViewModel.isLoggedIn() == false)
-		{
-		    console.log("Not logged in");
-		    return;
-		}
-		var proposal = self.proposals()[index];
-		console.log('endorseWithIndex called with index ' + index + ' and endorsement_type ' + endorsement_type);
-		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
-		console.log('endorse uri = ' + endorse_uri);
-
-		ajaxRequest(endorse_uri, 'POST', {endorsement_type:endorsement_type})
-		.done(function(data, textStatus, jqXHR)
-		{
-		    console.log('Proposals data returned...');
-			console.log(data);
-
-			if (jqXHR.status == 201)
-			{
-				console.log('Updating proposal ' + proposal.id() + ' to ' + endorsement_type);
-				var prev_endorsement_type = proposal.endorse_type();
-				proposal.endorse_type(endorsement_type);
-				viewProposalViewModel.setProposal(proposal);
-				if ( (prev_endorsement_type == 'endorse'
-					&& (endorsement_type == 'confused' || endorsement_type == 'oppose'))
-				|| (endorsement_type == 'endorse'
-					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
-					    || prev_endorsement_type == 'notvoted')) )
-				{
-					console.log('Refreshing graphs after vote...');
-					fetchVotingGraphs(); // boots
-					questionViewModel.fetchParticipationTable();
-				}
-				// reset key players
-				//self.fetchKeyPlayers();
 			}
 			else
 			{
@@ -3538,8 +3538,8 @@ function ProposalsViewModel()
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
 					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
-					mapx: mapx,
-					mapy: mapy,
+					mapx: ko.observable(mapx),
+					mapy: ko.observable(mapy),
 					box_background: ko.observable(background), 
 					box_color: ko.observable(color)
 		  		});
@@ -3577,8 +3577,8 @@ function ProposalsViewModel()
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
 					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
-					mapx: mapx,
-					mapy: mapy,
+					mapx: ko.observable(mapx),
+					mapy: ko.observable(mapy),
 					box_background: ko.observable(background), 
 					box_color: ko.observable(color)
 		  		});
@@ -3630,8 +3630,8 @@ function ProposalsViewModel()
 					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
 					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
-					mapx: mapx,
-					mapy: mapy,
+					mapx: ko.observable(mapx),
+					mapy: ko.observable(mapy),
 					box_background: ko.observable(background), 
 					box_color: ko.observable(color)
 		  		});
