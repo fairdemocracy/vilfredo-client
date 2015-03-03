@@ -3050,8 +3050,29 @@ function QuestionsViewModel()
 	            html = html + "<br>Everyone has voted!"
 	        }*/
 	        
+	        /*
 	        html = html + question.completed_voter_count() + ' out of ' + question.participant_count()
     	            + ' participants already voted';
+    	      */      
+
+            var not_finished = question.voters_voting_count() - question.completed_voter_count();
+    	    html = html + "Out of " + question.participant_count() + ' participants';
+    	    if (question.voters_voting_count() == 0)
+    	    {
+    	        html = html + " no one started voting. Be the first!";
+    	    }
+    	    if (not_finished && question.completed_voter_count())
+    	    {
+    	        html = html + ", " + question.completed_voter_count() + " finished voting, " +  not_finished +  " started voting";
+    	    }
+    	    else if (question.completed_voter_count())
+    	    {
+    	        html = html + ", " + question.completed_voter_count() + " finished voting";
+    	    }
+    	     else if (not_finished)
+    	    {
+    	        html = html + ", " +  not_finished +  " started voting";
+    	    }
 	        
 	    }
 	    else if (question.phase() == 'results')
