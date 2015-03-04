@@ -258,7 +258,7 @@
 		<p>You have not written any proposals so far. If you think you have a possible solution, why not propose an answer?</p>
 		</div>
 		
-		<div data-bind="visible: hasVotedAll() == false">
+		<div data-bind="visible: hasVotedAll() == false && questionViewModel.phase() == 'voting'">
 		<h2>Still to Vote</h2>
 		<p>Below are the proposals you have not yet voted for.</p>
 		<br>
@@ -298,7 +298,7 @@
 		Current Proposals End
 		-->
 		
-		<div data-bind="visible: hasVoted()">
+		<div data-bind="visible: hasVoted() && questionViewModel.phase() == 'voting'">
 		<h2>Voted Proposals</h2>
 		<p>Below are the proposals you have voted for, ordered by how much you like them. You can change your vote for any of these proposals at any time during the voting phase.</p>
 		<br>
