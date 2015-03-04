@@ -6204,6 +6204,14 @@ button.close {
 body {
   /*padding-top: 50px;*/
 }
+.h1 {
+  padding-left: 10px;
+}
+.page-header {
+  padding-bottom: 0px;
+  margin: 0px;
+  border-bottom: 0px;
+}
 .container.main {
   padding-top: 75px;
 }
@@ -6286,6 +6294,9 @@ td.green {
 }
 .alert.main {
   margin-bottom: 5px;
+}
+.well {
+  margin-bottom: 0px;
 }
 .well .blurb {
   font-size: 1.1em;
@@ -6730,6 +6741,7 @@ a.plain {
 }
 .all-questions .panel-title {
   text-align: center;
+  font-weight: bold;
   font-size: 1.1em;
 }
 .all-questions .panel-body {
@@ -7060,10 +7072,9 @@ a.disabled {
 #propdetails {
   overflow: auto;
 }
-/*
 .progress {
-	display: none;
-}*/
+  margin-bottom: 0px;
+}
 #avatar_placeholder {
   width: 200px;
   height: 200px;
