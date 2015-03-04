@@ -4443,7 +4443,7 @@ function QuestionViewModel() // winter
 	    console.log('moveToResults called...');
 	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_to_results:true}).done(function(data) {
 		    questionViewModel.phase(data.phase);
-		    add_page_alert('success', 'Question now in ' + questionViewModel.phase() + ' phase');
+		    add_page_alert('success', 'This question is now in ' + questionViewModel.phase() + ' phase');
 		});
 	}
 
