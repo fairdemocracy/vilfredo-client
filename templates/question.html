@@ -39,7 +39,7 @@
 	<div class="container main">
 		
 		<div id="completed_box" data-bind="visible: phase() == 'results'">
-		<h1>This Question has Now Completed!</h1>
+		<h1>This Question has been Completed!</h1>
 		<p>Click on the button below to view the final results.</p>
 		<button data-bind="click: show_results" class="btn btn-primary">Show Results</button>
 		<br><br><br>
@@ -76,7 +76,7 @@
 			<br>
 			
 			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length < 2 -->
-			<p class="text-info">Once you have a minimum of two proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
+			<p class="text-info">Once you have a minimum of 2 proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
 			<!-- /ko -->
 			
 			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && questionViewModel.new_proposal_count() > 1 -->
@@ -198,7 +198,7 @@
 			<h1>
 				Inherited Proposals
 			</h1>
-			<h3>These proposals were inherited from the previous generation:</h3>
+			<p>These proposals were inherited from the previous generation:</p>
 		</div>
 			
 		<div class="proposal_list row multi-columns-row">
@@ -237,17 +237,17 @@
 		
 		<div class="current-proposals">
 		<div data-bind="visible: questionViewModel.phase() == 'voting'" class="page-header">
-			<h1>
+			<h2>
 				Current Proposals
-			</h1>
-			<h3 data-bind="visible: proposals().length > 0">Vote on all the proposals below:</h3>
+			</h2>
+			<p data-bind="visible: proposals().length > 0">Vote on all the proposals below:</p>
 			<p class="guide"><em>Click on the blue triangles to open the triangular voting map, then click on the map to place your vote. Follow the guides to locate your vote at the location which best represents how much you understand a proposal, and how much you agree or disagree with it.</em></p>
 		</div>
 		<div data-bind="visible: questionViewModel.phase() == 'writing'" class="page-header">
-			<h1>
+			<h2>
 				Your New Proposals
-			</h1>
-			<h3 data-bind="visible: proposals().length > 0">Below are the proposals you have created during the writing phase of this generation:</h3>
+			</h2>
+			<p data-bind="visible: proposals().length > 0">Below are the proposals you have created during the writing phase of this generation:</p>
 		</div>
 		
 		<div data-bind="visible: questionViewModel.proposal_count == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">
@@ -384,7 +384,7 @@
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	        <h4 class="modal-title">Edit a Question</h4>
-			<p><b>Questions may be edited until they receive a proposal.</b></p>
+			<p><strong>Questions may be edited until they receive a proposal.</strong></p>
 	      </div>
 	      <div class="modal-body">
 		<div class="message alert alert-danger"></div>
