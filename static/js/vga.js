@@ -3421,6 +3421,7 @@ function ProposalsViewModel()
 				proposal.endorse_type(data.endorsement_type);
 				proposal.mapx(mapx);
 				proposal.mapy(mapy);
+				proposal.vote_count(parseInt(data.vote_count));
 				
 				proposal.box_background(setMapColor(mapx, mapy));
 		  		proposal.box_color(getContrastYIQ(proposal.box_background()));
