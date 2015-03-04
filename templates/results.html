@@ -60,11 +60,11 @@
 		<div id="final_results" class="panel">
 		  <div class="well">
 				<h2>Results</h2>
-				<p>There are <span data-bind="text: proposalsViewModel.pareto().length"></span> winning proposals. They are listed in order of preference by the group.</p>
+				<p>There are <strong><span data-bind="text: proposalsViewModel.pareto().length"></span> winning proposals</strong>. They are listed in order of preference by the group.</p>
 				<ul>
 				<!-- ko foreach: final_results -->
 				<li>
-				<p>"<span data-bind="text: title"></span>" by <span data-bind="text: author"></span> which was <span data-bind="visible: relations.understood == false">not</span> fully understood by everyone. Median Like was: <span data-bind="text: (medx * 100).toFixed(2)"></span>%</p>	
+				<p>"<span data-bind="text: title"></span>" by <span data-bind="text: author"></span> which was <span data-bind="visible: relations.understood == false">not</span> fully understood by everyone. Median Like was: <strong><span data-bind="text: (medx * 100).toFixed(2)"></span>%</strong></p>	
 				</li>
 				<!-- /ko -->
 				</ul>
