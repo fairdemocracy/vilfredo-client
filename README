@@ -17,6 +17,8 @@ ln -s /Users/[user]/python/vilfredo-client/templates ./templates
 
 Of course you could also copy the static and template subdirectories into the VilfredoReloadedCore directory of vilfredo-core but this seems easier.
 
+Once you have it ready, go to /static/templates/analytics.template.html and replace UA-XXXXXXXX-X with your Google Analytics ID if you use Google Analytics. If you use any other analytics tool, just replace the file contents with your tracking code. The template will be inserted inside the HEAD tag.
+
 Start flask inbuilt server:
 vr
 2014-01-25 14:56:18,797 - INFO -  * Running on http://0.0.0.0:8080/

@@ -30,6 +30,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-title" content="Vilfredo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='images/apple-touch-icon-57x57.png') }}">
 <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='images/apple-touch-icon-114x114.png') }}">
@@ -50,52 +51,75 @@
     <meta name="msapplication-square150x150logo" content="{{ url_for('static', filename='images/mediumtile.png') }}">
     <meta name="msapplication-wide310x150logo" content="{{ url_for('static', filename='images/widetile.png') }}">
     <meta name="msapplication-square310x310logo" content="{{ url_for('static', filename='images/largetile.png') }}">
-        <!-- Startup images for Apple -->
-        <!-- iOS 6 & 7 iPad (retina, portrait) -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-1536x2008.jpg') }}"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: portrait)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
 
-        <!-- iOS 6 & 7 iPad (retina, landscape) -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-1496x2048.jpg') }}"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: landscape)
+<!-- iPad retina portrait startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-1536x2008.jpg') }}"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 2)
+                 and (orientation: portrait)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPad retina landscape startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-1496x2048.jpg') }}"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 2)
+                 and (orientation: landscape)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPad non-retina portrait startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-768x1004.jpg') }}"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 1)
+                 and (orientation: portrait)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPad non-retina landscape startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-748x1024.jpg') }}"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 1)
+                 and (orientation: landscape)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPhone 6 Plus portrait startup image
+    <link href="apple-touch-startup-image-1242x2148.png"
+          media="(device-width: 414px) and (device-height: 736px)
+                 and (-webkit-device-pixel-ratio: 3)
+                 and (orientation: portrait)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPhone 6 Plus landscape startup image 
+    <link href="apple-touch-startup-image-1182x2208.png"
+          media="(device-width: 414px) and (device-height: 736px)
+                 and (-webkit-device-pixel-ratio: 3)
+                 and (orientation: landscape)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPhone 6 startup image 
+    <link href="apple-touch-startup-image-750x1294.png"
+          media="(device-width: 375px) and (device-height: 667px)
                  and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 iPad (portrait) -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-768x1004.jpg') }}"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: portrait)
+          rel="apple-touch-startup-image">  -->
+ 
+    <!-- iPhone 5 startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-640x1096.jpg') }}"
+          media="(device-width: 320px) and (device-height: 568px)
+                 and (-webkit-device-pixel-ratio: 2)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPhone < 5 retina startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-640x920.jpg') }}"
+          media="(device-width: 320px) and (device-height: 480px)
+                 and (-webkit-device-pixel-ratio: 2)"
+          rel="apple-touch-startup-image">
+ 
+    <!-- iPhone < 5 non-retina startup image -->
+    <link href="{{ url_for('static', filename='images/apple-touch-startup-image-320x460.jpg') }}"
+          media="(device-width: 320px) and (device-height: 480px)
                  and (-webkit-device-pixel-ratio: 1)"
-              rel="apple-touch-startup-image">
+          rel="apple-touch-startup-image">
 
-        <!-- iOS 6 iPad (landscape) -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-748x1024.jpg') }}"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: landscape)
-                 and (-webkit-device-pixel-ratio: 1)"
-              rel="apple-touch-startup-image">
 
-        <!-- iOS 6 & 7 iPhone 5 -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-640x1096.jpg') }}"
-              media="(device-width: 320px) and (device-height: 568px)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
 
-        <!-- iOS 6 & 7 iPhone (retina) -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-640x920.jpg') }}"
-              media="(device-width: 320px) and (device-height: 480px)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 iPhone -->
-        <link href="{{ url_for('static', filename='images/apple-touch-startup-image-320x460.jpg') }}"
-              media="(device-width: 320px) and (device-height: 480px)
-                 and (-webkit-device-pixel-ratio: 1)"
-              rel="apple-touch-startup-image">
     </head>
     <body>
 	
@@ -104,7 +128,6 @@
 	<div class="container main">
 		
 		<div id="displaycookiebar"></div>
-		<br><br>
 		
 		<div id="main_intro" class="jumbotron intro" data-bind="visible: currentUserViewModel.isLoggedOut()">
 		<h2>Fair Decision-Making</h2>
@@ -407,23 +430,23 @@
       	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     	<![endif]-->
-		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.2.0.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.2.0.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
 		{{ flask_util_js.js }}
 		
 	<script type="text/javascript">
