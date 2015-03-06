@@ -152,7 +152,11 @@
                 </div>
                 <div class="panel-body">
 				<div class="">
-					<a data-bind="click: beginNewQuestion" class="btn btn-primary btn-lg pull-right" role="button">Ask a Question</a>
+					<span class="ask_question">
+					<a data-bind="click: beginNewQuestion" class="btn btn-primary btn-lg pull-right" role="button">Ask a Question</a></span>
+					
+					<div class="row">
+					<div data-bind="visible: currentUserViewModel.isLoggedIn()" class="col-md-6 new_questions">
 					<!-- ko foreach: questions -->
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
@@ -165,12 +169,26 @@
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
+					</div>
+					
+					<div id="new_invites" class="col-md-6">
+						<!-- ko foreach: currentUserViewModel.new_invites -->
+						<div>
+						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
+						<span data-bind="text: question_title"></span>
+						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+					<a data-bind="click: currentUserViewModel.declineInvite"><span title="Decline" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+						</div>
+						<!-- /ko -->
+					</div>
+					</div>
+					
 				</div>
 				</div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-6 icons writing panel">
+			<div data-bind="visible: currentUserViewModel.isLoggedIn()" class="col-md-6 icons writing panel questions_writing">
 				<div class="panel-heading">
                   <h2 class="panel-title"><span class="glyphicon glyphicon-edit questhdricon" aria-hidden="true"></span> Propose an Answer to a Question</h2>
                 </div>
@@ -190,7 +208,7 @@
 				</div>
 				</div>
 			</div>
-			<div class="col-md-6 icons voting panel">
+			<div data-bind="visible: currentUserViewModel.isLoggedIn()" class="col-md-6 icons voting panel questions_voting">
 				<div class="panel-heading">
                   <h4 class="panel-title"><span class="glyphicon glyphicon-check questhdricon" aria-hidden="true"></span> Vote all the Answers you Agree On</h4>
                 </div>
@@ -210,7 +228,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12 icons consensus panel">
+			<div data-bind="visible: currentUserViewModel.isLoggedIn()" class="col-md-12 icons consensus panel questions_results">
 				<div class="panel-heading">
                   <h2 class="panel-title"><span class="glyphicon glyphicon-thumbs-up questhdricon" aria-hidden="true"></span> Questions Which have Found Solutions</h2>
                 </div>
@@ -232,7 +250,6 @@
 			</div>
 		</div>
 		</div> <!-- all-questions -->
-		
 		
 		<div id="footer"></div>
 		
@@ -420,6 +437,8 @@
 		{
 			console.log('loadUser completed...');
 			
+			currentUserViewModel.fetchNewInvites();
+			
 			// Load Templates
 			//
 			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
@@ -546,6 +565,7 @@
 		
 		ko.applyBindings(passwordResetViewModel, $('#reset_pwd')[0]);
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
+		
 		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
 		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
 		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);

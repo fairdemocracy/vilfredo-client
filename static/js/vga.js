@@ -1449,6 +1449,57 @@ function CurrentUserViewModel()
 	self.remember = false;
 	self.avatar_url = ko.observable('');
 	self.login_jqXHR = null;
+	self.new_invites = ko.observableArray();
+	
+    self.fetchNewInvites = function() {
+		if (currentUserViewModel.isLoggedOut()) return false;
+		console.log("Fetching new invites...");		
+		ajaxRequest(VILFREDO_API + '/users/'+ self.userid() +'/new_invites', 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('New Invites data returned...');
+			self.new_invites([]);
+			var fetched_invites = [];
+			for (var i = 0; i < data.invites.length; i++) {
+		  		fetched_invites.push({
+		  		    id: data.invites[i].id,
+					permissions: ko.observable(data.invites[i].permissions),
+		      		question_title: ko.observable(data.invites[i].question_title),
+					sender_username: ko.observable(parseInt(data.invites[i].sender_username))
+		  		});
+			}
+			self.new_invites(fetched_invites);
+		});
+	}
+	
+	self.acceptInvite = function(invite)
+	{
+	    //alert("acceptInvite called...");
+	    console.log("accept new invite..." + invite.id);
+	    ajaxRequest(VILFREDO_API + '/users/'+ self.userid() +'/new_invites/'+invite.id+'/accept', 'POST').done(function(data, textStatus, jqXHR) {
+		    console.log('Invite accepted...');
+		    self.new_invites.remove(invite);
+			questionsViewModel.fetchQuestions();
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+		    var message = getJQXHRMessage(jqXHR, 'There was a problem.');
+            add_page_alert('danger', message);
+        });
+	}
+	
+	self.declineInvite = function(invite)
+	{
+	    //alert("declineInvite called...");
+	    var decline_invite = confirm('Are you sure you want to decline this invitation?');
+		if (!decline_invite) return;
+	    console.log("decline new invite..." + invite.id);	
+	    ajaxRequest(VILFREDO_API + '/users/'+ self.userid() +'/new_invites/'+invite.id+'/decline', 'POST').done(function(data, textStatus, jqXHR) {
+		    console.log('Invite declined...');
+		    self.new_invites.remove(invite);
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+		    var message = getJQXHRMessage(jqXHR, 'There was a problem.');
+            add_page_alert('danger', message);
+        });
+	}
 	
 	self.isLoggedIn = ko.computed(function() {
         console.log('isLoggedIn...' + this.userid());
@@ -1683,6 +1734,7 @@ function CurrentUserViewModel()
 			if (typeof(questionsViewModel) != 'undefined')
 			{
 			    questionsViewModel.fetchQuestions();
+			    currentUserViewModel.fetchNewInvites();
 			}
 
 			if (proposalsViewModel)
