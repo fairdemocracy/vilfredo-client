@@ -1463,11 +1463,40 @@ function CurrentUserViewModel()
 		  		    id: data.invites[i].id,
 					permissions: ko.observable(data.invites[i].permissions),
 		      		question_title: ko.observable(data.invites[i].question_title),
-					sender_username: ko.observable(parseInt(data.invites[i].sender_username))
+					sender_username: ko.observable(data.invites[i].sender_username)
 		  		});
 			}
 			self.new_invites(fetched_invites);
 		});
+	}
+	
+	self.setinvitetext = function(invite)
+	{
+	    html = "";
+	    if (invite.question_title().length > 15)
+	    {
+	        html = html + invite.question_title().substr(0, 15) + '...';
+	    }
+	    else
+	    {
+	        html = html + invite.question_title();
+	    }
+	    return html;
+	}
+	
+	self.setinvitetooltip = function(invite)
+	{
+	    html = "<div>";
+	    if (invite.question_title().length > 50)
+	    {
+	        html = html + invite.question_title().substr(0, 50) + '...</div>';
+	    }
+	    else
+	    {
+	        html = html + invite.question_title() + '</div>';
+	    }
+	    html = html + ' by ' + invite.sender_username();
+	    return html;
 	}
 	
 	self.acceptInvite = function(invite)

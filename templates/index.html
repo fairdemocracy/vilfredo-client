@@ -197,10 +197,12 @@
 					<div id="new_invites" class="col-md-6">
 						<!-- ko foreach: currentUserViewModel.new_invites -->
 						<div>
+						<a data-toggle="tooltip" title="" data-bind="attr: { title: currentUserViewModel.setinvitetooltip($data) }">
 						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
-						<span data-bind="text: question_title"></span>
-						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
-					<a data-bind="click: currentUserViewModel.declineInvite"><span title="Decline" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+						<span data-bind="text: currentUserViewModel.setinvitetext($data)"></span>
+						</a>
+						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="label label-success" aria-hidden="true">Accept</span></a>
+					<a data-bind="click: currentUserViewModel.declineInvite"><span title="Decline" class="label label-danger" aria-hidden="true">Reject</span></a>
 						</div>
 						<!-- /ko -->
 					</div>
@@ -221,7 +223,7 @@
 					<!-- ko if: !consensus_found() && phase() == "writing" && !$root.is_new_question($data) -->
 					
 					<div class="item">
-					<a data-toggle="tooltip" title="not yet implememntd" data-bind="attr: { href: link, title: $root.settooltip($data) }">
+					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
 					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
