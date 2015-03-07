@@ -1992,7 +1992,7 @@ function RegisterViewModel() //jumpx
 		    }
             var message = getJQXHRMessage(jqXHR, 'There was a problem with your registrations');
             $('#register .alert')
-			.text(message)
+			.html(message)
 			.setAlertClass('danger')
 			.fadeIn();
         });
