@@ -4,7 +4,7 @@
 #
 # This file is part of the Vilfredo Client.
 #
-# Copyright © 2009-2014 Pietro Speroni di Fenizio / Derek Paterson.
+# Copyright © 2009-2015 Pietro Speroni di Fenizio / Derek Paterson.
 #
 # VilfredoReloadedCore is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -184,7 +184,7 @@
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					&nbsp;
 					<a title="Edit question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -198,7 +198,7 @@
 						<!-- ko foreach: currentUserViewModel.new_invites -->
 						<div>
 						<a data-toggle="tooltip" title="" data-bind="attr: { title: currentUserViewModel.setinvitetooltip($data) }">
-						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
+						<!-- <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> -->
 						<span data-bind="text: currentUserViewModel.setinvitetext($data)"></span>
 						</a>
 						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="label label-success" aria-hidden="true">Accept</span></a>
@@ -224,7 +224,7 @@
 					
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> --> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
 					
@@ -243,7 +243,7 @@
 					<!-- ko if: phase() == "voting" -->
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
 					<!-- /ko -->
@@ -264,7 +264,7 @@
 					
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
 					
@@ -437,14 +437,14 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.2.0.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script async type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
