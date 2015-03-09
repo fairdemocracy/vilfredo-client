@@ -2374,7 +2374,7 @@ function EditQuestionViewModel()
 		var EDIT_URL = VILFREDO_API + '/questions/' + self.question.id();
 		var updates = {'title': self.title(), 'blurb': self.blurb()}
 	    console.log('updateQuestion called...');
-	    ajaxRequest(EDIT_URL, 'PATCH', updates).done(function(data) {
+	    ajaxRequest(EDIT_URL, 'POST', updates).done(function(data) {
 		    console.log(data);
 		    self.question.title(self.title());
 		    self.question.blurb(self.blurb());
@@ -2442,7 +2442,7 @@ function EditProposalViewModel()
 		var EDIT_URL = VILFREDO_API + '/questions/' + question_id + '/proposals/' + self.proposal.id();
 		var updates = {'title': self.title(), 'abstract': self.abstract(), 'blurb': self.blurb(), 'user_id': currentUserViewModel.userid()}
 	    console.log('updateProposal called...');
-	    ajaxRequest(EDIT_URL, 'PATCH', updates).done(function(data) {
+	    ajaxRequest(EDIT_URL, 'POST', updates).done(function(data) {
 		    console.log(data);
 		    self.proposal.title(self.title());
 		    self.proposal.abstract(self.abstract());
@@ -4576,7 +4576,7 @@ function QuestionViewModel() // winter
 	self.move_to_results = function()
 	{
 	    console.log('moveToResults called...');
-	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_to_results:true}).done(function(data) {
+	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'POST', {move_to_results:true}).done(function(data) {
 		    questionViewModel.phase(data.phase);
 		    add_page_alert('success', 'This question is now in ' + questionViewModel.phase() + ' phase');
 		});
@@ -4585,7 +4585,7 @@ function QuestionViewModel() // winter
 	self.move_on = function()
 	{
 	    console.log('move_on called...');
-	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'PATCH', {move_on:true}).done(function(data) {
+	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'POST', {move_on:true}).done(function(data) {
 		    add_page_alert('success', 'Question now in ' + data.question.phase + ' phase');
 		    console.log('Move on question data returned...');
 			console.log(data);
