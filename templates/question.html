@@ -91,7 +91,7 @@
 	<!-- ko if: completed_voter_count() >= 2 && completed_voter_count() == participant_count() -->
 	<div class="alert alert-success alert-dismissible" role="alert">
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	  <p>Congratulations! Everyone has voted! You can now move to results.</p>
+	  <p>Congratulations! Everyone has voted! You can now move to results or to the next generation.</p>
 	   </div>
 	<!-- /ko -->
 	<!-- /ko -->
@@ -102,6 +102,7 @@
 	<!-- /ko -->
 	<!-- ko if: questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= 2 -->
 	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page.">Move to Results</button>
+	<button data-bind="click: move_on" class="btn btn-primary">Move to Next Generation</button>
 	<!-- /ko -->
 		<br>
 
