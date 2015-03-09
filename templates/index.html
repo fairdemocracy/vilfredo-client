@@ -184,7 +184,7 @@
 					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					&nbsp;
 					<a title="Edit question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -198,7 +198,7 @@
 						<!-- ko foreach: currentUserViewModel.new_invites -->
 						<div>
 						<a data-toggle="tooltip" title="" data-bind="attr: { title: currentUserViewModel.setinvitetooltip($data) }">
-						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
+						<!-- <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> -->
 						<span data-bind="text: currentUserViewModel.setinvitetext($data)"></span>
 						</a>
 						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="label label-success" aria-hidden="true">Accept</span></a>
@@ -224,7 +224,7 @@
 					
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>  
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> --> 
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
 					
@@ -243,7 +243,7 @@
 					<!-- ko if: phase() == "voting" -->
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> 
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
 					<!-- /ko -->
@@ -264,7 +264,7 @@
 					
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
+					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
 					
