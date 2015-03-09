@@ -47,49 +47,73 @@
 		<br><br><br>
 		</div>
 		
+		<div class="question-view" data-bind="visible: currentUserViewModel.isLoggedIn()">
+		<div class="page-header question-info">
+			<h1 data-bind="text: title"></h1>
+			<h5><img data-bind="attr: { src: avatar_url }" width="50px" height="50px" class="img-rounded"/> by <span class="authorname" data-bind="text: author"></span></h5>
+			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
+			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase - 
+			<span data-bind="html: set_question_status()"></span>
+			</h4>
+			<br>
+		</div>
 		
-		<div class="author_controls">
-		<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && completed_voter_count() > 1 -->
-		<h2>Move to Results Phase</h2>
-		<p>Move the question to the results phase. This will end the writing and voting cycle and create a results page.</p>
-		<button data-bind="click: move_to_results" class="btn btn-primary">Move to Results</button>
-		<br><br>
-		<!-- /ko -->
-		<!-- ko if: author_id() == currentUserViewModel.userid() -->
-		<h2>Participants</h2>
-		<p>View current Participants and invite new people.</p>
-		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary">Participants</button>
+		
+	<div class="author_controls" data-bind="visible: author_id() == currentUserViewModel.userid()">
+	  <!-- ko if: questionViewModel.phase() == 'writing' -->
+	  <!-- ko if: proposalsViewModel.proposals().length < 2 -->
+	  <div class="alert alert-info alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <p>Once you have a minimum of 2 proposals you can move the question on to the voting phase. The more proposals you get the better.</p><p>Why not <a data-bind="click: permissionsViewModel.open_permissions">involve more people</a> in the writing process?</p>
+	   </div>
+	<!-- /ko -->
+	<!-- ko if: proposalsViewModel.proposals().length >= 2 -->
+	<div class="alert alert-success alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <p>Once you have a minimum of 2 proposals you can move the question on to the voting phase. The more proposals you get the better.</p><p>Why not <a data-bind="click: permissionsViewModel.open_permissions">involve more people</a> in the writing process?</p>
+	   </div>
+	<!-- /ko -->
+	<!-- /ko -->
+	
+	<!-- ko if: questionViewModel.phase() == 'voting' -->
+	  <!-- ko if: completed_voter_count() < 2 -->
+	  <div class="alert alert-info alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <p>Once a minimum of 2 participants have finished voting you can move the question to the results phase. Try to get everyone to vote</p>
+	   </div>
+	<!-- /ko -->
+	<!-- ko if: completed_voter_count() >= 2 && completed_voter_count() < participant_count() -->
+	<div class="alert alert-success alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <p>Once a minimum of 2 participants have finished voting you can move the question to the results phase. Try to get everyone to vote</p>
+	   </div>
+	<!-- /ko -->
+	<!-- ko if: completed_voter_count() >= 2 && completed_voter_count() == participant_count() -->
+	<div class="alert alert-success alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <p>Congratulations! Everyone has voted! You can now move to results.</p>
+	   </div>
+	<!-- /ko -->
+	<!-- /ko -->
+		
+		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people">Participants</button>
+	<!-- ko if: questionViewModel.phase() == 'writing' && questionViewModel.new_proposal_count() >= 2 -->
+	<button data-bind="click: move_on" class="btn btn-primary">Move to Voting</button>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= 2 -->
+	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page.">Move to Results</button>
+	<!-- /ko -->
 		<br>
-		<div id="edit_question_buttons" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0">
+
+		<div id="edit_question_buttons" data-bind="visible: proposal_count() == 0">
 		<h2>Edit Question</h2>
 		<p>You can edit or delete this question so long as no-one has written any proposals for it.</p>
 		<button data-bind="click: questionViewModel.edit" class="btn btn-primary">Edit Question</button>
 		<button data-bind="click: questionViewModel.delete" class="btn btn-primary">Delete Question</button>
 		</div>
-		<!-- /ko -->
-		</div>
+	</div>
+	<!-- author controls -->
 		
-		<div class="question-view" data-bind="visible: currentUserViewModel.isLoggedIn()">
-		<div class="page-header question-info">
-			<h1 data-bind="text: title"></h1>
-			<h5><img data-bind="attr: { src: avatar_url }" width="50px" height="50px" class="img-rounded"/> by <span class="authorname" data-bind="text: author"></span></h5>
-			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase.</h4>
-			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
-			<br>
-			
-			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && proposalsViewModel.proposals().length < 2 -->
-			<p class="text-info">Once you have a minimum of 2 proposals you can move the question on to the voting phase. Of course the more proposals there are the better. Why not involve more people in the writing process.</p>
-			<!-- /ko -->
-			
-			<!-- ko if: questionViewModel.phase() == 'writing' && author_id() == currentUserViewModel.userid() && questionViewModel.new_proposal_count() > 1 -->
-			<p>You can now move this question on to the next phase: <button data-bind="click: move_on" class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
-			<!-- /ko -->
-			
-			<!-- ko if: questionViewModel.phase() == 'voting' && author_id() == currentUserViewModel.userid() && questionViewModel.completed_voter_count() > 1 && false -->
-			<p>You can now move this question on to the next phase: <button class="btn btn-primary">Move on to <span data-bind="text: show_next_phase()"></span></button></p>
-			<!-- /ko -->
-
-		</div>
 		
 		<br>
 		<div class="panel question-info">
@@ -562,7 +586,7 @@
 			<p><b>Proposals may be edited until they receive a vote.</b></p>
 	      </div>
 	      <div class="modal-body">
-			<div class="alert alert-danger"></div>
+			<div class="message alert alert-danger"></div>
 			<form autocomplete="off" class="form-horizontal" role="form">
 		  	<div class="form-group">
 		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
@@ -622,7 +646,7 @@
 	        <h4 class="modal-title">Add Proposal</h4>
 	      </div>
 	      <div class="modal-body">
-			<div class="alert alert-danger"></div>
+			<div class="message alert alert-danger"></div>
 			<form autocomplete="off" class="form-horizontal" role="form">
 		  	<div class="form-group">
 		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>

@@ -1472,7 +1472,7 @@ function CurrentUserViewModel()
 	
 	self.setinvitetext = function(invite)
 	{
-	    html = "";
+	    var html = "";
 	    if (invite.question_title().length > 15)
 	    {
 	        html = html + invite.question_title().substr(0, 15) + '...';
@@ -1486,7 +1486,7 @@ function CurrentUserViewModel()
 	
 	self.setinvitetooltip = function(invite)
 	{
-	    html = "<div>";
+	    var html = "<div>";
 	    if (invite.question_title().length > 50)
 	    {
 	        html = html + invite.question_title().substr(0, 50) + '...</div>';
@@ -3095,7 +3095,7 @@ function QuestionsViewModel()
 	*/
 	self.settooltip = function(question)
 	{
-	    html = "<div>";
+	    var html = "<div>";
 	    html = html + question.blurb().substr(0, 150) + '...</div>';
 	    html = html + "<strong>Generation: " + question.generation() + "</strong><br>";
 	    
@@ -3529,6 +3529,7 @@ function ProposalsViewModel()
 				// reset participation table
 				//questionViewModel.fetchParticipationTable();
 				redoResultsMap();
+				questionViewModel.fetchQuestion();
 				
 				$('.voting').each(function(){
 					var index = $(this).parents('.panel').siblings('.index')[0].value;
@@ -4074,6 +4075,7 @@ function QuestionViewModel() // winter
     self.participant_count = ko.observable();
     self.voters_voting_count = ko.observable();
     self.consensus_found = ko.observable();
+    self.inherited_proposal_count = ko.observable();
 
 	self.key_players = ko.observableArray();
 
@@ -4106,6 +4108,56 @@ function QuestionViewModel() // winter
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
+    
+    self.set_question_status = function()
+	{
+	    var html = '';
+	    if (self.phase() == 'writing')
+	    {
+    	    if (self.new_proposal_count() > 0)
+    	    {
+    	        html = html + self.new_proposer_count() + ' out of ' + self.participant_count()
+    	            + ' participants submitted ' + self.new_proposal_count() + ' proposals';
+    	    }
+    	    else
+    	    {
+    	        html = html + "No new proposals so far.";
+    	    }
+    	    if (self.inherited_proposal_count() > 0)
+    	    {
+    	        html = html + "<br>There are "
+    		        + self.inherited_proposal_count()
+    		        + " inherited from the previous generation";
+    	    }
+	    }
+	    else if (self.phase() == 'voting')
+	    {
+	        var not_finished = self.voters_voting_count() - self.completed_voter_count();
+	        html = "Out of " + self.participant_count() + ' participants ';
+    	    if (self.voters_voting_count() == 0)
+    	    {
+    	        html = html + "no one started voting. Be the first!";
+    	    }
+    	    if (not_finished && self.completed_voter_count())
+    	    {
+    	        html = html + ", " + self.completed_voter_count() + " finished voting, " +  not_finished +  " started voting";
+    	    }
+    	    else if (self.completed_voter_count())
+    	    {
+    	        html = html + ", " + self.completed_voter_count() + " finished voting";
+    	    }
+    	     else if (not_finished)
+    	    {
+    	        html = html + ", " +  not_finished +  " started voting";
+    	    }
+	    }
+	    else if (self.phase() == 'results')
+	    {
+    	    html = html + self.completed_voter_count() + ' out of ' + self.participant_count()
+    	            + ' participants contributed';
+        }
+        return html;
+	}
     
     // storm
     self.fetchQuestion = function() 
@@ -4142,6 +4194,7 @@ function QuestionViewModel() // winter
     		self.new_proposal_count(parseInt(data.question.new_proposal_count));
     		self.new_proposer_count(parseInt(data.question.new_proposer_count));
     		self.consensus_found(data.question.consensus_found);
+    		self.inherited_proposal_count(parseInt(data.question.inherited_proposal_count));
 	    }).fail(function(jqXHR, textStatus, errorThrown)
 		{
             var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');

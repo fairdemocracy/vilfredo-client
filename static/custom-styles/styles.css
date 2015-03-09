@@ -6286,10 +6286,14 @@ td.green {
 .alglink {
   display: none;
 }
-.alert {
+.alert .flash {
+  font-weight: bold;
+}
+.alert .message {
   display: none;
 }
-.alert .flash {
+.alert a {
+  text-decoration: underline;
   font-weight: bold;
 }
 .alert.main {
