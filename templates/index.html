@@ -263,7 +263,7 @@
 					<!-- ko if: phase() == 'results' -->
 					
 					<div class="item">
-					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
+					<a data-toggle="tooltip" title="" data-bind="attr: { href: link + '/results', title: $root.settooltip($data) }">
 					<!-- <span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span> -->
 					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
 					</div>
