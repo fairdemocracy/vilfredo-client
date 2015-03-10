@@ -7029,6 +7029,10 @@ a {
 .questicon {
   font-size: 1.8em;
 }
+.notificationicon {
+  font-size: 1.5em;
+  color: blue;
+}
 .new .glyphicon-tree-deciduous {
   color: green;
 }
