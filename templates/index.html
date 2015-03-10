@@ -171,7 +171,7 @@
 		<div class="row">
 			<div class="col-md-12 icons new panel">
 				<div class="panel-heading">
-					<h2 class="panel-title"><span class="glyphicon glyphicon-flag questhdricon" aria-hidden="true"></span>New Questions and Invitations</h2>
+					<h2 class="panel-title"><span class="glyphicon glyphicon-flag questhdricon" aria-hidden="true"></span>Invitations to Participate</h2>
                 </div>
                 <div class="panel-body">
 				<div class="">
@@ -183,22 +183,8 @@
 					<a data-bind="click: beginNewQuestion" class="btn btn-primary btn-lg" role="button">Ask a Question</a>
 					</div>
 					
-					<div class="col-md-5 col-md-pull-3 col-xs-12 new_questions">
-					<!-- ko foreach: questions -->
-					<!-- ko if: phase() == "writing" && $root.is_new_question($data) -->
-					<div class="item">
-					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
-					<span class="glyphicon glyphicon-tree-deciduous questicon" aria-hidden="true"></span>
-					<span data-bind="text: title"></span></a> by <span data-bind="text: author"></span>
-					&nbsp;
-					<a title="Edit question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
-					<a title="Delete question" data-bind="visible: author_id() == currentUserViewModel.userid() && proposal_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
-					</div>
-					<!-- /ko -->
-					<!-- /ko -->
-					</div>
 					
-					<div id="new_invites" class="col-md-4 col-md-pull-3 col-xs-12">
+					<div id="new_invites" class="col-md-9 col-md-pull-3 col-xs-12">
 						<!-- ko foreach: currentUserViewModel.new_invites -->
 						<div class="item">
 						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="label label-success" aria-hidden="true">Accept</span></a>
@@ -224,7 +210,7 @@
                 <div class="panel-body">
 				<div class="">
 					<!-- ko foreach: questions -->
-					<!-- ko if: !consensus_found() && phase() == "writing" && !$root.is_new_question($data) -->
+					<!-- ko if: !consensus_found() && phase() == "writing" -->
 					
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
