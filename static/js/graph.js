@@ -187,8 +187,9 @@ function initGraph(svg)
 	var graph = $(this);
 	setGraphData(graph);
 	setProposalModals(svg);
+	return;
 	var userid = currentUserViewModel.userid();
-	if (userid)
+	if (false && userid)
 	{
 	    setCurrentUser(userid, graph);
 	    showCurrentUser(userid, graph);

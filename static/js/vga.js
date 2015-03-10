@@ -1779,7 +1779,7 @@ function CurrentUserViewModel()
 			        console.log('fetchCurrentUser: Fetching all proposals');
 			        proposalsViewModel.fetchProposals();
 			    }
-			    resetGraphsForUser();
+			    //resetGraphsForUser();
 			}
 		}).fail(function(jqXHR) {
            if (jqXHR.status == 401 || jqXHR.status == 403)
@@ -4607,7 +4607,7 @@ function QuestionViewModel() // winter
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
 					if (currentUserViewModel.isLoggedIn())
 					{
-						resetGraphsForUser();
+						//resetGraphsForUser();
 					}
 				});
 		        
