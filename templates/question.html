@@ -754,8 +754,7 @@
 		console.log('initPage called...');
 		
 		$.when(currentUserViewModel.loadUser(), 
-			   questionViewModel.fetchQuestion(), 
-			   questionViewModel.fetchVotingData()).done(function()
+			   questionViewModel.fetchQuestion()).done(function()
 		{
 			console.log('User and question loaded...');
 			$('.question-view, .current-proposals').show();
@@ -820,11 +819,11 @@
 				$.when(proposalsViewModel.fetchInheritedProposals(), 
 			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
 			    {
-					$('#resultstriangle').svg({onLoad: createResultsMap});
+					//$('#resultstriangle').svg({onLoad: createResultsMap});
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
 					if (currentUserViewModel.isLoggedIn())
 					{
-						resetGraphsForUser();
+						//resetGraphsForUser();
 					}
 					questionViewModel.fetchParticipationTable();
 				});
@@ -833,7 +832,8 @@
 		    else if (questionViewModel.phase() == 'voting' || questionViewModel.phase() == 'results')
 		    {
 		        //proposalsViewModel.fetchProposals();
-				$.when(proposalsViewModel.fetchProposals()).done(function()
+				$.when(proposalsViewModel.fetchProposals(),
+					   questionViewModel.fetchVotingData()).done(function()
 			    {
 					$('#resultstriangle').svg({onLoad: createResultsMap});
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
