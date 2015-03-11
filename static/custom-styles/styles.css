@@ -6222,13 +6222,24 @@ body {
   padding-right: 20px;
   padding-left: 10px;
 }
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+  border: 1px solid #efefef;
+  background-color: #ffffff;
+  text-align: center;
+  padding-left: 25px;
+}
+.navbar-inverse .navbar-toggle {
+  background-color: #eeeeee;
+}
+.navbar-inverse .navbar-toggle:hover {
+  background-color: #ffffff;
+}
 #keyplayer_info {
   display: none;
 }
 #footer {
   margin-top: 60px;
-  /*border-top: solid 1px #cccccc;*/
-  /*background-color: #eeeeee;*/
 }
 #cookie-bar a {
   line-height: 30px;
