@@ -656,9 +656,11 @@
 		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputProposalTitle" placeholder="Title">
 		    </div>
 		  </div>
-		<div class="form-group">
+		<!-- ko if: addProposalViewModel().blurb().length > PROPOSAL_ABSTRACT_REQUIRED_LENGTH -->
+		<div class="form-group abstract">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-10">
+				<p class="warning">Abstract required if your proposal is longer than <span data-bind="text: PROPOSAL_ABSTRACT_REQUIRED_LENGTH"></span> characters</p>
 			<div class="progress">
 			  <div data-bind="style: { width: abstract_length_pc() }" class="progress-bar progress-bar-success" style="">
 			    <span data-bind="text: abstract_length_pc()"></span>
@@ -671,6 +673,7 @@
 			<textarea data-bind="textInput: abstract" id="inputProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text"></textarea>
 		    </div>
 		  </div>
+		<!-- /ko -->
 		  <div class="form-group">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-10">
@@ -1060,10 +1063,24 @@
 			counterText: "Characters left" + " "
 		});
 		
+		
+		/*
 		$("#inputProposalAbstract").charCount({
 			allowed: 5000,		
 			warning: 4950,
 			counterText: "Characters left" + " "
+		});*/
+		
+		$('#inputProposalAbstract').live('click', function(e) {
+			if ($(this).data('charcount') == undefined)
+			{
+				$(this).data('charcount', true);
+				$(this).charCount({
+					allowed: 5000,		
+					warning: 4950,
+					counterText: "Characters left" + " "
+				});
+			}
 		});
 		
 		$('.inputAnswerComment').live('click', function(e) {

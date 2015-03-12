@@ -35,6 +35,7 @@ var ALGORITHM_VERSION = 2;
 // radius of circle representing a vote
 var RADIUS = 10;
 var MAX_COMMENT_DISAPLAY_CHARS = 150;
+var PROPOSAL_ABSTRACT_REQUIRED_LENGTH = 2000;
 
 // Don't edit below
 //
