@@ -41,7 +41,7 @@
 	<div class="container main">
 		
 		<div id="completed_box" data-bind="visible: phase() == 'results'">
-		<h1>This Question has been Completed!</h1>
+		<h2>This Question has been Completed!</h2>
 		<p>Click on the button below to view the final results.</p>
 		<button data-bind="click: show_results" class="btn btn-primary">Show Results</button>
 		<br><br><br>
@@ -51,7 +51,7 @@
 		<div class="page-header question-info">
 			<h1 data-bind="text: title"></h1>
 			<h5><img data-bind="attr: { src: avatar_url }" width="50px" height="50px" class="img-rounded"/> by <span class="authorname" data-bind="text: author"></span></h5>
-			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> has passed since last moved on.</p>
+			<p><span data-bind="text: time_dhm(get_timestamp()-last_move_on())"></span> passed since last moved on.</p>
 			<h4>Generation <span data-bind="text: generation"></span>: <span data-bind="text: phase"></span> phase - 
 			<span data-bind="html: set_question_status()"></span>
 			</h4>
