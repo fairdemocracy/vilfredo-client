@@ -129,6 +129,10 @@
 		
 		<div id="displaycookiebar"></div>
 		
+		<div id="invite_only" class="alert alert-info" role="alert" data-bind="visible: SITE_INVITE_ONLY">
+			<p><strong>Please Note</strong> <span data-bind="text: SITE_INVITE_ONLY_MESSAGE"></span> <a data-bind="attr: {href: SITE_INVITE_ONLY_LINK_URL}, visible: SITE_INVITE_ONLY_LINK_URL.length > 0"><span data-bind="text: SITE_INVITE_ONLY_LINK_TEXT, visible: SITE_INVITE_ONLY_LINK_TEXT.length > 0"></span></a></p>
+		</div>
+		
 		<div id="main_intro" class="jumbotron intro" data-bind="visible: currentUserViewModel.isLoggedOut()">
 		<h2>Fair Decision-Making</h2>
 		  <p>Vilfredo allows groups from 5 to 20 people to ask open questions and reach consensus in an easy and fair way.</p>
@@ -587,6 +591,8 @@
 		ko.applyBindings(loginViewModel, $('#invited_intro')[0]);
 		//ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(currentUserViewModel, $('.intro')[0]);
+		
+		ko.applyBindings(currentUserViewModel, $('#invite_only')[0]);
 		
 		//$('.home').attr('href', VILFREDO_URL);
 		//$('.navbar-brand').attr('href', VILFREDO_URL);

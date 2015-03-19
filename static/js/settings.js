@@ -38,6 +38,10 @@ var MAX_COMMENT_DISAPLAY_CHARS = 150;
 var PROPOSAL_ABSTRACT_REQUIRED_LENGTH = 2000;
 var MIN_VOTERS_BEFORE_MOVEON = 1;
 var RESULTS_VOTING_MIN_VOTERS = 1;
+var SITE_INVITE_ONLY = false;
+var SITE_INVITE_ONLY_MESSAGE = 'Registration on this site is by invitation only! Click link to go to alternate site.';
+var SITE_INVITE_ONLY_LINK_URL = 'http://demo-site.com';
+var SITE_INVITE_ONLY_LINK_TEXT = 'Vilfredo Demo Site';
 
 // Don't edit below
 //
