@@ -7049,6 +7049,9 @@ a {
   font-size: 1.5em;
   color: blue;
 }
+.note {
+  color: blue;
+}
 .new .glyphicon-tree-deciduous {
   color: green;
 }
