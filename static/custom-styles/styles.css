@@ -6228,11 +6228,17 @@ body {
   text-align: center;
   padding-left: 25px;
 }
-.navbar-inverse .navbar-toggle {
+.navbar-collapse .collapse .in {
+  background-color: #333333;
+}
+.navbar-toggle {
   background-color: #eeeeee;
 }
-.navbar-inverse .navbar-toggle:hover {
-  background-color: #ffffff;
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus,
+.navbar-inverse .navbar-toggle:visited,
+.navbar-inverse .navbar-toggle:active {
+  background-color: #ffffff!important;
 }
 #keyplayer_info {
   display: none;
