@@ -672,7 +672,7 @@ function showUserVotes(clicked, svg, userid, username, threshold)
             }
         });
         
-        if (userid == currentUserViewModel.userid())
+        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
             console.log("Make draggable for user id " + userid);
             $(vote).addClass('draggable').addClass('vote');
