@@ -58,6 +58,36 @@ var triangle_offset_y = 0;
 var voting_triangle_width;
 var voting_triangle_height;
 
+// mouse move click prevent
+(function($){
+    var $doc = $(document),
+        moved = false,
+        pos = {x: null, y: null},
+        abs = Math.abs,
+        mclick = {
+        'mousedown.mclick': function(e) {
+            pos.x = e.pageX;
+            pos.y = e.pageY;
+            moved = false;
+            console.log("mousedown.mclick moved = " + moved);
+        },
+        'mouseup.mclick': function(e) {
+            moved = abs(pos.x - e.pageX) > $.clickMouseMoved.threshold
+                || abs(pos.y - e.pageY) > $.clickMouseMoved.threshold;
+            console.log("mouseup.mclick moved = " + moved);
+        }
+    };
+    
+    $doc.on(mclick);
+    
+    $.clickMouseMoved = function () {
+        return moved;
+    };
+    
+    $.clickMouseMoved.threshold = 3;
+})(jQuery);
+
+
 
 function readURL(input) 
 {
@@ -384,6 +414,8 @@ function setVote(proposal) // paris
 	var vote = $('.vote', svg.root()).filter(function() {
 		return $(this).data("pid") == proposal.id();
 	});
+	
+	console.log("setVote: num votes found = " + vote.length);
 
     if (vote.length > 0)
 	{
@@ -397,6 +429,7 @@ function setVote(proposal) // paris
         $(vote).data('pid', proposal.id());
         // Add event handlers and mak draggable
         $(vote).addClass('draggable');
+        /*
         $(vote).on( "click", function(e) {
             console.log('click on vote');
             $(this).parent().siblings('#map').trigger(e);
@@ -404,6 +437,7 @@ function setVote(proposal) // paris
         $(vote).on( "mousemove", function(e) {
             $(this).parent().siblings('#map').trigger(e);
         });
+        */
         // moon
         $(vote).on("mousedown", beginDraggingVote);
         $(vote).on("mouseup", voteAfterDrag);
@@ -426,9 +460,135 @@ function voteHandler(e)
 }
 
 
-function showUserVotes(clicked, svg, userid, username, threshold) // snow
+function showProposalVotes(med, svg, threshold) // humbug
 {
-    $('#allvotes').remove();
+    var triangle = $('#results_triangle');
+    if (triangle.length == 0) 
+    {
+        return;
+    }
+    var pid = parseInt($(med).data('pid'));
+    var settings = {'mode': 'showProposalVotes', 'pid': pid};
+    triangle.data('settings', settings);
+    
+    var dimensions = calculateTriangleDimensions(svg);
+    var container_width = dimensions.width;
+    var container_height = dimensions.height;
+
+    $('#allvotes,#alluservotes').remove();
+    
+    var voters = questionViewModel.voting_data[pid].voters;
+
+    //threshold = {'mapx': container_width * questionViewModel.mapx, 'mapy': container_height * questionViewModel.mapy}
+    //console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
+
+    var g = svg.group(resultsmap, 'allvotes');
+    var fill_color;
+
+    var med_selected_fill_color = '#7e7e7e';
+
+    //svg.circle(g, threshold.mapx, threshold.mapx, RADIUS+1, {fill: 'yellow', title: 'THRESHOLD ' + threshold.mapx + ', ' +  threshold.mapy});
+
+    jQuery.each(voters, function(userid, coords) {
+        cx = container_width * coords.mapx;
+        cy = container_height * coords.mapy;
+        console.log("showProposalVotes: Draw " + coords.username + "'s vote at (" + cx + ", " + cy +")");
+
+        fill_color = setMapColor(coords.mapx, coords.mapy);
+
+        // addline
+        // Draw line to connect vote with median
+        var medline = svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {class: 'medline', strokeWidth: 1, stroke: fill_color});
+        $(medline).data('pid', $(med).data('pid'));
+        $(medline).data('userid', userid);
+        $(medline).data('settings', {'userid': parseInt(userid), 'pid': parseInt($(med).data('pid'))});
+
+        var vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); 
+        $(vote).data('userid', userid);
+        $(vote).data('username', coords.username);
+        $(vote).data('pid', pid);
+        $(vote).data('settings', {'userid': parseInt(userid), 'username': coords.username, 'pid': parseInt(pid)}).addClass('uservote');
+
+        console.log("showProposalVotes: med pid set at " + $(med).data('pid'));
+        console.log("showProposalVotes: vote pid set to " + $(vote).data('pid'));
+        console.log("showProposalVotes: vote userid set to " + $(vote).data('userid'));
+
+        // harpo
+        $(vote).on("click", function(e) {
+            if ($.clickMouseMoved()) {
+                console.log('click aborted');
+                return;           
+            }
+            //e.stopPropagation();
+            console.log('click on user vote... showUserVotes');
+            showUserVotes(this, svg, userid, coords.username, threshold);
+        })
+        
+        if (userid == currentUserViewModel.userid())
+        {
+            console.log("Make draggable for user id " + userid);
+            $(vote).addClass('draggable').addClass('vote');
+            /*
+            $(vote).on( "click", function(e) {
+                if ($.clickMouseMoved()) {
+                    console.log('click aborted');
+                    return;           
+                }
+                console.log('click on vote');
+                $(this).parent().siblings('#map').trigger(e);
+            });
+            
+            $(vote).on("mousemove", function(e) {
+                $(this).parent().siblings('#map').trigger(e);
+            });
+            */
+            $(vote).on("mousedown", beginDraggingVoteResults);
+            $(vote).on("mouseup", voteAfterDragResults);
+        }
+
+        // Display username
+        var txtx, txty;
+        if (cx < 30)
+        {
+            txtx = cx + 25;
+        }
+        else
+        {
+            txtx = cx - 20;
+        }
+        if (cy < 30)
+        {
+            txty = cy + 25;
+        }
+        else
+        {
+            txty = cy - 20;
+        }
+        var vote_label = svg.text(g, txtx, txty, coords.username);  // rel="popover" 
+        $(vote_label).data('settings', {'userid': parseInt(userid), 'username': coords.username, 'pid': parseInt(pid)}).addClass('vote_label');
+    });
+    // Add marker over selected median
+    var med_marker = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), RADIUS+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
+    $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
+    /*
+    $(med_marker).on( "click", function(e) {
+        showProposalVotes(this, svg, threshold);
+    });*/
+}
+
+function showUserVotes(clicked, svg, userid, username, threshold)
+{
+    console.log("showUserVotes called for user " + userid);
+    
+    var triangle = $('#results_triangle');
+    if (triangle.length == 0) 
+    {
+        return;
+    }
+    var settings = {'mode': 'showUserVotes', 'userid': parseInt(userid)};
+    triangle.data('settings', settings);
+    
+    $('#allvotes', svg.root()).remove();
 
     var g = svg.group(resultsmap, 'alluservotes');
     var fill_color;
@@ -437,7 +597,7 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
     var votey = parseInt($(clicked).attr('cy'));
 
     // Display username
-    var txtx, texty;
+    var txtx, txty;
     if (votex < 30)
     {
         txtx = votex + 25;
@@ -456,8 +616,9 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
     }
     //svg.text(g, txtx, txty, coords.voters[parseInt(userid)].username);
     //var username = questionViewModel.voting_data[parseInt($(med).data('pid'))].voters[parseInt(userid)].username;//fixme
-    var label = "All " + username + "'s votes";
-    svg.text(g, txtx, txty, label);
+    var label_text = "All " + username + "'s votes";
+    var user_votes_label = svg.text(g, txtx, txty, label_text);
+    $(user_votes_label).data('settings', {'userid': parseInt(userid), 'username': username}).addClass('user_votes_label');
 
     var med_selected_fill_color = '#7e7e7e';
 
@@ -465,7 +626,7 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
     //var container_width = $(svg._container).innerWidth();
     //var container_height = 0.7 * container_width;
 
-    var dimensions = calculateTriangleDimensions(svg);
+    var dimensions = calculateTriangleDimensions(svg); // helium
     var container_width = dimensions.width;
     var container_height = dimensions.height;
 
@@ -475,6 +636,7 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
 
         if (typeof coords['voters'][parseInt(userid)] == 'undefined')
         {
+            console.log("vote not found");
             return true;
         }
         
@@ -483,30 +645,21 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
 
         fill_color = setMapColor(coords['voters'][parseInt(userid)]['mapx'], coords['voters'][parseInt(userid)]['mapy']);
 
-        // Set fill colour
-        /*
-        if (cy > threshold.mapy)
-        {
-            fill_color = 'blue';
-        }
-        else if (cx < threshold.mapx)
-        {
-            fill_color = 'red';
-        }
-        else
-        {
-            fill_color = 'green';
-        }
-        */
-
         // Draw line to connect vote with median
-        svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
+        var medline = svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
+        $(medline).data('settings', {'userid': parseInt(userid), 'pid': parseInt(pid)}).addClass('medline');
 
+        console.log("Create vote at " + cx + ', ' + cy);
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); 
         $(vote).data('userid', userid);
         $(vote).data('pid', pid);
+        $(vote).data('settings', {'userid': parseInt(userid), 'username': username, 'pid': parseInt(pid)}).addClass('uservote');
 
         $(vote).on( "click", function(e) {
+            if ($.clickMouseMoved()) {
+                console.log('click aborted');
+                return;
+            }
             e.stopPropagation();
             var pid = parseInt($(this).data('pid'));
             var med = $('.med').filter(function() {
@@ -515,11 +668,18 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
 
             if (med)
             {
-                showProposalVotes(med, svg, threshold, coords['voters']);
+                showProposalVotes(med, svg, threshold);
             }
         });
         
-        
+        if (userid == currentUserViewModel.userid())
+        {
+            console.log("Make draggable for user id " + userid);
+            $(vote).addClass('draggable').addClass('vote');
+            $(vote).on("mousedown", beginDraggingVoteResults);
+            $(vote).on("mouseup", voteAfterDragResults);
+        }
+
         var prop_title;
         var prop = proposalsViewModel.getProposal(pid);
 
@@ -531,19 +691,28 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
         {
             prop_title = 'Proposal ID ' + pid
         }
-        
 
-        var med = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title})
+        /*
+        var med = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title});
         $(med).on( "click", function(e) {
-            showProposalVotes(this, svg, threshold, coords['voters']);
-        });
+            showProposalVotes(this, svg, threshold);
+        });*/
+        
+        
+        // Add marker over selected median
+        var med_marker = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title});
+        $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
+		/*
+		$(med_marker).on( "click", function(e) {
+            showProposalVotes(this, svg, threshold);
+        });*/ 
 
         /*
         var votex = parseInt($(vote).attr('cx'));
         var votey = parseInt($(vote).attr('cy'));
 
         // Display username
-        var txtx, texty;
+        var txtx, txty;
         if (votex < 30)
         {
             txtx = votex + 25;
@@ -565,75 +734,6 @@ function showUserVotes(clicked, svg, userid, username, threshold) // snow
     });
 }
 
-function showProposalVotes(med, svg, threshold, voters) //snow
-{
-    /*
-    var container_width = $(svg._container).innerWidth();
-    var container_height = 0.7 * container_width;
-    */
-
-    var dimensions = calculateTriangleDimensions(svg);
-    var container_width = dimensions.width;
-    var container_height = dimensions.height;
-
-    $('#allvotes,#alluservotes').remove();
-
-    //threshold = {'mapx': container_width * questionViewModel.mapx, 'mapy': container_height * questionViewModel.mapy}
-    //console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
-
-    var g = svg.group(resultsmap, 'allvotes');
-    var fill_color;
-
-    var med_selected_fill_color = '#7e7e7e';
-
-    //svg.circle(g, threshold.mapx, threshold.mapx, RADIUS+1, {fill: 'yellow', title: 'THRESHOLD ' + threshold.mapx + ', ' +  threshold.mapy});
-
-    jQuery.each(voters, function(userid, coords) {
-        cx = container_width * coords.mapx;
-        cy = container_height * coords.mapy;
-        console.log("showProposalVotes: Draw " + coords.username + "'s vote at (" + cx + ", " + cy +")");
-
-        fill_color = setMapColor(coords.mapx, coords.mapy);
-
-        // Draw line to connect vote with median
-        svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {strokeWidth: 1, stroke: fill_color});
-
-        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); 
-        $(vote).data('userid', userid);
-        $(vote).data('username', coords.username);
-        $(vote).data('pid', $(med).attr('pid'));
-
-        $(vote).on( "click", function(e) {
-            e.stopPropagation();
-            console.log('click on user vote...');
-            showUserVotes(this, svg, userid, coords.username, threshold);
-        });
-
-
-        // Display username
-        var txtx, texty;
-        if (cx < 30)
-        {
-            txtx = cx + 25;
-        }
-        else
-        {
-            txtx = cx - 20;
-        }
-        if (cy < 30)
-        {
-            txty = cy + 25;
-        }
-        else
-        {
-            txty = cy - 20;
-        }
-        svg.text(g, txtx, txty, coords.username);  // rel="popover" 
-    });
-    // Add marker over selected median
-    var c = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), RADIUS+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
-    //$(c).popover({ content:"Blah blah blah", container:"body" });
-}
 
 // snow
 function drawVoteNowTriangle(svg)
@@ -652,20 +752,23 @@ function drawVoteNowTriangle(svg)
 	);
 }
 
-// snow
+// haha
 function redoResultsMap()
 {
     console.log('redoResultsMap called...');
     $.when(questionViewModel.fetchVotingData()).done(function()
     {
+	    /*
 	    //var results = $('#resultstriangle');
 	    $('#resultsmap').remove();
-	    svg = $('#resultstriangle').svg('get');
+	    var svg = $('#resultstriangle').svg('get');
         createResultsMap(svg);
+        */
+        updateResultsMap();
     });
 }
 
-function calculateTriangleDimensions(svg)
+function calculateTriangleDimensions(svg) // harpo
 {
     // set height of results triangle container based on available space
 	//var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
@@ -705,8 +808,141 @@ function calculateTriangleDimensions(svg)
     return {'width' : map_width, 'height' : map_height};
 }
 
+// haha
+function update_vote(vote, svg, cx, cy, fill_color)
+{
+	console.log("update_vote called...");
+	
+	// Check if Vote unchanged
+	if (parseInt(vote.attr("cx")) == cx && parseInt(vote.attr("cy")) == cy)
+	{
+	    console.log("update_vote: Vote unchanged");
+	    return;
+	}
+	
+	var pid = vote.data('pid');
+	var userid = vote.data('userid');
+	
+	vote.animate({svgCx : cx, svgCy : cy}, 1000);
+	// medlines
+	var medline = $('.medline', svg.root()).filter(function() {
+		return $(this).data("settings").pid == pid && $(this).data("settings").userid == userid;
+	});
+	if (medline.length == 1)
+	{
+	    medline.animate({svgX1 : cx, svgY1 : cy, svgStroke: fill_color}, 1000);
+    }
+    else
+    {
+        console.log("update_vote: medline not found");
+    }
+	// vote label
+	
+	var txtx, txty;
+    txtx = cx;
+    if (cy < 30)
+    {
+        txty = cy + 25;
+    }
+    else
+    {
+        txty = cy - 20;
+    }
+	var vote_label = $('.vote_label', svg.root()).filter(function() {
+    	return $(this).data("settings").pid == pid && $(this).data("settings").userid == userid;
+    });
+	vote_label.animate({svgX : txtx, svgY : txty}, 1000);
+}
+function update_median(med, svg, cx, cy)
+{
+	console.log("update_median called...");
+	
+	// median
+	// Check if Median unchanged
+	if (parseInt(med.attr("cx")) == cx && parseInt(med.attr("cy")) == cy)
+	{
+	    console.log("update_median: Median unchanged");
+	    return;
+	}
+	
+	var pid = parseInt($(med).data('pid'));
+	
+	$(med).animate({svgCx : cx, svgCy : cy}, 1000);
+		
+	// medlines
+	var medlines = $('.medline', svg.root()).filter(function() {
+		return $(this).data("settings").pid == pid;
+	});
+	$(medlines).animate({svgX2 : cx, svgY2 : cy}, 1000);
+	// median label
+	var txtx, txty;
+    txtx = cx;
+    if (cy < 30)
+    {
+        txty = cy + 25;
+    }
+    else
+    {
+        txty = cy - 20;
+    }
+	var med_label = $('.med_label', svg.root()).filter(function() {
+		return $(this).data("settings").pid == pid;
+	});
+	med_label.animate({svgX : txtx, svgY : txty}, 1000);
+	
+	var med_marker = $('.med_marker', svg.root()).filter(function() {
+    	return $(this).data("settings").pid == pid;
+    });
+    $(med_marker).animate({svgCx : cx, svgCy : cy}, 1000);
+}
 
-function createResultsMap(svg) // snow
+function updateResultsMap() // haha
+{
+    var triangle = $('#results_triangle');
+    if (triangle.length == 0) 
+    {
+        console.log("updateResultsMap: results triangle not found");
+        return;
+    }
+
+    // set height of results triangle container based on available space
+    var svg = $('#resultstriangle').svg('get');
+    var dimensions = calculateTriangleDimensions(svg);
+    var container_width = dimensions.width;
+    var container_height = dimensions.height;
+    
+    $('.med', svg.root()).each(function(){
+		var pid = $(this).data("settings").pid;
+		var coords = questionViewModel.voting_data[pid];
+		var cx = container_width * coords['median'].medx;
+        var cy = container_height * coords['median'].medy;
+        update_median($(this), svg, cx, cy);
+	});
+	
+	$('.uservote', svg.root()).each(function(){
+		var pid = $(this).data("settings").pid;
+		var userid = $(this).data("settings").userid;
+		var user_vote = questionViewModel.voting_data[pid].voters[userid];
+		var fill_color = setMapColor(user_vote.mapx, user_vote.mapy);
+		var cx = container_width * user_vote.mapx;
+        var cy = container_height * user_vote.mapy;
+        update_vote($(this), svg, cx, cy, fill_color);
+	});
+}
+
+function resizeResultsMap()
+{
+    console.log('redoResultsMap called...');
+    $.when(questionViewModel.fetchVotingData()).done(function()
+    {
+	    //var results = $('#resultstriangle');
+	    $('#resultsmap').remove();
+	    var svg = $('#resultstriangle').svg('get');
+        createResultsMap(svg);
+    });
+}
+
+function createResultsMap(svg) // harpo
 {
 	/*
 	console.log('createResultsMap called...');
@@ -720,10 +956,12 @@ function createResultsMap(svg) // snow
 	var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
     $('#resultstriangle').height(set_results_map_height);
     
+    /*
     $('#resultstriangle').on( "click", function(e) {
     	e.stopPropagation();
         $('#allvotes,#alluservotes').remove();
     });
+    */
 
     var dimensions = calculateTriangleDimensions(svg);
     var container_width = dimensions.width;
@@ -734,7 +972,7 @@ function createResultsMap(svg) // snow
     var mid_x = container_width/2;
     var mid_y = container_height/2;
 
-    var resultsmap = svg.group('resultsmap'); // snow
+    var resultsmap = svg.group('resultsmap');
 
     resetSize(svg, container_width, container_height);
 
@@ -748,9 +986,11 @@ function createResultsMap(svg) // snow
             fill: 'white',
             stroke: '#CDCDCD',
             strokeWidth: 2,
-            id: 'results_map'
+            id: 'results_triangle'
         }
     );
+    
+	$(triangle).data('display', {'mode': 'default'});
 
     var threshold_x = container_width*questionViewModel.mapx;
     var threshold_y = container_height*questionViewModel.mapy;
@@ -759,6 +999,7 @@ function createResultsMap(svg) // snow
     var g = svg.group(resultsmap, 'votes'); // mapgroup
 
     $.each(questionViewModel.voting_data, function(pid, coords) {
+        
         if (!coords['median'])
         {
             return;
@@ -768,6 +1009,8 @@ function createResultsMap(svg) // snow
         {
             return;
         }
+        
+        console.log("pid is type " + typeof pid);
 
         var cx = container_width * coords['median'].medx;
         var cy = container_height * coords['median'].medy;
@@ -796,9 +1039,10 @@ function createResultsMap(svg) // snow
 
         med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
         $(med).data('pid', pid);
+        $(med).data('settings', {'pid': parseInt(pid)});
 
         // Display proposal ID
-        var txtx, texty;
+        var txtx, txty;
         txtx = cx;
         if (cy < 30)
         {
@@ -808,12 +1052,13 @@ function createResultsMap(svg) // snow
         {
             txty = cy - 20;
         }
-        svg.text(g, txtx, txty, pid);
+        var med_label = svg.text(g, txtx, txty, pid);
+        $(med_label).data('settings', {'pid': parseInt(pid)}).addClass('med_label');
 
         $(med).on( "click", function(e) {
-            //console.log('click on median...');
+            console.log('click on median...');
             e.stopPropagation();
-            showProposalVotes(this, svg, threshold, coords['voters']);
+            showProposalVotes(this, svg, threshold); // humbug
         });
 
         // Add error triangle if defined
@@ -839,7 +1084,6 @@ function createResultsMap(svg) // snow
     });
 }
 
-// paris
 function getSVGDimensions(selector)
 {
     if ( $(selector).hasClass('hasSVG') === false)
@@ -857,6 +1101,12 @@ function getSVGDimensions(selector)
 function getVotingMapDimensions()
 {
     var dimensions = getSVGDimensions('#modalvotesmap');
+    dimensions['height'] = 0.7 * dimensions['width'];
+    return dimensions;
+}
+function getResultsMapDimensions()
+{
+    var dimensions = getSVGDimensions('#resultstriangle');
     dimensions['height'] = 0.7 * dimensions['width'];
     return dimensions;
 }
@@ -1000,7 +1250,7 @@ function createVoteMap(svg)
         $(vote).data('pid', proposal.id());
 
         // Display proposal ID
-        var txtx, texty;
+        var txtx, txty;
         txtx = cx;
         if (cy < 30)
         {
@@ -1011,8 +1261,7 @@ function createVoteMap(svg)
             txty = cy - 20;
         }
         svg.text(g, txtx, txty, String(proposal.id()));
-        
-        
+        /*
         $(vote).on( "click", function(e) {
             console.log('click on vote');
             $(this).parent().siblings('#map').trigger(e);
@@ -1020,6 +1269,7 @@ function createVoteMap(svg)
         $(vote).on( "mousemove", function(e) {
             $(this).parent().siblings('#map').trigger(e);
         });
+        */
     });
     // Add active vote last
     var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()];
@@ -1032,6 +1282,7 @@ function createVoteMap(svg)
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type});
         $(vote).data('pid', proposal.id());
         $(vote).addClass('draggable');
+        /*
         $(vote).on( "click", function(e) {
             console.log('click on vote');
             $(this).parent().siblings('#map').trigger(e);
@@ -1039,46 +1290,10 @@ function createVoteMap(svg)
         $(vote).on( "mousemove", function(e) {
             $(this).parent().siblings('#map').trigger(e);
         });
-        // moon
-        
+        */
+        // humbug
         $(vote).on("mousedown", beginDraggingVote);
-        /*
-        $(vote).on( "mousedown", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Mousedown on draggable vote!!!!!");
-            if ($(this).hasClass('draggable'))
-            {
-                $(this).addClass('dragged');
-                console.log("Add trackDraggableVote handler to triangle...");
-                $(triangle).on( "mousemove", trackDraggableVote);
-            }
-        });*/
         $(vote).on("mouseup", voteAfterDrag);
-        /*
-        $(vote).on("mouseup", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            //$(triangle).off("click");
-            console.log("Mouseup on draggable vote!!!!!");
-            //$(triangle).off( "mousemove");
-            console.log("Remove trackDraggableVote handler from triangle...")
-            $(triangle).off( "mousemove", trackDraggableVote);
-            
-            var vote = $('.vote.draggable');
-            var cx = $(vote).attr('cx');
-            var cy = $(vote).attr('cy');
-            
-            var dimensions = getVotingMapDimensions();
-            var max_x = dimensions.width;
-            var max_y = dimensions.height;
-            
-            // Endorse with normalised vote coordinates
-        	var n_cx = cx / max_x;
-        	var n_cy = cy / max_y;
-        	
-        	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
-        });*/
     }
     
     /*
@@ -1162,6 +1377,123 @@ function createVoteMap(svg)
     $(triangle).on( "click", triangleClickHandler );
 }
 
+// humbug
+// results triangle
+function beginDraggingVoteResults(e)
+{
+    e.preventDefault();
+    //e.stopPropagation();
+    console.log("Mousedown on draggable results vote!!!!!");
+    if ($(this).hasClass('draggable'))
+    {
+        $(this).addClass('dragged');
+        console.log("Add trackDraggableVote handler to triangle...");
+        var triangle = $('#results_triangle');
+        triangle.on( "mousemove", trackDraggableVoteResults);
+    }
+}
+
+function voteAfterDragResults(e)
+{
+    e.preventDefault();
+    //e.stopPropagation();
+    console.log("Mouseup on draggable vote!!!!!");
+    var triangle = $('#results_triangle');
+    triangle.off( "mousemove", trackDraggableVoteResults);
+    
+    var vote = $('.vote.dragged');
+    var cx = $(vote).attr('cx');
+    var cy = $(vote).attr('cy');
+    
+    //var dimensions = getResultsMapDimensions();
+    var svg = $('#resultstriangle').svg('get');
+    var dimensions = calculateTriangleDimensions(svg);
+    var max_x = dimensions.width;
+    var max_y = dimensions.height;
+    
+    // Endorse with normalised vote coordinates
+	var n_cx = cx / max_x;
+	var n_cy = cy / max_y;
+	
+	vote.removeClass('dragged'); // haha
+	var pid = vote.data('settings').pid;
+	
+	proposalsViewModel.resultsmapEndorseProposal(n_cx, n_cy, pid);
+	
+	//proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
+}
+
+function trackDraggableVoteResults(e)
+{
+    console.log("trackDraggableVoteResults: mousemove on results triangle!!!!!");
+    var posX = $(this).offset().left;
+	var posY = $(this).offset().top;
+
+	var cx, cy;
+	if (typeof $.browser.webkit == 'undefined')
+	{
+	    cx = e.pageX - posX - RADIUS;
+	    cy = e.pageY - posY - RADIUS;
+	}
+	else
+	{
+	    cx = e.pageX - posX;
+	    cy = e.pageY - posY;
+	}
+	
+	console.log("cx:" + cx + ", cy:" + cy);
+	
+	//var dimensions = getResultsMapDimensions();
+	var svg = $('#resultstriangle').svg('get');
+    var dimensions = calculateTriangleDimensions(svg);
+	var container_width = dimensions.width;
+	var container_height = dimensions.height;
+	
+	var n_cx = cx / container_width;
+	var n_cy = cy / container_height;
+	
+	var fill_color = setMapColor(n_cx, n_cy);
+	var vote = $('.vote.dragged', svg.root());
+	if (vote.length == 0)
+	{
+	    console.log("NO VOTE FOUND !!!!");
+	}
+	else if (vote.length > 1)
+	{
+	    console.log("MORE THAN ONE VOTE FOUND !!!!");
+	}
+	else
+	{
+        $('.vote.dragged').attr('cx', cx).attr('cy', cy).attr('fill', fill_color);
+        // addline
+        
+        // Update line connecting vote with median
+        /*
+        var med =  $('.med', svg.root()).filter(function() {
+    		return $(this).data("pid") == $(vote).data("pid");
+    	});
+    	if (med.length == 0)
+    	{
+    	    console.log("trackDraggableVoteResults: Med not found");
+    	    return;
+    	}
+    	*/
+        var medline = $('.medline', svg.root()).filter(function() {
+    		return $(this).data("settings").pid == $(vote).data("settings").pid && $(this).data("settings").userid == $(vote).data("settings").userid;
+    	});
+    	if (medline.length == 0)
+    	{
+    	    console.log("medline not found");
+    	}
+    	else
+    	{
+            $(medline).attr('x1', cx)
+                      .attr('y1', cy)
+                      .attr('stroke', fill_color);
+        }
+    }
+}
+// Voting triangle harpo
 function beginDraggingVote(e)
 {
     e.preventDefault();
@@ -2760,7 +3092,7 @@ function ViewProposalViewModel()
         }
     }
 
-	self.addComment = function(comment) // vienna
+	self.addComment = function(comment)
 	{
 		console.log("ViewProposalViewModel.addComment() called for proposal" + self.proposal.id() + " ...");
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals/' + self.proposal.id() + '/comments';
@@ -3449,7 +3781,96 @@ function ProposalsViewModel()
         });
 	}
 
-	
+	// Add vote using normalised votemap coordinates
+	self.resultsmapEndorseProposal = function(mapx, mapy, pid) // haha
+	{
+		if (currentUserViewModel.isLoggedIn() == false)
+		{
+		    console.log("Not logged in");
+		    return;
+		}
+
+		var proposal = this.getProposal(pid);
+		
+		console.log('resultsmapEndorseProposal called with pid ' + pid + ' and coords ' + mapx + ', ' + mapy + " **************");
+		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ pid +'/endorsements';
+		console.log('endorse uri = ' + endorse_uri);
+
+		// Normalized vote coordinates
+        var coords = {mapx: mapx, mapy: mapy};
+
+		ajaxRequest(endorse_uri, 'POST', {use_votemap:true, coords:coords})
+		.done(function(data, textStatus, jqXHR)
+		{
+		    console.log('Proposals data returned...');
+			console.log(data);
+
+			if (jqXHR.status == 201)
+			{
+				console.log('Updating proposal ' + proposal.id() + ' to ' + data.endorsement_type);
+				var prev_endorsement_type = proposal.endorse_type();
+				proposal.endorse_type(data.endorsement_type);
+				viewProposalViewModel.setProposal(proposal);
+				if ( (prev_endorsement_type == 'endorse'
+					&& (data.endorsement_type == 'confused' || data.endorsement_type == 'oppose'))
+				|| (data.endorsement_type == 'endorse'
+					&& (prev_endorsement_type == 'confused' || prev_endorsement_type == 'oppose'
+					    || prev_endorsement_type == 'notvoted')) 
+				|| ($('#voting_graphs').is(":visible") == false && proposalsViewModel.votedAll()) )
+				{
+					if (proposalsViewModel.votedAll())
+					{
+					    console.log('Refreshing graphs after voted FOR ALL...');
+    					fetchVotingGraphs(); // boots
+					}
+					else
+					{
+					    console.log('Dont refresh graphs until voted FOR ALL...');
+					}
+				}
+
+				// Update vote coordinates and endorsement type
+				proposal.endorse_type(data.endorsement_type);
+				proposal.mapx(mapx);
+				proposal.mapy(mapy);
+				proposal.vote_count(parseInt(data.vote_count));
+				
+				proposal.box_background(setMapColor(mapx, mapy));
+		  		proposal.box_color(getContrastYIQ(proposal.box_background()));
+		  						
+				// setcolor
+				//setProposalPanelColor(proposal);
+				/*
+				var background = setMapColor(proposal.mapx, proposal.mapy);
+                var color = getContrastYIQ(background);
+                $(".proposal_list .proposal[pid='" + proposal.id() + "'] .panel-heading").css("color", color).css("background-color", background).css("border", background);
+                */
+
+				// Draw vote on votemap if displayed
+				//setVote(proposal);
+				redoResultsMap(); // haha
+				questionViewModel.fetchQuestion();
+				/*
+				$('.voting').each(function(){
+					var index = $(this).parents('.panel').siblings('.index')[0].value;
+					var pid = $(this).parents('.panel').siblings('.propId')[0].value;
+					//console.log('adding pid ' + pid + ' and threeway class to voting container...');
+					$(this).data('pid', pid).addClass('threeway').data('index', index);
+					//console.log('check if pid added ==> ' + $(this).data('pid'));
+					console.log('Load triangle into proposal box');
+					//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
+					$(this).svg({loadURL: STATIC_FILES + '/images/triangle_b.svg'});//,
+					//			 onLoad: init3WayTriangle});
+				});*/
+				
+				proposalsViewModel.proposals.sort(sortProposalsByLike);
+			}
+			else
+			{
+				console.log(jqXHR.status);
+			}
+		});
+	}
 
 	// Add vote using normalised votemap coordinates
 	self.mapEndorseWithIndex = function(mapx, mapy, index) // bingo
@@ -3839,7 +4260,7 @@ var questionViewModel = function(data) {
 	};
 }*/
 
-function InviteUsersViewModel() // haha
+function InviteUsersViewModel()
 {
     var self = this;
     // Update subscribers after 50 microseconds
@@ -3920,7 +4341,7 @@ function InviteUsersViewModel() // haha
 		});
 	}
 
-	self.add_users = function() //haha
+	self.add_users = function()
 	{
 	    console.log("InviteUsersViewModel.add_users called...");
 	    var invite_user_ids = new Array();
@@ -3991,7 +4412,7 @@ function PermissionsViewModel() // wolf
 
 	self.fetchParticipantPermissions = function()
 	{   
-		self.permissions([]); // haha
+		self.permissions([]);
 		var URI = VILFREDO_API + '/questions/' + question_id + '/permissions';
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Question permissions returned...');
@@ -4211,6 +4632,7 @@ function QuestionViewModel() // winter
   		    generation_id = parseInt(data.question.generation);
   		}
     }
+
     
     // chat
 	self.delete = function()
@@ -4312,6 +4734,7 @@ function QuestionViewModel() // winter
 		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Question voting data returned...');
 			self.voting_data = data.voting_data;
+			//updateResultsMap();
 		});
 	}
 

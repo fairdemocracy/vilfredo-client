@@ -7107,6 +7107,9 @@ a.disabled {
 #selected_image {
   margin-bottom: 10px;
 }
+#clearvotes {
+  margin-bottom: 10px;
+}
 .clearfix:before,
 .clearfix:after,
 .dl-horizontal dd:before,

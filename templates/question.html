@@ -201,9 +201,10 @@
 	
 			<h2>Results Map</h2>
 			<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
-		
+			<button id="clearvotes" type="button" class="btn btn-sm btn-info">Clear Votes</button>
+			<br>
 			<div id="resultstriangle"></div>
-			<!-- resultstriangle table end -->
+			<!-- resultstriangle end -->
 		</div> 
 		<!-- results_map end -->
 		
@@ -748,13 +749,13 @@
     	<![endif]-->
 		
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+    	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.2.0.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svg.min.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.svgdom.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.4.4/jquery.svganim.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.5.0/jquery.svg.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.5.0/jquery.svgdom.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/svg-1.5.0/jquery.svganim.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
@@ -762,6 +763,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		{{ flask_util_js.js }}
@@ -770,6 +772,19 @@
 	function initPage()
 	{
 		console.log('initPage called...');
+		
+		var clickme = $("#clickme");
+		$(clickme).on( "click", function(e) {
+        	console.log('click on clickme');
+        });
+        
+		$(clickme).on( "mousedown", function(e) {
+        	console.log('mousedown on clickme');
+        });
+		$(clickme).on( "mouseup", function(e) {
+        	console.log('mouseup on clickme');
+        });
+
 		
 		$.when(currentUserViewModel.loadUser(), 
 			   questionViewModel.fetchQuestion(),
@@ -873,7 +888,7 @@
 			//
 			$( window ).resize(function() {
 				console.log('window resized');
-				redoResultsMap();
+				resizeResultsMap();
 			});
 			//
 		});
@@ -1086,7 +1101,7 @@
 			counterText: "Characters left" + " "
 		});*/
 		
-		$('#inputProposalAbstract').live('click', function(e) {
+		$('#inputProposalAbstract').on('click', function(e) {
 			if ($(this).data('charcount') == undefined)
 			{
 				$(this).data('charcount', true);
@@ -1098,7 +1113,7 @@
 			}
 		});
 		
-		$('.inputAnswerComment').live('click', function(e) {
+		$('.inputAnswerComment').on('click', function(e) {
 			if ($(this).data('charcount') == undefined)
 			{
 				$(this).data('charcount', true);
@@ -1132,6 +1147,16 @@
 		$('button').removeAttr('disabled');
 		
 		$("[data-toggle='tooltip']").tooltip();
+		
+		$('#clearvotes').on( "click", function(e) {
+ 	   		e.stopPropagation();
+	        $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
+			var triangle = $('#results_triangle');
+		    if (triangle.length == 1) 
+		    {
+		    	triangle.data('settings', {'mode': 'default'});
+		    }
+	    });
 	});	
 	</script>
 	</body>
