@@ -7052,6 +7052,9 @@ a {
 .note {
   color: blue;
 }
+#fullquestionblurb .question_text {
+  margin-bottom: 20px;
+}
 .new .glyphicon-tree-deciduous {
   color: green;
 }

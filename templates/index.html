@@ -193,7 +193,7 @@
 						<div class="item">
 						<a data-bind="click: currentUserViewModel.acceptInvite"><span title="Accept" class="label label-success" aria-hidden="true">Accept</span></a>
 					<a data-bind="click: currentUserViewModel.declineInvite"><span title="Decline" class="label label-danger" aria-hidden="true">Reject</span></a>
-						<a data-toggle="tooltip" title="" data-bind="attr: { title: currentUserViewModel.setinvitetooltip($data) }">
+						<a data-toggle="tooltip" title="View question text" data-bind="click: currentUserViewModel.openInviteQuestionText.bind($data, $index), attr: { title: currentUserViewModel.setinvitetooltip($data) }">
 						<!-- <span class="notificationicon glyphicon glyphicon-envelope" aria-hidden="true"></span> -->
 						<span data-bind="text: question_title"></span>
 						</a>
@@ -359,12 +359,15 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-bind="click: close3WayTriangle" aria-hidden="true">×</button>
-					<h4 class="modal-title">
+					<button type="button" class="close" data-bind="click: closeInviteQuestionText" aria-hidden="true">×</button>
+					<h4 class="question_title modal-title">
 					</h4>
 				</div>
 				<div class="modal-body">
-					<div class="show3waytriangle"></div>
+					
+					<div class="question_text"></div>
+					<div><a data-bind="click: currentUserViewModel.acceptInviteFromModal.bind()"><span title="Accept" class="label label-success" aria-hidden="true">Accept</span></a>
+					<a data-bind="click: currentUserViewModel.declineInviteFromModal.bind()"><span title="Decline" class="label label-danger" aria-hidden="true">Reject</span></a></div>
 				</div><!-- /.modal-body -->
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
@@ -608,6 +611,9 @@
 		
 		ko.applyBindings(currentUserViewModel, $('#invite_only')[0]);
 		
+		ko.applyBindings(currentUserViewModel, $('#fullquestionblurb')[0]);
+				
+		
 		//$('.home').attr('href', VILFREDO_URL);
 		//$('.navbar-brand').attr('href', VILFREDO_URL);
 		//$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
@@ -633,7 +639,7 @@
 			$(this).find(".form-control").val('').trigger("setcharcount");
 			newQuestionViewModel().clear();
 			$(this).find("button").removeAttr('disabled');
-		})
+		});
 		
 		$('body').tooltip({
 		    selector: "[data-toggle='tooltip']",

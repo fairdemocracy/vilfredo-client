@@ -107,6 +107,12 @@ function readURL(input)
     }
 }
 
+// knockout html binding should do this
+function convertNewlines(str)
+{
+    return str.replace(/\r?\n/g, '<br>');
+}
+
 function updateProgress(evt) 
 {
     console.log('updateProgress');
@@ -1732,6 +1738,22 @@ jQuery.fn.extend({
     }
 });
 
+function add_modal_alert(modal_id, alert, text)
+{
+    var modal = $(modal_id);
+    if (modal.length == 0 || modal.is(':visible') == false) { return; }
+    
+    modal.find('.alert').fadeOut().remove();
+
+    var alertbox = '<div class="alert alert-'+ alert + '">';
+	alertbox = alertbox + '	<span class="flash">' + alert_flash[alert] + '</span> <span class="text">';
+	alertbox = alertbox + text + '</span>';
+	alertbox = alertbox +  '</div>';
+
+	var alert = modal.find('.modal-body').prepend(alertbox);
+	$(alert).fadeIn();
+}
+
 function add_page_alert(alert, text, class_id) // bear
 {
     if (typeof(class_id) == 'undefined')
@@ -1782,6 +1804,7 @@ function CurrentUserViewModel()
 	self.avatar_url = ko.observable('');
 	self.login_jqXHR = null;
 	self.new_invites = ko.observableArray();
+	self.view_invite_id = ko.observable('');
 	
     self.fetchNewInvites = function() {
 		if (currentUserViewModel.isLoggedOut()) return false;
@@ -1795,7 +1818,8 @@ function CurrentUserViewModel()
 		  		    id: data.invites[i].id,
 					permissions: ko.observable(data.invites[i].permissions),
 		      		question_title: ko.observable(data.invites[i].question_title),
-					sender_username: ko.observable(data.invites[i].sender_username)
+					sender_username: ko.observable(data.invites[i].sender_username),
+					question_blurb: ko.observable(data.invites[i].question_blurb)
 		  		});
 			}
 			self.new_invites(fetched_invites);
@@ -1829,6 +1853,58 @@ function CurrentUserViewModel()
 	    }
 	    html = html + ' by ' + invite.sender_username();
 	    return html;
+	}
+	self.openInviteQuestionText = function(index, invite)
+	{
+	    self.view_invite_id(index());
+	    console.log("openInviteQuestionText called with invite..." + index());
+	    var show_invite = $('#fullquestionblurb');
+	    show_invite.find('.alert').remove();
+	    show_invite.find('.question_title').html(invite.question_title());
+	    show_invite.find('.question_text').html(convertNewlines(invite.question_blurb()));
+	    show_invite.modal('show');
+	}
+	self.closeInviteQuestionText = function()
+	{
+	    self.view_invite_id(null);
+	    var show_invite = $('#fullquestionblurb');
+	    show_invite.find('.question_title').html('');
+	    show_invite.find('.question_text').html('');
+	    show_invite.modal('hide');
+	}
+	
+	self.acceptInviteFromModal = function()
+	{
+	    console.log("acceptInviteFromModal: accept new invite..." + self.view_invite_id());
+	    var invite = self.new_invites()[self.view_invite_id()];
+	    console.log("acceptInviteFromModal: accept new invite..." + invite.id);
+	    ajaxRequest(VILFREDO_API + '/users/'+ self.userid() +'/new_invites/'+invite.id+'/accept', 'POST').done(function(data, textStatus, jqXHR) {
+		    console.log('Invite accepted...');
+		    self.closeInviteQuestionText();
+		    self.new_invites.remove(invite);
+			questionsViewModel.fetchQuestions();
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+		    var message = getJQXHRMessage(jqXHR, 'There was a problem.');
+            add_modal_alert('#fullquestionblurb', 'danger', message);
+        });
+	}
+	self.declineInviteFromModal = function()
+	{
+	    var decline_invite = confirm('Are you sure you want to decline this invitation?');
+		if (!decline_invite) return;
+	    console.log("acceptInviteFromModal: declined new invite..." + self.view_invite_id());
+	    var invite = self.new_invites()[self.view_invite_id()];
+	    console.log("acceptInviteFromModal: accept new invite..." + invite.id);	
+	    ajaxRequest(VILFREDO_API + '/users/'+ self.userid() +'/new_invites/'+invite.id+'/decline', 'POST').done(function(data, textStatus, jqXHR) {
+		    console.log('Invite declined...');
+		    self.closeInviteQuestionText();
+		    self.new_invites.remove(invite);
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+		    var message = getJQXHRMessage(jqXHR, 'There was a problem.');
+            add_modal_alert('#fullquestionblurb', 'danger', message);
+        });
 	}
 	
 	self.acceptInvite = function(invite)
