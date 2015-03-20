@@ -501,8 +501,12 @@
 					</div>					
 					<!-- /ko -->
 					<!-- /ko -->
+					
+					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: comment_for" id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'for')" id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</span>
+					
 					</div>
 					<!-- for comments end -->
 				
@@ -520,8 +524,11 @@
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
+					
+					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: comment_against" id="inputAgainstComment" class="form-control" rows="2" placeholder="Point Against"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'against')" id="inputAgainstCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</span>
 					</div>
 				</div>
 			</div> 
@@ -555,11 +562,10 @@
 								</div>
 							</div>
 							<!-- /ko -->
-							
-							
+															
 							<!-- ko ifnot: $parent.getAnswerObject(id) -->
 							
-							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id -->
+							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id && questionViewModel.phase() == 'voting'-->
 							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment form-control" rows="3" placeholder="Answer Question"></textarea>
 							<button data-bind="click: function() { $root.addcommentanswer(id()) }" type="button" class="btn btn-default btn-xs">answer</button>
 							<!-- /ko -->
@@ -578,8 +584,10 @@
 					<!-- /ko -->
 					<div class="qabox row">
 					<div class="col-md-6">
+					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: question" id="inputQuestionComment" class="form-control" rows="2" placeholder="Question"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'question')" id="inputQuestionCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</span>
 					</div>
 					<div class="col-md-6"></div>
 					</div>
