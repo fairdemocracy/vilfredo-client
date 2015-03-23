@@ -862,7 +862,6 @@
 				$.when(proposalsViewModel.fetchInheritedProposals(), 
 			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
 			    {
-					$('#resultstriangle').svg({onLoad: createResultsMap});
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
 					if (currentUserViewModel.isLoggedIn())
 					{
@@ -877,7 +876,11 @@
 		        //proposalsViewModel.fetchProposals();
 				$.when(proposalsViewModel.fetchProposals()).done(function()
 			    {
-					$('#resultstriangle').svg({onLoad: createResultsMap});
+					if (proposalsViewModel.votedAll())
+					{
+						$('#resultstriangle').svg({onLoad: createResultsMap});
+					}
+					
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
 					if (currentUserViewModel.isLoggedIn())
 					{

@@ -6397,6 +6397,11 @@ td.green {
   font-size: 1.em;
   font-weight: bold;
 }
+#results_map {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 #resultstriangle {
   width: 100%;
   margin: 0;
