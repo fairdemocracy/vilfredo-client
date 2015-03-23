@@ -858,6 +858,12 @@ function drawVoteNowTriangle(svg)
 function resizeResultsMap()
 {
     console.log('resizeResultsMap called...');
+    
+    if ($('#resultsmap').length == 0)
+    {
+        return;
+    }
+    
     $.when(questionViewModel.fetchVotingData()).done(function()
     {
 	    //var results = $('#resultstriangle');
