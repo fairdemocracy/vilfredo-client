@@ -112,7 +112,7 @@
   <!-- /ko --> <!-- voting -->
 		
 		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people">Participants</button>
-	<!-- ko if: questionViewModel.phase() == 'writing' && questionViewModel.new_proposal_count() >= 2 -->
+	<!-- ko if: questionViewModel.phase() == 'writing' && questionViewModel.proposal_count() >= 2 && questionViewModel.new_proposal_count() >= 1 -->
 	<button data-bind="click: move_on" class="btn btn-primary">Move to Voting</button>
 	<!-- /ko -->
 	<!-- ko if: questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= 2 || (questionViewModel.completed_voter_count() == 1 && participant_count() == 1) -->
@@ -295,7 +295,7 @@
 		</div>
 		
 		<div data-bind="visible: questionViewModel.proposal_count == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">
-		<p>There are no proposals so far. Why not be the first to propose an answer?</p>
+		<p>There are no new proposals so far. Why not be the first to propose an answer?</p>
 		</div>
 		
 		<div data-bind="visible: proposals().length == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">

@@ -3753,9 +3753,10 @@ function QuestionsViewModel()
     	    }
     	    if (question.inherited_proposal_count() > 0)
     	    {
-    	        html = html + "<br>There are "
+    	        var total_props = question.new_proposal_count() + question.inherited_proposal_count();
+    	        html = html + "<br>There are also "
     		        + question.inherited_proposal_count()
-    		        + " inherited from the previous generation";
+    		        + " inherited from the previous generation, so " +  total_props + " in total";
     	    }
 	    }
 	    else if (question.phase() == 'voting')
@@ -4860,9 +4861,10 @@ function QuestionViewModel() // winter
     	    }
     	    if (self.inherited_proposal_count() > 0)
     	    {
-    	        html = html + "<br>There are "
+    		    var total_props = self.new_proposal_count() + self.inherited_proposal_count();
+    	        html = html + "<br>There are also "
     		        + self.inherited_proposal_count()
-    		        + " inherited from the previous generation";
+    		        + " inherited from the previous generation, so " +  total_props + " in total";
     	    }
 	    }
 	    else if (self.phase() == 'voting')
