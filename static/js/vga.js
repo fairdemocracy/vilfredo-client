@@ -474,7 +474,7 @@ function addProposalVote(med, svg, userid, userdata) // haha
     {
         return;
     }
-    var pid = parseInt($(med).data('pid'));
+    var pid = $(med).data('settings').pid;
     console.log("addProposalVote called for pid " + pid);
     
     var dimensions = calculateTriangleDimensions(svg);
@@ -558,7 +558,7 @@ function showProposalVotes(med, svg, threshold) // humbug
     {
         return;
     }
-    var pid = parseInt($(med).data('pid'));
+    var pid = $(med).data('settings').pid;
     var settings = {'mode': 'showProposalVotes', 'pid': pid};
     triangle.data('settings', settings);
     
@@ -590,9 +590,9 @@ function showProposalVotes(med, svg, threshold) // humbug
         // addline
         // Draw line to connect vote with median
         var medline = svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {class: 'medline', strokeWidth: 1, stroke: fill_color});
-        $(medline).data('pid', $(med).data('pid'));
+        $(medline).data('pid', $(med).data('settings').pid);
         $(medline).data('userid', userid);
-        $(medline).data('settings', {'userid': parseInt(userid), 'pid': parseInt($(med).data('pid'))});
+        $(medline).data('settings', {'userid': parseInt(userid), 'pid': $(med).data('settings').pid});
 
         var vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); 
         $(vote).data('userid', userid);
@@ -959,8 +959,10 @@ function update_vote(vote, svg, cx, cy, fill_color)
 	    return;
 	}
 	
-	var pid = vote.data('pid');
-	var userid = vote.data('userid');
+	//var pid = vote.data('pid');
+	//var userid = vote.data('userid');
+	var pid = vote.data('settings').pid;
+	var userid = vote.data('settings').pid;
 	
 	vote.animate({svgCx : cx, svgCy : cy, svgFill: fill_color}, 1000);
 	// medlines
@@ -1004,7 +1006,8 @@ function update_median(med, svg, cx, cy)
 	    return;
 	}
 	
-	var pid = parseInt($(med).data('pid'));
+	//var pid = parseInt($(med).data('pid'));
+	var pid = $(med).data('settings').pid;
 	
 	$(med).animate({svgCx : cx, svgCy : cy}, 1000);
 		
