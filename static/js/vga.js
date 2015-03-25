@@ -962,7 +962,7 @@ function update_vote(vote, svg, cx, cy, fill_color)
 	//var pid = vote.data('pid');
 	//var userid = vote.data('userid');
 	var pid = vote.data('settings').pid;
-	var userid = vote.data('settings').pid;
+	var userid = vote.data('settings').userid;
 	
 	vote.animate({svgCx : cx, svgCy : cy, svgFill: fill_color}, 1000);
 	// medlines
@@ -1050,7 +1050,7 @@ function updateResultsMap() // haha v2
     if (triangle.data('settings') == 'undefined')
     {
         console.log("triangle.data('settings') NOT DEFINED!!!");
-        alert("triangle.data('settings') NOT DEFINED!!!");
+        //alert("triangle.data('settings') NOT DEFINED!!!");
         return;
     }
 
@@ -1068,7 +1068,10 @@ function updateResultsMap() // haha v2
     */
 
     $.each(questionViewModel.voting_data, function(pid, coords) {
-        //console.log("LOOP 1: pid = " + pid + " coords.median.medx = " + coords.median.medx);
+        console.log("LOOP 1: pid = " + pid + " coords.median.medx = " + coords.median.medx);
+        //console.log("*****> pid variable is of type " + typeof pid);
+        pid = parseInt(pid);
+        //console.log("*****> pid variable is of type " + typeof pid);
         if (!coords['median'])
         {
             return;
@@ -1094,8 +1097,11 @@ function updateResultsMap() // haha v2
 
         if (triangle.data('settings').mode == 'showProposalVotes' && pid == triangle.data('settings').pid)
         {
+            console.log("updateResultsMap: mode == showProposalVotes for pid " + pid);
             $.each(coords.voters, function(userid, userdata) {
-                //console.log("LOOP 2: userid = " + userid + " userdata.username = " + userdata.username);
+                console.log("LOOP 2: userid = " + userid + " userdata.username = " + userdata.username);
+                userid = parseInt(userid);
+                //console.log("*****> userid variable is of type " + typeof userid);
 
                 if (isNaN(userdata.mapx) || isNaN(userdata.mapy))
                 {
@@ -1112,6 +1118,7 @@ function updateResultsMap() // haha v2
             
                 if (vote.length == 1)
                 {
+                    console.log("Update vote pid " + pid + " for user " + userid);
                     update_vote($(vote), svg, cx, cy, fill_color);
                 }
                 else
@@ -1123,6 +1130,7 @@ function updateResultsMap() // haha v2
         else if (triangle.data('settings').mode == 'showUserVotes')
         {
             var userid = triangle.data('settings').userid;
+            console.log("updateResultsMap: mode == showUserVotes for userid " + userid);
             var userdata = coords.voters[userid];
             var fill_color = setMapColor(userdata.mapx, userdata.mapy);
     		var cx = container_width * userdata.mapx;
@@ -1661,8 +1669,6 @@ function voteAfterDragResults(e)
 	var pid = vote.data('settings').pid;
 	
 	proposalsViewModel.resultsmapEndorseProposal(n_cx, n_cy, pid);
-	
-	//proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
 }
 
 function trackDraggableVoteResults(e)
