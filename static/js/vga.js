@@ -514,6 +514,8 @@ function addMedian(svg, pid, coords) // bang
         med_fill = '#BEBEBE';
     }
     
+    med_fill = '#BEBEBE';
+    
     var med_selected_fill_color = '#7e7e7e';
     var title;
     var prop = proposalsViewModel.getProposal(pid);
@@ -1329,6 +1331,8 @@ function createResultsMap(svg) // bang
         {
             med_fill = '#BEBEBE';
         }
+        
+        med_fill = '#BEBEBE';
     
         var med_selected_fill_color = '#7e7e7e';
 
