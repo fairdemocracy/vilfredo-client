@@ -7121,7 +7121,7 @@ a.disabled {
 #selected_image {
   margin-bottom: 10px;
 }
-#clearvotes {
+.resultsmapcontrols {
   margin-bottom: 10px;
 }
 .clearfix:before,
