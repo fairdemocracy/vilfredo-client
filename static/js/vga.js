@@ -1267,9 +1267,17 @@ function createResultsMap(svg) // harpo
 
         //console.log("Draw result vote at (" + cx + ", " + cy +")");
 
-        var fill_color = '#BEBEBE';
+        var med_fill;
+        
+        if  (coords['dominated_by'] == 0)
+        {
+            med_fill = '#FFA500';
+        }
+        else
+        {
+            med_fill = '#BEBEBE';
+        }
 
-        var med_fill = '#BEBEBE';
         var med_selected_fill_color = '#7e7e7e';
 
         // var title ='Proposal ' + pid;
