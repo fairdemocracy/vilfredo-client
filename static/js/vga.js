@@ -107,6 +107,11 @@ function readURL(input)
     }
 }
 
+function gotomain()
+{
+    window.location.replace(VILFREDO_URL);
+}
+
 // knockout html binding should do this
 function convertNewlines(str)
 {
@@ -2498,6 +2503,14 @@ function NewQuestionViewModel()
     var self = this;
     self.title = ko.observable('').extend({ required: true, maxLength: 100, minLength:1 });
     self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength:1 });
+    self.created = ko.observable(false);
+    self.id = ko.observable(0);
+    self.question_type = ko.observable(1);
+    
+    self.questionTypes = ko.observableArray([
+       {name: "Standard", id: 1},
+       {name: "Image", id: 2}
+    ]);
 
     self.availableTimePeriods = ko.observableArray([
        new TimePeriod("1 second", 1),
@@ -2515,17 +2528,39 @@ function NewQuestionViewModel()
     {
         self.resetform();
     }
+    
+    self.select_question_type = function(question_type, $data)
+    {
+        self.question_type(question_type);
+    }
+    self.show_question_type = ko.computed(function() {
+        if (self.question_type() == 'image')
+        {
+		    return 'Image Only';
+		}
+		else if (self.question_type() == 'standard')
+		{
+		    return 'Standard';
+		} 
+    }, this);
+    
+    self.gotopage = function()
+    {
+        window.location.replace(VILFREDO_URL+"/question/"+self.id());
+    }
 
     self.resetform = function()
     {
 		console.log("NewQuestionViewModel.resetform() called ...");
         self.title('');
         self.blurb('');
+        self.question_type(1);
         self.title.isModified(false);
         self.blurb.isModified(false);
         //self.minimum_time(self.availableTimePeriods()[2]);
         //self.maximum_time(self.availableTimePeriods()[3]);
         $('#addquestion .alert').css('display', 'none').html('');
+        $("#addquestion .form-control").trigger( "setcharcount" );
     }
     self.close = function()
     {
@@ -2533,6 +2568,7 @@ function NewQuestionViewModel()
         self.resetform();
         $('#addquestion').modal('hide');
     }
+    /*
     self.add = function()
 	{
 		console.log("NewQuestionViewModel.add() called ...");
@@ -2541,8 +2577,54 @@ function NewQuestionViewModel()
 		questionsViewModel.addQuestion({
             title: self.title(),
             blurb: self.blurb(),
+            question_type: self.question_type(),
             minimum_time: 1,
             maximum_time: 2592000
+        });
+	}*/
+	self.addQuestion = function()
+	{
+		console.log("NewQuestionViewModel.addQuestion() called...");
+		
+		question = {
+            title: self.title(),
+            blurb: self.blurb(),
+            question_type: self.question_type(),
+            minimum_time: 1,
+            maximum_time: 2592000
+        };
+		console.log(question);
+		
+		var URI = VILFREDO_API + '/questions';
+		ajaxRequest(URI, 'POST', question).done(function(data, textStatus, jqXHR) {
+		    console.log('Add question data returned...');
+			console.log(data);
+
+			if (jqXHR.status == 201)
+			{
+				self.clear();
+		  		// Question added - show permissions modal
+		  		question_id = data.question.id;
+		  		self.id(data.question.id);
+		  		self.created(true);
+		        var message = "You're new question \"" + data.question.title + "\" was created!";
+                add_page_alert('success', message);
+		  		$.when(questionViewModel.fetchQuestion()).done(function()
+		        {
+		  		    permissionsViewModel.open_permissions();
+		  		});
+			}
+			else
+			{
+				console.log(jqXHR.status);
+				var message = getJQXHRMessage(jqXHR, 'There was a problem adding your question');
+				add_page_alert('danger', message);
+			}
+		}).fail(function(jqXHR) {
+            console.log('addQuestion: There was an error. Error ' + jqXHR.status);
+            // Set alert
+            var message = getJQXHRMessage(jqXHR, 'There was a problem adding your question');
+			add_page_alert('danger', message);
         });
 	}
 }
@@ -2908,36 +2990,95 @@ function ThreeWayVoteViewModel()
 	}
 }
 
-// maison
+// bang
 function AddProposalViewModel()
 {
     var self = this;
     self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
-    self.abstract = ko.observable('').extend({ maxLength: 5000 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
+    
+    //self.abstract = ko.observable('').extend({ maxLength: 5000 });
+    //self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
+    
+    self.abstract = ko.observable('');
+    self.blurb = ko.observable('');
+    
     self.abstract_length_pc = ko.computed(function() {
         return '' + Math.round(self.abstract().length / 50) + '%';
     });
     self.blurb_length_pc = ko.computed(function() {
         return '' + Math.round(self.blurb().length / 100) + '%';
     });
+    
+    self.readImageURL = function(input) 
+    {
+        console.log('AddProposalViewModel.readImageURL called AGAIN!!!....');
+        if (input.files && input.files[0]) 
+        {
+            $('#proposal_image_placeholder').hide();
+            var reader = new FileReader();
 
-    self.addProposal = function() { 
-        $('#addproposal .alert').text('').fadeOut(100);
-		if (self.title() == '' || self.blurb() == '')
-		{
-			$('#addproposal .alert').text('You have not completed all the required fields.')
-			.fadeIn(500);
-			return;
-		}
-        proposalsViewModel.add({
-            title: self.title(),
-			abstract: self.abstract(),
-            blurb: self.blurb()
-        });
+            reader.onload = function (e) {
+                $('#selected_proposal_image')
+                    .attr('src', e.target.result)
+                    .width(200)
+                    .height(200);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
     }
+
+    self.open_addproposal_modal = function()
+    {
+        if (questionViewModel.question_type() == 1)
+        {
+            self.abstract.extend({ maxLength: 5000 });
+            self.blurb.extend({ required: true, maxLength: 10000, minLength: 25 });
+        }
+        $('#addproposal').modal('show');
+    }
+    
+    self.addProposal = function() // bang
+    { 
+        $('#addproposal .alert').text('').fadeOut(100);
+        
+        console.log("Title = " + self.title());
+        
+        if (questionViewModel.question_type() == 1)
+        {
+		    if (self.title() == '' || self.blurb() == '')
+    		{
+    			$('#addproposal .alert').text('You have not completed all the required fields.')
+    			.fadeIn(500);
+    			return;
+    		}
+            proposalsViewModel.add({
+                title: self.title(),
+    			abstract: self.abstract(),
+                blurb: self.blurb()
+            });
+        }
+        else if (questionViewModel.question_type() == 2)
+        {
+            var file = $('#image_file_selector')[0].files[0];
+            console.log(file.name);
+            if (self.title() == '' || typeof(file) == 'undefined')
+    		{
+    			$('#addproposal .alert').text('You have not completed all the required fields.')
+    			.fadeIn(500);
+    			return;
+    		}
+    		// bang
+            //proposalsViewModel.addImageProposal(self.title(), file);
+            var formdata = new FormData($('#newpropform')[0]);
+            proposalsViewModel.addImageProposal(formdata);
+        }
+    }
+    
     self.clear = function()
 	{
+		console.log("Clearing addproposal modal!!!");
+		$('#addproposal .alert').text('').hide();
 		self.title('');
 		self.abstract('');
 		self.blurb('');
@@ -2945,10 +3086,20 @@ function AddProposalViewModel()
 		self.abstract.isModified(false);
 		self.blurb.isModified(false);
 		$("#addproposal .form-control").trigger( "setcharcount" );
+		
+		$('#selected_proposal_image')
+                .attr('src', '').width(0).height(0);
+		var control = $("#image_file_selector");
+		control.replaceWith( control = control.clone( true ) );
+		
+		var placeholder = $('#proposal_image_placeholder');
+		if (placeholder.length)
+		{
+			placeholder.show();
+		}
 	}
 	self.close = function()
 	{
-		$('#addproposal .alert').text('').hide();
 		self.clear();
 		$('#addproposal').modal('hide');
 	}
@@ -3060,7 +3211,7 @@ function EditQuestionViewModel()
 	}
 	self.show = function()
 	{
-	    $('#editquestion').modal('show');
+	    $('#editquestion').modal('show'); // banger
 	}
 	self.updateQuestion = function() 
 	{
@@ -3098,9 +3249,9 @@ function EditProposalViewModel()
 {
     var self = this;
     self.proposal;
-	self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength: { params: 2, message: "Please make sure your title clearly summarizes your proposal!" } });
+	self.title = ko.observable('');
     self.abstract = ko.observable('').extend({ maxLength: 5000 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 25 });
+    self.blurb = ko.observable('');
     self.abstract_length_pc = ko.computed(function() {
         return '' + Math.round(self.abstract().length / 50) + '%';
     });
@@ -3108,8 +3259,10 @@ function EditProposalViewModel()
         return '' + Math.round(self.blurb().length / 100) + '%';
     });
 	self.index;
-	self.proposal_id;
-	
+	self.proposal_id = ko.observable();
+	self.image_url = ko.observable();
+	self.image_changed = ko.observable(false);
+
 	self.setProposal = function(proposal)
 	{
 		self.proposal = proposal;
@@ -3117,6 +3270,7 @@ function EditProposalViewModel()
 		self.abstract(proposal.abstract());
 		self.blurb(proposal.blurb());
 		self.proposal_id = proposal.id();
+		self.image_url(proposal.image_url);
 	}
 	self.close = function()
 	{
@@ -3125,12 +3279,105 @@ function EditProposalViewModel()
 		self.abstract('');
 		self.blurb('');
 	    $('#editproposal').modal('hide');
+	    self.image_changed(false);
 	}
 	self.show = function()
 	{
+	    if (questionViewModel.question_type() == 1)
+        {
+            self.abstract.extend({ maxLength: 5000 });
+            self.blurb.extend({ required: true, maxLength: 10000, minLength: 25 });
+        }
 	    $('#editproposal').modal('show');
 	}
-	self.updateProposal = function() 
+	
+	self.readImageURL = function(input) 
+    {
+        console.log("EditProposalViewModel: readEditImageURL called...");
+        if (input.files && input.files[0]) 
+        {
+            $('#edit_proposal_current_image').hide();
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                self.image_changed(true);
+                $('#edit_proposal_image')
+                    .attr('src', e.target.result)
+                    .width(200)
+                    .height(200);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+	
+	self.updateProposal = function() // bang here
+	{
+        $('#editproposal .alert').text('').fadeOut(100);
+        
+        // Check data entered
+        if (questionViewModel.question_type() == 1)
+        {
+		    if (self.title() == '' || self.blurb() == '')
+    		{
+    			$('#editproposal .alert').text('You have not completed all the required fields.')
+    			.fadeIn(500);
+    			return;
+    		}
+		}
+		else if (questionViewModel.question_type() == 2)
+		{
+    		//var file = $('#edit_image_file_selector')[0].files[0];
+            //console.log(file.name);
+            if (self.title() == '')
+    		{
+    			$('#editproposal .alert').text('You have not completed all the required fields.')
+    			.fadeIn(500);
+    			return;
+    		}
+		}
+		var url = VILFREDO_API + '/questions/' + question_id + '/proposals/' + self.proposal.id();
+		//formdata = new FormData($('#editproposalform')[0]);
+		
+		var formdata;
+		
+		if (questionViewModel.question_type() == 2)
+		{
+		    if (self.image_changed())
+    		{
+    		    console.log("EditProposalViewModel.updateProposal: Image changed: upload new one....");
+    		    formdata = new FormData($('#editproposalform')[0]);
+    		}
+    		else
+    		{
+    		    console.log("EditProposalViewModel.updateProposal: Image unchanged: update title only....")
+    		    formdata = new FormData();
+    		    formdata.append('title', self.title());
+    		}
+    	}
+    	else
+    	{
+    	    formdata = new FormData($('#editproposalform')[0]);
+    	}
+
+	    ajaxFormRequest(url, formdata).done(function(data) {
+		    self.proposal.title(data.proposal.title);
+		    self.proposal.abstract(data.proposal.abstract);
+		    self.proposal.blurb(data.proposal.blurb);
+		    self.proposal.image_url(data.proposal.image_url);
+		    self.close();
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+			console.log('updateProposal v2: There was an error editing the proposal. Status: ' + textStatus); // maison
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
+            $('#editproposal .alert')
+			.text(message)
+			.setAlertClass('danger')
+			.fadeIn();
+        });
+    }
+    
+	self.updateProposal_v1 = function() 
 	{
         $('#editproposal .alert').text('').fadeOut(100);
 		if (self.title() == '' || self.blurb() == '')
@@ -3171,6 +3418,7 @@ function ViewProposalViewModel()
 	self.endorse_type = ko.observable();
 	self.comments = ko.observableArray();
 	self.author_id = ko.observable();
+	self.image_url = ko.observable();
 	self.index;
 
 	self.comment_for = ko.observable('');
@@ -3559,6 +3807,7 @@ function ViewProposalViewModel()
 		self.title(proposal.title());
 		self.blurb(proposal.blurb());
 		self.author(proposal.author());
+		self.image_url(proposal.image_url);
 		self.author_id(proposal.author_id());
 		self.endorse_type(proposal.endorse_type());
 		self.comments([]);
@@ -3652,7 +3901,8 @@ function QuestionsViewModel()
 
 			if (jqXHR.status == 201)
 			{
-				newQuestionViewModel().close();
+				//newQuestionViewModel().close();
+				newQuestionViewModel().clear();
 
 				console.log('Updating questions list');
 				self.questions.push({
@@ -3662,6 +3912,7 @@ function QuestionsViewModel()
 		      		author: ko.observable(data.question.author),
 					uri: ko.observable(data.question.url),
 					phase: ko.observable(data.question.phase),
+					question_type: ko.observable(data.question.question_type),
 					last_move_on : ko.observable(parseInt(data.question.last_move_on)),
             		minimum_time : ko.observable(parseInt(data.question.minimum_time)),
             		maximum_time : ko.observable(parseInt(data.question.maximum_time)),
@@ -3678,6 +3929,10 @@ function QuestionsViewModel()
 		  		
 		  		// Question added - show permissions modal
 		  		question_id = data.question.id;
+		  		newQuestionViewModel().id(data.question.id);
+		  		newQuestionViewModel().created(true);
+		        var message = "You're new question \"" + data.question.title + "\" was created!";
+                add_page_alert('success', message);
 		  		$.when(questionViewModel.fetchQuestion()).done(function()
 		        {
 		  		    permissionsViewModel.open_permissions();
@@ -3686,20 +3941,14 @@ function QuestionsViewModel()
 			else
 			{
 				console.log(jqXHR.status);
-				$('.addquestion .alert')
-				.html(data.message)
-				.setAlertClass('danger')
-				.fadeIn()
+				var message = getJQXHRMessage(jqXHR, 'There was a problem adding your question');
+				add_page_alert('danger', message);
 			}
 		}).fail(function(jqXHR) {
             console.log('addQuestion: There was an error. Error ' + jqXHR.status);
-            // Set modal alert
-            var message = (jqXHR.responseText && JSON.parse(jqXHR.responseText).message) ? JSON.parse(jqXHR.responseText).message : 'There was a problem';
-
-            $('#addquestion .alert')
-            .text(message)
-            .setAlertClass('danger')
-            .fadeIn()
+            // Set alert
+            var message = getJQXHRMessage(jqXHR, 'There was a problem adding your question');
+			add_page_alert('danger', message);
         });
 	}
 
@@ -3728,6 +3977,7 @@ function QuestionsViewModel()
 		      		author: ko.observable(data.questions[i].author),
 					uri: ko.observable(data.questions[i].url),
 					phase: ko.observable(data.questions[i].phase),
+					question_type: ko.observable(data.questions[i].question_type),
 					last_move_on : ko.observable(parseInt(data.questions[i].last_move_on)),
             		minimum_time : ko.observable(parseInt(data.questions[i].minimum_time)),
             		maximum_time : ko.observable(parseInt(data.questions[i].maximum_time)),
@@ -3781,8 +4031,10 @@ function QuestionsViewModel()
 	self.beginNewQuestion = function()
 	{
 	    console.log('begin_new_question');
-	    $('#addquestion').modal('show');
+	    //$('#addquestion').modal('show');
+	    window.location.replace(VILFREDO_URL+"/newquestion");
 	}
+	
 	self.is_new_question = function(question)
 	{
 	    return question.generation() == 1 && question.proposal_count() == 0;
@@ -4078,7 +4330,7 @@ function ProposalsViewModel()
 	// maison
 	self.edit = function(index, proposal)
 	{
-		console.log("ProposalsViewModel.edit called with index " + index);
+		//console.log("ProposalsViewModel.edit called with index " + index);
 		editProposalViewModel().setProposal(proposal);
 		editProposalViewModel().index = index;
 		editProposalViewModel().show();
@@ -4086,7 +4338,7 @@ function ProposalsViewModel()
 
 	self.read = function(index, panel, proposal)
 	{
-		console.log("ProposalsViewModel.read called with index " + index);
+		//console.log("ProposalsViewModel.read called with index " + index);
 		viewProposalViewModel.setProposal(proposal);
 		viewProposalViewModel.index = index;
 		viewProposalViewModel.panel = panel;
@@ -4094,6 +4346,84 @@ function ProposalsViewModel()
 		viewProposalViewModel.reset();
 		$('#viewproposal').modal('show');
 	}
+	
+	self.addImageProposal = function(formdata) // bang
+	{
+        console.log("addImageProposal called...");
+        var formdata = new FormData($('#newpropform')[0]);
+        var URI = VILFREDO_API + '/questions/' + question_id + '/upload_image_proposal'; 
+        var request = {
+		    url: URI,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            async: false,
+            cache: false,
+            data: formdata,
+            xhr: function() 
+            { 
+                myXhr = $.ajaxSettings.xhr();
+                // check if upload property exists
+                if(myXhr.upload){ 
+                    // for handling the progress of the upload
+                    myXhr.upload.addEventListener('progress', updateProgress, false);
+                }
+                return myXhr;
+            },
+            beforeSend: function (xhr) {
+    			if (self.authToken != '')
+    			{
+    				xhr.setRequestHeader('Authorization',
+    					"Basic " + btoa(currentUserViewModel.authToken + ":" + ''));
+    			}
+    			else if (self.username() != '' && currentUserViewModel.password != '')
+    			{
+    				xhr.setRequestHeader("Authorization",
+                    	"Basic " + btoa(self.username() + ":" + self.password));
+    			}
+            },
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+            }
+        };
+        
+        $.ajax(request).done(function(data, textStatus, jqXHR) {
+			var mapx = parseFloat(data.proposal.mapx);
+		  		var mapy = parseFloat(data.proposal.mapy);
+		  		var background = setMapColor(mapx, mapy);
+		  		var color = getContrastYIQ(background);
+
+	  		    self.proposals.push({
+					id: ko.observable(parseInt(data.proposal.id)),
+					title: ko.observable(data.proposal.title),
+		      		blurb: ko.observable(data.proposal.blurb.replace(/\r?\n/g, '<br>')),
+		      		abstract: ko.observable(data.proposal.abstract.replace(/\r?\n/g, '<br>')),
+		      		author: ko.observable(data.proposal.author),
+					endorse_type: ko.observable(data.proposal.endorse_type),
+					uri: ko.observable(data.proposal.uri),
+					author_id: ko.observable(parseInt(data.proposal.author_id)),
+					image_url: ko.observable(data.proposal.image_url),
+					question_count: ko.observable(parseInt(data.proposal.question_count)),
+					comment_count: ko.observable(parseInt(data.proposal.comment_count)),
+					vote_count: ko.observable(parseInt(data.proposal.vote_count)),
+					mapx: ko.observable(mapx),
+					mapy: ko.observable(mapy),
+					box_background: ko.observable(background),
+					box_color: ko.observable(color)
+		  		});
+		  		addProposalViewModel().close();
+		  		questionViewModel.fetchQuestion();
+		  		questionViewModel.fetchParticipationTable();
+			
+		}).fail(function(jqXHR) {
+           var message = getJQXHRMessage(jqXHR, 'There was a problem uploading your file.'); // stuffit
+            $('#addproposal .alert')
+            .text(message)
+            .setAlertClass('danger')
+            .fadeIn();
+        });
+    }
+
 
 	self.add = function(proposal)
 	{
@@ -4126,6 +4456,7 @@ function ProposalsViewModel()
 					mapx: ko.observable(mapx),
 					mapy: ko.observable(mapy),
 					box_background: ko.observable(background),
+					image_url: ko.observable(data.proposal.image_url),
 					box_color: ko.observable(color)
 		  		});
 		  		addProposalViewModel().close();
@@ -4467,7 +4798,7 @@ function ProposalsViewModel()
 	}
 
 
-	self.fetchProposals = function(options) { // breeze
+	self.fetchProposals = function(options) { // bang
 	    console.log('fetchProposals() called...');
 	    self.clearData();
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
@@ -4502,6 +4833,7 @@ function ProposalsViewModel()
 					title: ko.observable(data.proposals[i].title),
 		      		blurb: ko.observable(data.proposals[i].blurb.replace(/\r?\n/g, '<br>')),
 		      		abstract: ko.observable(data.proposals[i].abstract.replace(/\r?\n/g, '<br>')),
+		      		image_url: ko.observable(data.proposals[i].image_url),
 		      		author: ko.observable(data.proposals[i].author),
 					endorse_type: ko.observable(data.proposals[i].endorse_type),
 					uri: ko.observable(data.proposals[i].uri),
@@ -4841,7 +5173,7 @@ function PermissionsViewModel() // wolf
 	}
 }
 
-function QuestionViewModel() // winter
+function QuestionViewModel() // bang
 {
 	var self = this;
 	self.URI = VILFREDO_API + '/questions/' + question_id;
@@ -4852,6 +5184,7 @@ function QuestionViewModel() // winter
 	self.author_id = ko.observable();
 	self.avatar_url = ko.observable();
 	self.phase = ko.observable();
+	self.question_type = ko.observable();
 	self.generation = ko.observable();
 	self.last_move_on = ko.observable();
 	self.minimum_time = ko.observable();
@@ -4972,6 +5305,7 @@ function QuestionViewModel() // winter
     		self.author_id(data.question.author_id);
     		self.avatar_url(data.question.avatar_url);
     		self.phase(data.question.phase);
+    		self.question_type(data.question.question_type);
     		self.last_move_on(parseInt(data.question.last_move_on));
     		self.minimum_time(parseInt(data.question.minimum_time));
     		self.maximum_time(parseInt(data.question.maximum_time));
@@ -5632,16 +5966,17 @@ var ajaxRequestPR = function(uri, method, data) {
      return $.ajax(request);
 }
 
-var ajaxRequest_v1 = function(uri, method, data) {
-	console.log('ajaxRequest: request made... ' + uri);
-	var request = {
+var ajaxFormRequest = function(uri, formdata) {
+	console.log('ajaxFormRequest: request made... ' + uri);
+	console.log('ajaxFormRequest: formdata... ' + formdata);
+    var request = {
 		url: uri,
-        type: method,
-        contentType: "application/json",
-        accepts: "application/json",
+        type: 'POST',
+        contentType: false,
+        processData: false,
+        async: false,
         cache: false,
-        dataType: 'json',
-        data: JSON.stringify(data),
+        data: formdata,
         beforeSend: function (xhr) {
 			if (currentUserViewModel.authToken != '')
 			{
@@ -5671,10 +6006,10 @@ var ajaxRequest = function(uri, method, data) {
 		url: uri,
         type: method,
         crossDomain: true,
+        xhrFields: { withCredentials: true },
         contentType: "application/json",
         accepts: "application/json",
         cache: false,
-        xhrFields: { withCredentials: true },
         dataType: 'json',
         data: JSON.stringify(data),
         beforeSend: function (xhr) {

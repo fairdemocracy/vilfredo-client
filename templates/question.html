@@ -138,7 +138,7 @@
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
-				<a data-toggle="modal" data-target="#addproposal" class="btn btn-primary btn-lg active" role="button">Submit a Proposal</a>
+				<a data-bind="click: addProposalViewModel().open_addproposal_modal" class="btn btn-primary btn-lg active" role="button">Submit a Proposal</a>
 				</div>	
 			</div>
 		</div>
@@ -332,7 +332,12 @@
 					<h3 class="panel-title proposal" data-bind="text: id() + ': ' + title(), click: $parent.read.bind($data, $index(), 'content')"></h3>
 				</div>
 				<div class="panel-body proposal-blurb">
-					<span data-bind="html: blurb"></span>
+					<!-- ko if: questionViewModel.question_type() == 1 -->
+					<span data-bind="html: blurb"></span>  
+					<!-- /ko -->
+					<!-- ko if: questionViewModel.question_type() == 2 -->
+					<img data-bind="attr: { src: image_url }" width="200px" height="200px"/> 
+					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
@@ -373,7 +378,12 @@
 					<h3 class="panel-title proposal" data-bind="text: id() + ': ' + title(), click: $parent.read.bind($data, $index(), 'content')"></h3>
 				</div>
 				<div class="panel-body proposal-blurb">
-					<span data-bind="html: blurb"></span>
+					<!-- ko if: questionViewModel.question_type() == 1 -->
+					<span data-bind="html: blurb"></span>  
+					<!-- /ko -->
+					<!-- ko if: questionViewModel.question_type() == 2 -->
+					<img data-bind="attr: { src: image_url }" width="200px" height="200px"/> 
+					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
@@ -497,7 +507,12 @@
 	
 		<div>				
 			<div id="propdetails">
-				<div data-bind="html: blurb">Hmm... This proposal has no content.</div>
+				<!-- ko if: questionViewModel.question_type() == 1 -->
+					<span data-bind="html: blurb"></span>  
+					<!-- /ko -->
+					<!-- ko if: questionViewModel.question_type() == 2 -->
+					<img data-bind="attr: { src: image_url() }" width="200px" height="200px"/> 
+					<!-- /ko -->
 			</div>
 			<div id="showcomments">
 				<div class="col-md-6">
@@ -625,14 +640,15 @@
 	      </div>
 	      <div class="modal-body">
 			<div class="message alert alert-danger"></div>
-			<form autocomplete="off" class="form-horizontal" role="form">
+			<form id="editproposalform" autocomplete="off" class="form-horizontal" role="form" enctype="multipart/form-data">
 		  	<div class="form-group">
 		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
 		    <div class="col-sm-10">
 			  <span class="errormsg" data-bind="validationMessage: title"></span>
-		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputEditProposalTitle" placeholder="Title">
+		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputEditProposalTitle" placeholder="Title" name="title">
 		    </div>
 		  </div>
+		<!-- ko if: questionViewModel.question_type() == 1 && addProposalViewModel().blurb().length > PROPOSAL_ABSTRACT_REQUIRED_LENGTH -->
 		<div class="form-group">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-10">
@@ -645,10 +661,11 @@
 		    <label for="inputAbstract" class="col-sm-2 control-label">Abstract (optional)</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: abstract"></span>
-			<textarea data-bind="value: abstract" id="inputEditProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text"></textarea>
+			<textarea data-bind="value: abstract" id="inputEditProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text" name="abstract"></textarea>
 		    </div>
 		  </div>
-		  <div class="form-group">
+		<!-- /ko -->
+		  <div class="form-group" data-bind="visible: questionViewModel.question_type() == 1">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-10">
 			<div class="progress">
@@ -660,9 +677,23 @@
 		    <label for="inputBlurb" class="col-sm-2 control-label">Proposal Text</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: blurb"></span>
-			<textarea data-bind="value: blurb" id="inputEditProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text"></textarea>
+			<textarea data-bind="value: blurb" id="inputEditProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text" name="blurb"></textarea>
 		    </div>
 		  </div>
+		
+		<div class="form-group" data-bind="visible: questionViewModel.question_type() == 2">
+		    <label for="edit_image_file_selector" class="col-sm-2 control-label">Image</label>
+		    <div class="col-sm-10">
+			<img id="edit_proposal_current_image" src="" alt="" data-bind="attr: { src: image_url() }" class="selected_upload_image"/>
+			<img id="edit_proposal_image" src="" alt="" class="selected_upload_image"/>
+			<br>
+			<label class="btn btn-primary" for="edit_image_file_selector">
+			    <input id="edit_image_file_selector" type="file" style="display:none;" name="image" onchange="editProposalViewModel().readImageURL(this)">
+			    Select Alternate Image
+			</label>
+		    </div>
+		  </div>
+		
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
 		      <button id="update_prop_btn" data-bind="click: updateProposal, enable: isValid()" type="button" class="btn btn-primary">Save Changes</button>
@@ -685,15 +716,15 @@
 	      </div>
 	      <div class="modal-body">
 			<div class="message alert alert-danger"></div>
-			<form autocomplete="off" class="form-horizontal" role="form">
+			<form id="newpropform" autocomplete="off" class="form-horizontal" role="form" enctype="multipart/form-data">
 		  	<div class="form-group">
-		    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
+		    <label for="inputProposalTitle" class="col-sm-2 control-label">Title</label>
 		    <div class="col-sm-10">
 			  <span class="errormsg" data-bind="validationMessage: title"></span>
-		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputProposalTitle" placeholder="Title">
+		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputProposalTitle" placeholder="Title" name="title">
 		    </div>
 		  </div>
-		<!-- ko if: addProposalViewModel().blurb().length > PROPOSAL_ABSTRACT_REQUIRED_LENGTH -->
+		<!-- ko if: questionViewModel.question_type() == 1 && addProposalViewModel().blurb().length > PROPOSAL_ABSTRACT_REQUIRED_LENGTH -->
 		<div class="form-group abstract">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-10">
@@ -704,14 +735,14 @@
 			  </div>
 			</div>
 			</div>
-		    <label for="inputAbstract" class="col-sm-2 control-label">Abstract (optional)</label>
+		    <label for="inputProposalAbstract" class="col-sm-2 control-label">Abstract (optional)</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: abstract"></span>
-			<textarea data-bind="textInput: abstract" id="inputProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text"></textarea>
+			<textarea data-bind="textInput: abstract" id="inputProposalAbstract" class="form-control" rows="4" placeholder="Abstract Text" name="abstract"></textarea>
 		    </div>
 		  </div>
 		<!-- /ko -->
-		<div class="form-group">
+		<div class="form-group" data-bind="visible: questionViewModel.question_type() == 1">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-10">
 			<div class="progress">
@@ -723,9 +754,25 @@
 		    <label for="inputBlurb" class="col-sm-2 control-label">Proposal Text</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: blurb"></span>
-			<textarea data-bind="textInput: blurb" id="inputProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text"></textarea>
+			<textarea data-bind="textInput: blurb" id="inputProposalBlurb" class="form-control" rows="6" placeholder="Proposal Text" name="blurb"></textarea>
 		    </div>
 		  </div>
+		
+		  <div class="form-group" data-bind="visible: questionViewModel.question_type() == 2">
+		    <label for="image_file_selector" class="col-sm-2 control-label">Image</label>
+		    <div class="col-sm-10">
+			  <span class="errormsg" data-bind="validationMessage: title"></span>
+		      
+			<div id="proposal_image_placeholder" class="upload_image_placeholder"></div>
+			<img id="selected_proposal_image" src="" alt="" class="selected_upload_image"/>
+			<br>
+			<label class="btn btn-primary" for="image_file_selector">
+			    <input id="image_file_selector" type="file" style="display:none;" name="image" onchange="addProposalViewModel().readImageURL(this);">
+			    Select Image
+			</label>
+		    </div>
+		  </div>
+		
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
 		      <button id="add_prop_btn" data-bind="click: addProposal, enable: isValid()" type="button" class="btn btn-primary">Submit</button>
@@ -1042,12 +1089,25 @@
 			$("#inputEditProposalBlurb, #inputEditProposalAbstract, #inputEditProposalTitle").trigger('setcharcount');
 		});
 		
-		
+		/*
 		$('#addproposal').on('hide.bs.modal', function(e) {
+			console.log("Hiding addproposal modal!!!");
 			$(this).find(".form-control").val('').trigger("setcharcount");
 			addProposalViewModel().clear();
 			$(this).find("button").removeAttr('disabled');
-		});
+			
+			
+			$('#selected_proposal_image')
+                    .attr('src', '').width(0).height(0);
+			var control = $("#image_file_selector");
+			control.replaceWith( control = control.clone( true ) );
+			
+			var placeholder = $('#proposal_image_placeholder');
+			if (placeholder.length)
+			{
+				placeholder.show();
+			}
+		});*/
 		
 		$('#viewproposal').on('hide.bs.modal', function(e) {
 			$(this).find("textarea").val('');
