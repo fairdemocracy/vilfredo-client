@@ -1026,13 +1026,12 @@ function calculateTriangleDimensions(svg) // harpo
     else
     {
         //console.log('container_height >= ideal_height');
-        map_width = container_width;
-        map_height = container_height;
+        map_width = ideal_width;
+        map_height = ideal_height;
     }
 
     //console.log('map_width = ' + map_width);
 	//console.log('map_height = ' + map_height);
-
 	//console.log('********* Completed calculateTriangleDimensions *********');
 
     return {'width' : map_width, 'height' : map_height};
