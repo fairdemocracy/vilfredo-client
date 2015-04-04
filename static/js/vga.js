@@ -2505,10 +2505,15 @@ function NewQuestionViewModel()
     self.created = ko.observable(false);
     self.id = ko.observable(0);
     self.question_type = ko.observable(1);
+    self.voting_type = ko.observable(1);
     
     self.questionTypes = ko.observableArray([
        {name: "Standard", id: 1},
        {name: "Image", id: 2}
+    ]);
+    self.votingTypes = ko.observableArray([
+       {name: "Triangle", id: 1},
+       {name: "Linear", id: 2}
     ]);
 
     self.availableTimePeriods = ko.observableArray([
@@ -2554,6 +2559,7 @@ function NewQuestionViewModel()
         self.title('');
         self.blurb('');
         self.question_type(1);
+        self.voting_type(1);
         self.title.isModified(false);
         self.blurb.isModified(false);
         //self.minimum_time(self.availableTimePeriods()[2]);
@@ -2589,6 +2595,7 @@ function NewQuestionViewModel()
             title: self.title(),
             blurb: self.blurb(),
             question_type: self.question_type(),
+            voting_type: self.voting_type(),
             minimum_time: 1,
             maximum_time: 2592000
         };

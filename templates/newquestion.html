@@ -65,7 +65,6 @@
 			</div>
 
 			<form autocomplete="off" class="form-horizontal" role="form"> 
-			
 			<div class="form-group">
 		    <label for="inputQuestionType" class="col-sm-2 control-label">Question Type</label>
 			
@@ -84,7 +83,26 @@
 			<span data-bind="visible: question_type() == 2">Select Image if you want to to receive proposals containing a single image</span>
 			<span data-bind="visible: question_type() == 1">Select Text if you want to receive text proposals</span>
 		    </div>
+		 </div>
+		
+		<div class="form-group">
+		    <label for="inputVotingType" class="col-sm-2 control-label">Voting Type</label>
 			
+			<div class="col-sm-2">
+		 	  <div id="inputVotingType" class="btn-group selectquestiontype" role="group">
+	 	   		<select size=1 data-bind="
+    				options: votingTypes,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: voting_type">
+				</select>
+		   </div>
+			</div>
+			
+			<div class="col-sm-8">
+			<span data-bind="visible: voting_type() == 1">Select Triangle to include understanding</span>
+			<span data-bind="visible: voting_type() == 2">Select Linear to ignore understanding</span>
+		    </div>
 		 </div>
 		
 		<div class="form-group">
