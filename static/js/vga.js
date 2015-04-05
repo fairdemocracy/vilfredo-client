@@ -5211,6 +5211,7 @@ function QuestionViewModel() // bang
     self.voters_voting_count = ko.observable();
     self.consensus_found = ko.observable();
     self.inherited_proposal_count = ko.observable();
+    self.voting_type = ko.observable();
 
 	self.key_players = ko.observableArray();
 
@@ -5312,6 +5313,7 @@ function QuestionViewModel() // bang
     		self.avatar_url(data.question.avatar_url);
     		self.phase(data.question.phase);
     		self.question_type(data.question.question_type);
+    		self.voting_type(data.question.voting_type);
     		self.last_move_on(parseInt(data.question.last_move_on));
     		self.minimum_time(parseInt(data.question.minimum_time));
     		self.maximum_time(parseInt(data.question.maximum_time));
