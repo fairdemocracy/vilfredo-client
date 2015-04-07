@@ -205,7 +205,7 @@
 			<button id="clearvotes" type="button" class="btn btn-sm btn-info resultsmapcontrols">Show Medians Only</button>
 		<!--
 		 <div class="btn-group resultsmapcontrols" role="group">
-	 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+	 	   <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 		      <span data-bind="text: show_pareto_results"></span>
 		      <span class="caret"></span>
 		    </button>
@@ -490,7 +490,8 @@
 	      <div data-bind="css: endorse_type" class="vpheader modal-header">
 			<div data-bind="click: openvotemap.bind($data)" class="votebox"></div>
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="vptitle modal-title" data-bind="text: title"></h4>
+<!--	        <h4 class="vptitle modal-title" data-bind="text: title"></h4> -->
+			<h4 class="vptitle modal-title"><span data-bind="text: id"></span>: <span data-bind="text: title"></span></h4>
 			<div class="controls">
 			<a data-bind="click: showProposalContent"><span class="glyphicon glyphicon-file"></span> Proposal</a>&nbsp;&nbsp;&nbsp;
 			<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
@@ -684,8 +685,9 @@
 		<div class="form-group" data-bind="visible: questionViewModel.question_type() == 2">
 		    <label for="edit_image_file_selector" class="col-sm-2 control-label">Image</label>
 		    <div class="col-sm-10">
-			<img id="edit_proposal_current_image" src="" alt="" data-bind="attr: { src: image_url() }" class="selected_upload_image"/>
-			<img id="edit_proposal_image" src="" alt="" class="selected_upload_image"/>
+			
+			<img id="edit_proposal_current_image" src="" alt="" data-bind="attr: { src: image_url() }" class="selected_upload_image" width="200" height="200"/>
+			<img id="edit_proposal_image" src="" alt="" class="selected_upload_image" width="200" height="200"/>
 			<br>
 			<label class="btn btn-primary" for="edit_image_file_selector">
 			    <input id="edit_image_file_selector" type="file" style="display:none;" name="image" onchange="editProposalViewModel().readImageURL(this)">
