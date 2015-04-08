@@ -6029,11 +6029,34 @@ function QuestionViewModel() // bang
     self.consensus_found = ko.observable();
     self.inherited_proposal_count = ko.observable();
     self.voting_type = ko.observable();
+    
+    self.finished_writing = ko.observable(0);
+    self.show_finished_writing = ko.computed(function() {
+        if (self.finished_writing() == 0)
+        {
+		    return 'Ok I\'m Finish Writing';
+		}
+		else
+		{
+		    return 'Resume Writing';
+		} 
+    }, this);
 
 	self.key_players = ko.observableArray();
 
 	self.participation_table = ko.observable();
 	self.num_proposals = ko.observable();
+
+    self.show_finished_writing_in_table = function(finished) {
+        if (finished == 0)
+        {
+		    return 'Still Writing';
+		}
+		else
+		{
+		    return 'Finished';
+		} 
+    }
 
 	self.domination_map_array = ko.observableArray([]);
 	//self.domination_map = ko.observable();
@@ -6061,6 +6084,25 @@ function QuestionViewModel() // bang
 	   {name: "Propose", id: 5},
 	   {name: "Vote, Propose", id: 7}
     ]);
+    
+    self.set_finished_writing = function()
+    {
+        console.log("finished_writing called...");
+        //var finish = confirm('Are you sure you wish to finish writing for this geenration?');
+		//if (!finish) return;
+		var method = (self.finished_writing() == 0) ? 'POST': 'DELETE';
+		console.log('set_finished_writing method = ' + method);
+		var url = VILFREDO_API + '/questions/' + question_id + '/finished_writing';
+		ajaxRequest(url, method).done(function(data) {
+		    console.log("finished_writing: status updatd]");
+		    self.finished_writing(data.writing_status);
+		    self.fetchParticipationTable();
+		}).fail(function(jqXHR, textStatus, errorThrown)
+		{
+            var message = getJQXHRMessage(jqXHR, 'There was a problem updating your writing status');
+            add_page_alert('danger', message);
+        });
+    }
     
     self.set_question_status = function()
 	{
@@ -6151,6 +6193,7 @@ function QuestionViewModel() // bang
     		self.new_proposer_count(parseInt(data.question.new_proposer_count));
     		self.consensus_found(data.question.consensus_found);
     		self.inherited_proposal_count(parseInt(data.question.inherited_proposal_count));
+    		self.finished_writing(data.question.finished_writing);
 	    }).fail(function(jqXHR, textStatus, errorThrown)
 		{
             var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');
@@ -6179,7 +6222,7 @@ function QuestionViewModel() // bang
 		var DELETE_URL = VILFREDO_API + '/questions/' + self.id();
 	    console.log('delete question called...');
 	    ajaxRequest(DELETE_URL, 'DELETE').done(function(data) {
-		    alert("Question deleted!");
+		    console.log("Question deleted!");
 		    window.location.replace(VILFREDO_URL);
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{

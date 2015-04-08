@@ -139,6 +139,8 @@
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
 				<a data-bind="click: addProposalViewModel().open_addproposal_modal" class="btn btn-primary btn-lg active" role="button">Submit a Proposal</a>
+				
+				<a data-bind="click: questionViewModel.set_finished_writing, text: questionViewModel.show_finished_writing()" class="btn btn-primary btn-lg active" role="button" title="Click here to inform the author that you have finished writing proposals for this generation of this question">Finished Writing</a>
 				</div>	
 			</div>
 		</div>
@@ -157,10 +159,13 @@
 		<th>User</th>
 		<th>Proposals Written</th>
 		<th>Proposals Evaluated</th>
+<!--		<th>Finished <span data-bind="text: questionViewModel.phase() == 'writing' ? 'Writing' : 'Voting'"></span></th> -->
+		<th>Finished <span data-bind="text: 'Writing'"></span></th>
 		</tr>
 		<tr>
 		<th></th>
 		<th><span data-bind="text: num_proposals"></span> proposals in total</th>
+		<th></th>
 		<th></th>
 		</tr>
 		</thead>
@@ -170,6 +175,7 @@
 			<td class="verthdr" data-bind="text: username"></td>
 			<td data-bind="text: proposals_written"></td>
 			<td data-bind="text: $parent.proposalsEvaluatedText(evaluations), css: $parent.proposalsEvaluatedClass(evaluations)"></td>
+			<td data-bind="text: $parent.show_finished_writing_in_table(finished_writing)"></td>
 		</tr>
 		<!-- /ko -->
 		</tbody>
