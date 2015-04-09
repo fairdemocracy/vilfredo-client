@@ -279,9 +279,13 @@
 				</div>
 				<div class="panel-footer proposal-footer">
 					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
-					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>
+					&nbsp;
+					<!-- ko if: questionViewModel.phase() == 'voting' -->
+					&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
+					<!-- /ko -->
 				</div>
 			</div>
 			</div><!-- /ko -->
@@ -346,10 +350,14 @@
 					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
-					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>
+					&nbsp;
+					<!-- ko if: questionViewModel.phase() == 'voting' -->
+					&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 					&nbsp;
+					<!-- /ko -->
 					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
@@ -392,10 +400,14 @@
 					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
-					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>&nbsp;&nbsp;
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>
+					&nbsp;
+					<!-- ko if: questionViewModel.phase() == 'voting' -->
+					&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 					&nbsp;
+					<!-- /ko -->
 					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
