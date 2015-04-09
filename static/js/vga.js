@@ -1810,7 +1810,7 @@ function createResultsMap(svg) // bosh
             $(medlabel).addClass('pareto');
         }
 
-        /*
+        
         if (questionViewModel.voting_type() == 1)
         {
             $(med).on( "click", function(e) {
@@ -1819,6 +1819,7 @@ function createResultsMap(svg) // bosh
                 showProposalVotes(this, svg, threshold); // humbug
             });
         }
+        /*
         else if (questionViewModel.voting_type() == 2)
         {
             $(med).on( "click", function(e) {
