@@ -506,19 +506,24 @@
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div data-bind="css: endorse_type" class="vpheader modal-header">
-			<div data-bind="click: openvotemap.bind($data)" class="votebox"></div>
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-<!--	        <h4 class="vptitle modal-title" data-bind="text: title"></h4> -->
-			<h4 class="vptitle modal-title"><span data-bind="text: id"></span>: <span data-bind="text: title"></span></h4>
-			<div class="controls">
-			<a data-bind="click: showProposalContent"><span class="glyphicon glyphicon-file"></span> Proposal</a>&nbsp;&nbsp;&nbsp;
-			<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
-			<a data-bind="click: showProposalQuestions"><span class="glyphicon glyphicon-question-sign"></span> Questions</a>
-			<!-- ko if: questionViewModel.phase() == 'voting' -->
-			<!-- /ko -->
-			<!-- ko if: $data.author_id() != currentUserViewModel.userid() && questionViewModel.phase() == 'voting' -->
-			<!-- /ko -->
-			</div> <!-- controls -->
+		  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		
+			<div class="row">	
+				<div class="col-md-9">
+					<div class="row">
+						<h4 class="vptitle modal-title"><span data-bind="text: id"></span>: <span data-bind="text: title"></span></h4>
+					</div>
+					<div class="row">
+						<div class="controls">
+						<a data-bind="click: showProposalContent"><span class="glyphicon glyphicon-file"></span> Proposal</a>&nbsp;&nbsp;&nbsp;
+						<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
+						<a data-bind="click: showProposalQuestions"><span class="glyphicon glyphicon-question-sign"></span> Questions</a>
+						</div> <!-- controls -->
+								</div>
+				</div>
+					<div data-bind="click: openvotemap.bind($data)" class="votebox col-md-3"></div>
+			</div>
+						
 	      </div><!-- modal-header -->
 	      <div id="viewproposalbody" class="modal-body">
 		
