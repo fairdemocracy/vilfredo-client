@@ -111,7 +111,11 @@
    <!-- /ko --> <!-- participants == 1 -->
   <!-- /ko --> <!-- voting -->
 		
-		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people">Participants</button>
+		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people"><span class="glyphicon glyphicon-user"></span> Participants</button>
+		
+		<button data-bind="click: questionViewModel.edit, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit Question</button>
+		<button data-bind="click: questionViewModel.delete, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> Delete Question</button>
+		
 	<!-- ko if: questionViewModel.phase() == 'writing' && questionViewModel.proposal_count() >= 2 && questionViewModel.new_proposal_count() >= 1 -->
 	<button data-bind="click: move_on" class="btn btn-primary">Move to Voting</button>
 	<!-- /ko -->
@@ -119,14 +123,6 @@
 	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page.">Move to Results</button>
 	<button data-bind="click: move_on" class="btn btn-primary">Move to Next Generation</button>
 	<!-- /ko -->
-		<br>
-
-		<div id="edit_question_buttons" data-bind="visible: proposal_count() == 0">
-		<h2>Edit Question</h2>
-		<p>You can edit or delete this question so long as no-one has written any proposals for it.</p>
-		<button data-bind="click: questionViewModel.edit" class="btn btn-primary">Edit Question</button>
-		<button data-bind="click: questionViewModel.delete" class="btn btn-primary">Delete Question</button>
-		</div>
 	</div>
 	<!-- author controls -->
 		
@@ -138,9 +134,9 @@
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
-				<a data-bind="click: addProposalViewModel().open_addproposal_modal" class="btn btn-primary btn-lg active" role="button">Submit a Proposal</a>
+				<a data-bind="click: addProposalViewModel().open_addproposal_modal" class="btn btn-primary btn-lg active" role="button"><span class="glyphicon glyphicon-share-alt"></span> Submit a Proposal</a>
 				
-				<a data-bind="click: questionViewModel.set_finished_writing, text: questionViewModel.show_finished_writing()" class="btn btn-primary btn-lg active" role="button" title="Click here to inform the author that you have finished writing proposals for this generation of this question">Finished Writing</a>
+				<a data-bind="click: questionViewModel.set_finished_writing" class="btn btn-primary btn-lg active" role="button" title="Click here to inform the author that you have finished writing proposals for this generation of this question"><span class="glyphicon glyphicon-bullhorn"></span> <span data-bind="text: questionViewModel.show_finished_writing()"></span></a>
 				</div>	
 			</div>
 		</div>
