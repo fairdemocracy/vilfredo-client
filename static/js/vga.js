@@ -4380,7 +4380,7 @@ function ViewProposalViewModel()
 	}
 	self.showProposalContent = function()
 	{
-		newCommentViewModel().resetNewCommentPanel();
+		//newCommentViewModel().resetNewCommentPanel();
 		var $showing = $('#showquestions, #showcomments').filter(function() {
 		   return $(this).is(':visible');
 	    });
@@ -4391,7 +4391,7 @@ function ViewProposalViewModel()
 	}
 	self.showProposalComments = function()
 	{
-		newCommentViewModel().resetNewCommentPanel();
+		//newCommentViewModel().resetNewCommentPanel();
 		var $showing = $('#propdetails, #showquestions').filter(function() {
 		   return $(this).is(':visible');
 	    });
@@ -4409,7 +4409,7 @@ function ViewProposalViewModel()
 	}
 	self.showProposalQuestions = function()
 	{
-		newCommentViewModel().resetNewCommentPanel();
+		//newCommentViewModel().resetNewCommentPanel();
 		var $showing = $('#propdetails, #showcomments').filter(function() {
 		   return $(this).is(':visible');
 	    });

@@ -115,7 +115,7 @@
 	<!-- ko if: questionViewModel.phase() == 'writing' && questionViewModel.proposal_count() >= 2 && questionViewModel.new_proposal_count() >= 1 -->
 	<button data-bind="click: move_on" class="btn btn-primary">Move to Voting</button>
 	<!-- /ko -->
-	<!-- ko if: questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= 2 || (questionViewModel.completed_voter_count() == 1 && participant_count() == 1) -->
+	<!-- ko if: (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= MIN_VOTERS_BEFORE_MOVEON) || (questionViewModel.completed_voter_count() == participant_count()) -->
 	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page.">Move to Results</button>
 	<button data-bind="click: move_on" class="btn btn-primary">Move to Next Generation</button>
 	<!-- /ko -->
@@ -1129,7 +1129,7 @@
 			}
 		});*/
 		
-		$('#viewproposal').on('hide.bs.modal', function(e) {
+		$('#viewproposal').on('shown.bs.modal', function(e) {
 			$(this).find("textarea").val('');
 		});
 		
