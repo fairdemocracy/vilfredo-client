@@ -3437,7 +3437,7 @@ function NewQuestionViewModel()
 	}
 }
 
-function RegisterViewModel() //jumpx
+function RegisterViewModel() //thrones
 {
     var self = this;
     self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
@@ -3810,6 +3810,8 @@ function AddProposalViewModel()
     self.abstract = ko.observable('');
     self.blurb = ko.observable('');
     
+    self.add_proposal_jqXHR = null;
+    
     self.abstract_length_pc = ko.computed(function() {
         return '' + Math.round(self.abstract().length / 50) + '%';
     });
@@ -3850,6 +3852,11 @@ function AddProposalViewModel()
     { 
         $('#addproposal .alert').text('').fadeOut(100);
         
+        if (self.add_proposal_jqXHR != null)
+        {
+            return;
+        }
+        
         console.log("Title = " + self.title());
         
         if (questionViewModel.question_type() == 1)
@@ -3860,7 +3867,7 @@ function AddProposalViewModel()
     			.fadeIn(500);
     			return;
     		}
-            proposalsViewModel.add({
+            self.add_proposal_jqXHR = proposalsViewModel.add({
                 title: self.title(),
     			abstract: self.abstract(),
                 blurb: self.blurb()
@@ -5250,7 +5257,7 @@ function ProposalsViewModel()
 	self.add = function(proposal)
 	{
 		var URI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
-		ajaxRequest(URI, 'POST', proposal).done(function(data, textStatus, jqXHR) {
+		return ajaxRequest(URI, 'POST', proposal).done(function(data, textStatus, jqXHR) {
 		    console.log('Proposals data returned...');
 			console.log(data);
 			console.log('textstatus = ' + textStatus);
@@ -5302,6 +5309,8 @@ function ProposalsViewModel()
             .text(message)
             .setAlertClass('danger')
             .fadeIn();
+        }).always(function(jqXHR, textStatus, errorThrown) {
+            addProposalViewModel().add_proposal_jqXHR = null;
         });
 	}
 

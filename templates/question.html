@@ -799,7 +799,7 @@
 		
 		  <div class="form-group">
 		    <div class="col-sm-offset-8 col-sm-4">
-		      <button id="add_prop_btn" data-bind="click: addProposal, enable: isValid()" type="button" class="btn btn-primary">Submit</button>
+		      <button id="add_prop_btn" data-bind="click: addProposal, enable: isValid() && add_proposal_jqXHR == null" type="button" class="btn btn-primary">Submit</button>
 			  <button data-bind="click: close" type="button" class="btn btn-default">Cancel</button>
 		    </div>
 		  </div>
