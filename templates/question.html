@@ -135,9 +135,9 @@
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
-				<a data-bind="click: addProposalViewModel().open_addproposal_modal" class="btn btn-primary btn-lg active" role="button"><span class="glyphicon glyphicon-share-alt"></span> Submit a Proposal</a>
+				<button data-bind="click: addProposalViewModel().open_addproposal_modal, disable: questionViewModel.finished_writing" type="button" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-share-alt"></span> Submit a Proposal</button>
 				
-				<a data-bind="click: questionViewModel.set_finished_writing" class="btn btn-primary btn-lg active" role="button" title="Click here to inform the author that you have finished writing proposals for this generation of this question"><span class="glyphicon glyphicon-bullhorn"></span> <span data-bind="text: questionViewModel.show_finished_writing()"></span></a>
+				<a data-bind="click: questionViewModel.set_finished_writing" class="btn btn-primary btn-lg" role="button" title="Click here to inform the author that you have finished writing proposals for this generation of this question"><span class="glyphicon glyphicon-bullhorn"></span> <span data-bind="text: questionViewModel.show_finished_writing()"></span></a>
 				</div>	
 			</div>
 		</div>
@@ -1251,9 +1251,7 @@
 			warning: 900,
 			counterText: "Characters left" + " "
 		});
-		
-		$('button').removeAttr('disabled');
-		
+				
 		$("[data-toggle='tooltip']").tooltip();
 		
 		$('#clearvotes').on( "click", function(e) {
