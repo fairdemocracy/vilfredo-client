@@ -358,7 +358,6 @@
 					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
-					<a title="Open voting window" data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'"><span class="glyphicon glyphicon-check"></span></a>
 					
 					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
