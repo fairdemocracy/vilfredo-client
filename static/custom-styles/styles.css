@@ -7133,6 +7133,9 @@ a.disabled {
 #selected_image {
   margin-bottom: 10px;
 }
+.proposal-footer .glyphicon-triangle-bottom {
+  font-size: 2em;
+}
 .resultsmapcontrols {
   margin-bottom: 10px;
 }

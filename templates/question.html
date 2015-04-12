@@ -32,6 +32,7 @@
 	<meta name="apple-mobile-web-app-title" content="Vilfredo">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+	
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/multi-columns-row.css') }}">
     </head>
@@ -113,15 +114,15 @@
 		
 		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people"><span class="glyphicon glyphicon-user"></span> Participants</button>
 		
-		<button data-bind="click: questionViewModel.edit, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit Question</button>
-		<button data-bind="click: questionViewModel.delete, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> Delete Question</button>
+		<button data-bind="click: questionViewModel.edit, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit Question</button>
+		<button data-bind="click: questionViewModel.delete, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span> Delete Question</button>
 		
 	<!-- ko if: questionViewModel.phase() == 'writing' && questionViewModel.proposal_count() >= 2 && questionViewModel.new_proposal_count() >= 1 -->
-	<button data-bind="click: move_on" class="btn btn-primary">Move to Voting</button>
+	<button data-bind="click: move_on" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> Move to Voting</button>
 	<!-- /ko -->
 	<!-- ko if: (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= MIN_VOTERS_BEFORE_MOVEON) || (questionViewModel.completed_voter_count() == participant_count()) -->
-	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page.">Move to Results</button>
-	<button data-bind="click: move_on" class="btn btn-primary">Move to Next Generation</button>
+	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page."><span class="glyphicon glyphicon-thumbs-up"></span> Move to Results</button>
+	<button data-bind="click: move_on" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> Move to Next Generation</button>
 	<!-- /ko -->
 	</div>
 	<!-- author controls -->
@@ -354,9 +355,11 @@
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 					&nbsp;
 					<!-- /ko -->
-					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
+					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					&nbsp;
-					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
+					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
+					<a title="Open voting window" data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'"><span class="glyphicon glyphicon-check"></span></a>
+					
 					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
@@ -404,9 +407,10 @@
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 					&nbsp;
 					<!-- /ko -->
-					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
+					<a title="Open edit window" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.edit.bind($data, $index())"><span class="glyphicon glyphicon-pencil"></span></a>
 					&nbsp;
-					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && vote_count() == 0, click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-remove"></span></a>
+					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
+
 					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
