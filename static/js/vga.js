@@ -4817,6 +4817,7 @@ function QuestionsViewModel()
             		participant_count: ko.observable(parseInt(data.questions[i].participant_count)),
             		voters_voting_count: ko.observable(parseInt(data.questions[i].voters_voting_count)),
             		completed_voter_count: ko.observable(parseInt(data.questions[i].completed_voter_count)),
+            		finished_writing_count: ko.observable(data.questions[i].finished_writing_count),
 					consensus_found: ko.observable(data.questions[i].consensus_found),
 					inherited_proposal_count: ko.observable(parseInt(data.questions[i].inherited_proposal_count)),
 					link: VILFREDO_URL + "/question/" + data.questions[i].id
@@ -4882,6 +4883,13 @@ function QuestionsViewModel()
 	    
 	    if (question.phase() == 'writing')
 	    {
+    	    var complete = question.participant_count() == question.finished_writing_count();
+	        if (complete)
+	        {
+	            html += "Great! All participants have finished writing!";
+	            return html;
+	        }
+    	    
     	    if (question.new_proposal_count() > 0)
     	    {
     	        html = html + question.new_proposer_count() + ' out of ' + question.participant_count()
@@ -4889,7 +4897,7 @@ function QuestionsViewModel()
     	    }
     	    else
     	    {
-    	        html = html + "<br>No new proposals so far.";
+    	        html = html + "<br>No new proposals so far. Be the first!";
     	    }
     	    if (question.inherited_proposal_count() > 0)
     	    {
@@ -4902,6 +4910,13 @@ function QuestionsViewModel()
 	    else if (question.phase() == 'voting')
 	    {
 	        // Display how many have voted
+	        var complete = question.participant_count() == question.completed_voter_count();
+	        if (complete)
+	        {
+	            html += "Great! All participants have voted!";
+	            return html;
+	        }
+	        
             var not_finished = question.voters_voting_count() - question.completed_voter_count();
     	    html = html + "Out of " + question.participant_count() + ' participants';
     	    if (question.voters_voting_count() == 0)
@@ -6036,6 +6051,7 @@ function QuestionViewModel() // bang
 	self.can_propose_ob = ko.observable(false);
 	self.can_not_propose = false;
 	self.completed_voter_count = ko.observable();
+	self.finished_writing_count = ko.observable();
 	self.new_proposal_count = ko.observable();
     self.new_proposer_count = ko.observable();
     self.participant_count = ko.observable();
@@ -6203,6 +6219,7 @@ function QuestionViewModel() // bang
     		self.participant_count(parseInt(data.question.participant_count));
     		self.voters_voting_count(parseInt(data.question.voters_voting_count));
     		self.completed_voter_count(parseInt(data.question.completed_voter_count));
+    		self.finished_writing_count(data.question.finished_writing_count);
     		self.new_proposal_count(parseInt(data.question.new_proposal_count));
     		self.new_proposer_count(parseInt(data.question.new_proposer_count));
     		self.consensus_found(data.question.consensus_found);
