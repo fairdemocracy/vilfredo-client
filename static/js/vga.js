@@ -426,6 +426,57 @@ function setVoteLinear(proposal) // bosh
 	var dimensions = calculateLinearModalTriangleDimensions(svg);
     var max_x = dimensions.width;
     var max_y = dimensions.height;
+
+	votex = max_x * proposal.mapx(); 
+
+	var votesgroup = $('.votes', svg.root());
+    fill_color = setMapColorLinear(proposal.mapx());
+
+	// If a vote is already plotted, move it
+	var vote = $('.vote', svg.root()).filter(function() {
+		return $(this).data("pid") == proposal.id();
+	});
+	
+	console.log("setVoteLinear: num votes found = " + vote.length);
+
+    if (vote.length > 0)
+	{
+		console.log("Moving existing vote");
+		//$(vote).attr('cx', cx).attr('cy', cy).attr('fill', fill_color);
+		$(vote).animate({svgX1 : votex, svgX2 : votex, svgStroke: fill_color}, 1000);
+	}
+	else
+    {
+	    // Plot vote on votemap
+    	//vote = svg.circle(votesgroup, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
+		vote = svg.line(votesgroup, votex, LINEAR_MAP_OFFSET_Y, votex, LINEAR_MAP_OFFSET_Y + LINEAR_MAP_HEIGHT, {class: 'vote active draggable', stroke: fill_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: proposal.title()});
+
+
+        $(vote).data('pid', proposal.id());
+        // Add event handlers and mak draggable
+        /*
+        $(vote).on( "click", function(e) {
+            console.log('click on vote');
+            $(this).parent().siblings('#map').trigger(e);
+        });
+        $(vote).on( "mousemove", function(e) {
+            $(this).parent().siblings('#map').trigger(e);
+        });
+        */
+        // moon
+        $(vote).on("mousedown", beginDraggingVoteLinear);
+        $(vote).on("mouseup", voteAfterDragLinear);
+    }
+}
+
+function setVoteLinear_V1(proposal) // bosh
+{
+    console.log('setVote called...');
+	var votemap = $('#modalvotesmap');
+	var svg = $(votemap).svg('get');
+	var dimensions = calculateLinearModalTriangleDimensions(svg);
+    var max_x = dimensions.width;
+    var max_y = dimensions.height;
     /*
     var offset_x = 0, offset_y = 0;
     var offsets = votemap.find('#vote_map').data('offsets');
@@ -481,7 +532,7 @@ function setVoteLinear(proposal) // bosh
 }
 
 // Add current vote to votemap
-function setVote(proposal) // bosh
+function setVote(proposal, dfd) // strike
 {
     console.log('setVote called...');
 	var votemap = $('#modalvotesmap');
@@ -503,28 +554,39 @@ function setVote(proposal) // bosh
     //max_y = 0.7 * max_x;
     //console.log('container_height = ' + max_y);
 
-	cx = (max_x * proposal.mapx()) + triangle_offset_x; // fuck
+	cx = (max_x * proposal.mapx()) + triangle_offset_x;
 	cy = (max_y * proposal.mapy()) + triangle_offset_y;
 
 	var votesgroup = $('.votes', svg.root());
     fill_color = setMapColor(proposal.mapx(), proposal.mapy());
 
 	// If a vote is already plotted, move it
-	var vote = $('.vote', svg.root()).filter(function() {
-		return $(this).data("pid") == proposal.id();
+	var vote = $('.vote.active', svg.root()).filter(function() {
+		return parseInt($(this).data("settings").pid) == parseInt(proposal.id());
 	});
 	
-	console.log("setVote: num votes found = " + vote.length);
+	console.log("*****************************");
+	console.log("*****************************");
+	console.log("SETVOTE: num votes found = " + vote.length);
+	console.log("*****************************");
+	console.log("*****************************");
 
     if (vote.length > 0)
 	{
 		console.log("Moving existing vote");
 		$(vote).attr('cx', cx).attr('cy', cy).attr('fill', fill_color);
+		dfd.resolve();
+		/*
+		$.when( $(vote).animate({svgCx : cx, svgCy : cy, svgFill: fill_color}, 500) ).done(function()
+		{
+		    dfd.resolve();
+	    }); */
 	}
 	else
     {
+	    //alert("VOTE NOT FOUND");
 	    // Plot vote on votemap
-    	vote = svg.circle(votesgroup, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: 'pointer'});
+    	vote = svg.circle(votesgroup, cx, cy, RADIUS+1, {class: 'vote active', fill: fill_color, cursor: 'pointer'});
         $(vote).data('pid', proposal.id());
         // Add event handlers and mak draggable
         $(vote).addClass('draggable');
@@ -540,6 +602,7 @@ function setVote(proposal) // bosh
         // moon
         $(vote).on("mousedown", beginDraggingVote);
         $(vote).on("mouseup", voteAfterDrag);
+        dfd.resolve();
     }
 }
 
@@ -1227,7 +1290,7 @@ function calculateLinearModalTriangleDimensions(svg) // bosh
     triangle_offset_x = 0;
 	triangle_offset_y = 220;
     
-    return {'width' : container_width, 'height' : 41};
+    return {'width' : container_width, 'height' : LINEAR_MAP_HEIGHT};
 }
 
 function calculateModalTriangleDimensions(svg) // bosh
@@ -1725,7 +1788,7 @@ function updateResultsMap3D() // bang
 
 function createLinearResultsMap(svg) // bosh
 {
-	console.log('createResultsMap V2 called...');
+	console.log('createLinearResultsMap called...');
 	
 	if (proposalsViewModel.votedAll() == false)
 	{
@@ -2244,10 +2307,11 @@ function createLinearVoteMap(svg)
             fill: 'white',
             stroke: '#CDCDCD',
             strokeWidth: 2,
-            id: 'vote_map'
+            id: 'vote_map',
+            class: 'linear'
         }
     );
-    $(triangle).data('offsets', {'x': 0, 'y': 205});
+    $(triangle).data('offsets', {'x': 0, 'y': LINEAR_MAP_OFFSET_Y});
 
     var agree_oppose_y = 130;
     var agree_oppose_text_y = agree_oppose_y + 10;
@@ -2278,30 +2342,22 @@ function createLinearVoteMap(svg)
             return true;
         }
 
-        cx = triangle_width * proposal.mapx();
-        cy = triangle_height * proposal.mapy();
-        //console.log("Draw vote at (" + cx + ", " + cy +")");
-        
-        cx += triangle_offset_x;
-        cy += triangle_offset_y;
-
-        fill_color = '#BEBEBE';
+        var votex = triangle_width * proposal.mapx(); // strike
+        fill_color = MEDIAN_COLOR;
         cursor_type = 'arrow';
+        
+        var y1 = LINEAR_MAP_OFFSET_Y;
+        var y2 = LINEAR_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
 
-        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type, title: proposal.title()});
-        $(vote).data('pid', proposal.id());
+        // {stroke: fill_color, strokeWidth: 2, cursor: cursor_type, title: proposal.title()}
+        vote = svg.line(g, votex, y1, votex, y2, {stroke: fill_color, strokeWidth: 2, cursor: cursor_type, title: proposal.title()});
+        
+        $(vote).data('pid', proposal.id()); // remove
+        $(vote).data('settings', {'pid': proposal.id()});
 
         // Display proposal ID
-        var txtx, txty;
-        txtx = cx;
-        if (cy < 30)
-        {
-            txty = cy + 25;
-        }
-        else
-        {
-            txty = cy - 20;
-        }
+        var txtx = votex;
+        var txty = LINEAR_MAP_OFFSET_Y - 20;
         svg.text(g, txtx, txty, String(proposal.id()));
     });
     // Add active vote last
@@ -2309,13 +2365,15 @@ function createLinearVoteMap(svg)
 
     if (isNaN(proposal.mapx()) == false && isNaN(proposal.mapy()) == false)
     {
-        cx = triangle_width * proposal.mapx() + triangle_offset_x;
-        cy = triangle_height * proposal.mapy() + triangle_offset_y;
-        fill_color = setMapColor(proposal.mapx(), proposal.mapy());
+        votex = triangle_width * proposal.mapx();
+        fill_color = setMapColorLinear(proposal.mapx());
         cursor_type = 'pointer';
-        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type});
-        $(vote).data('pid', proposal.id());
-        $(vote).addClass('draggable');
+        
+        // {class: 'vote active', stroke: fill_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: proposal.title()}
+        vote = svg.line(g, votex, LINEAR_MAP_OFFSET_Y, votex, LINEAR_MAP_OFFSET_Y + LINEAR_MAP_HEIGHT, {class: 'vote active draggable', stroke: fill_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: proposal.title()});
+        
+        $(vote).data('pid', proposal.id()); // remove
+        $(vote).data('settings', {'pid': proposal.id()});
         $(vote).on("mousedown", beginDraggingVoteLinear);
         $(vote).on("mouseup", voteAfterDragLinear);
     }
@@ -2332,17 +2390,14 @@ function createLinearVoteMap(svg)
     	var cx, cy;
     	if (typeof $.browser.webkit == 'undefined')
     	{
-    	    cx = e.pageX - posX - RADIUS;
-    	    cy = e.pageY - posY - RADIUS;
+    	    cx = e.pageX - posX - LINEAR_MAP_VOTE_WIDTH;
+    	    cy = e.pageY - posY - LINEAR_MAP_VOTE_WIDTH;
     	}
     	else
     	{
     	    cx = e.pageX - posX;
     	    cy = e.pageY - posY;
     	}
-    	
-    	//cx += triangle_offset_x;
-        //cy += triangle_offset_y;
 
     	var max_x = $(svg._container).innerWidth();
     	var max_y = $(svg._container).innerHeight();
@@ -2368,7 +2423,9 @@ function createLinearVoteMap(svg)
     {
         console.log("triangleClickHandlerLinear called...");
         
-        var triangle = $('#vote_map');
+        //var triangle = $('#vote_map');
+        var triangle = $(this);
+        triangle.off( "click", triangleClickHandler);
         
         var vote = $('.vote.draggable');
         if (vote && $(vote).hasClass('dragged'))
@@ -2401,7 +2458,7 @@ function createLinearVoteMap(svg)
     	var n_cx = cx / max_x;
     	var n_cy = 0.0;
 
-    	var ajax_call = proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
+    	var ajax_call = proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal);
     	$(triangle).data('add_vote_jqXHR', ajax_call);
     }
     // Record vote on votemap
@@ -2507,8 +2564,8 @@ function createVoteMap(svg)
             return true;
         }
 
-        cx = triangle_width * proposal.mapx();
-        cy = triangle_height * proposal.mapy();
+        var cx = triangle_width * proposal.mapx();
+        var cy = triangle_height * proposal.mapy();
         //console.log("Draw vote at (" + cx + ", " + cy +")");
         
         cx += triangle_offset_x;
@@ -2518,7 +2575,8 @@ function createVoteMap(svg)
         cursor_type = 'arrow';
 
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type, title: proposal.title()});
-        $(vote).data('pid', proposal.id());
+        $(vote).data('pid', parseInt(proposal.id()));
+        $(vote).data('settings', {'pid': parseInt(proposal.id())});
 
         // Display proposal ID
         var txtx, txty;
@@ -2543,8 +2601,9 @@ function createVoteMap(svg)
         */
     });
     // Add active vote last
-    var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()]; 
-
+    //var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()]; // don't use index!!!
+    var proposal = voteMapViewModel.proposal; 
+    
     if (isNaN(proposal.mapx()) == false && isNaN(proposal.mapy()) == false)
     {
         cx = triangle_width * proposal.mapx() + triangle_offset_x;
@@ -2552,8 +2611,9 @@ function createVoteMap(svg)
         fill_color = setMapColor(proposal.mapx(), proposal.mapy());
         cursor_type = 'pointer';
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'vote', fill: fill_color, cursor: cursor_type});
-        $(vote).data('pid', proposal.id());
-        $(vote).addClass('draggable');
+        $(vote).data('pid', parseInt(proposal.id()));
+        $(vote).data('settings', {'pid': parseInt(proposal.id())});
+        $(vote).addClass('draggable').addClass('active');
         /*
         $(vote).on( "click", function(e) {
             console.log('click on vote');
@@ -2627,17 +2687,17 @@ function createVoteMap(svg)
         
         if (triangle.data('add_vote_jqXHR') != null)
         {
-            console.log("*********************************************************************");
+            //console.log("*********************************************************************");
 		    console.log("******* triangleClickHandler: Still adding vote: IGNORE CLICK *******");
-		    console.log("*********************************************************************");
+		    //console.log("*********************************************************************");
             return;
         }
         
-        var vote = $('.vote.draggable');
-        if (vote && $(vote).hasClass('dragged'))
+        var vote = $('.vote.active');
+        if (vote.length > 0 && vote.hasClass('dragged'))
         {
-            console.log("Dragged vote found. Ignore click *******");
-            $(vote).removeClass('dragged');
+            console.log("******** Dragged vote found. Ignore click *******");
+            vote.removeClass('dragged');
             return;
         }
         
@@ -2664,18 +2724,19 @@ function createVoteMap(svg)
     	var n_cx = cx / max_x;
     	var n_cy = cy / max_y;
 
-    	var ajax_call = proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
+    	var ajax_call = proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal);
     	$(triangle).data('add_vote_jqXHR', ajax_call);
     	
     	$.when( triangle.data('add_vote_jqXHR') ).done(function()
 		{
-		    console.log("***************************************");
-		    console.log("***************************************");
+		    //console.log("***************************************");
+		    //console.log("***************************************");
 		    console.log("******* add_vote_jqXHR complete *******");
-		    console.log("***************************************");
-		    console.log("***************************************");
+		    //console.log("***************************************");
+		    //console.log("***************************************");
 		    
 		    $(triangle).data('add_vote_jqXHR', null);
+		    $(triangle).on( "click", triangleClickHandler );
 	    });
     }
     
@@ -2857,7 +2918,7 @@ function voteAfterDragLinear(e)
     // Endorse with normalised vote coordinates
 	var n_cx = cx / max_x;
 	var n_cy = 0.0;
-	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
+	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal);
 }
 function voteAfterDrag(e)
 {
@@ -2879,7 +2940,7 @@ function voteAfterDrag(e)
 	var n_cx = cx / max_x;
 	var n_cy = cy / max_y;
 	
-	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal_index());
+	proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal);
 }
 
 
@@ -5300,6 +5361,7 @@ function QuestionsViewModel()
 function VoteMapViewModel()
 {
     var self = this;
+    self.proposal;
     self.proposal_index = ko.observable();
     self.proposal_id = ko.observable();
     self.endorse_type = ko.observable();
@@ -5483,6 +5545,7 @@ function ProposalsViewModel()
 	self.openvotemap = function(index, proposal)
 	{
 		console.log("ProposalsViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
+		voteMapViewModel.proposal = proposal;
 		voteMapViewModel.proposal_index(index);
 		voteMapViewModel.proposal_id(proposal.id());
 		voteMapViewModel.endorse_type(proposal.endorse_type());
@@ -5764,7 +5827,7 @@ function ProposalsViewModel()
 	}
 
 	// Add vote using normalised votemap coordinates
-	self.mapEndorseWithIndex = function(mapx, mapy, index) // bingo
+	self.mapEndorseWithIndex = function(mapx, mapy, proposal) // strike
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
 		{
@@ -5772,18 +5835,19 @@ function ProposalsViewModel()
 		    return;
 		}
 		
+		var dfd = $.Deferred();
+		
 		mapx = parseFloat(mapx);
 		mapy = parseFloat(mapy);
 		
-		var proposal = self.proposals()[index];
-		console.log('mapEndorseWithIndex called with index ' + index + ' and coords ' + mapx + ', ' + mapy + " **************");
+		console.log('mapEndorseWithIndex called for proposal ' + proposal.id() + ' and coords ' + mapx + ', ' + mapy + " **************");
 		var endorse_uri = VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ proposal.id() +'/endorsements';
 		console.log('endorse uri = ' + endorse_uri);
 
 		// Normalized vote coordinates
         var coords = {mapx: mapx, mapy: mapy};
 
-		return ajaxRequest(endorse_uri, 'POST', {use_votemap:true, coords:coords})
+		ajaxRequest(endorse_uri, 'POST', {use_votemap:true, coords:coords})
 		.done(function(data, textStatus, jqXHR)
 		{
 		    console.log('Proposals data returned...');
@@ -5833,7 +5897,7 @@ function ProposalsViewModel()
 				// Draw vote on votemap if displayed
 				if (questionViewModel.voting_type() == 1)
 				{
-				    setVote(proposal);
+				    setVote(proposal, dfd);
 				}
 				else
 				{
@@ -5877,6 +5941,8 @@ function ProposalsViewModel()
 				console.log(jqXHR.status);
 			}
 		});
+		
+		return dfd.promise();
 	}
 
 	self.show3WayTriangle = function()
