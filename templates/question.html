@@ -1035,7 +1035,14 @@
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
-			$('#modalvotesmap').svg({onLoad: createVoteMap}); // shark
+			if (questionViewModel.voting_type() == 1)
+			{
+				$('#modalvotesmap').svg({onLoad: createVoteMap}); 
+			}
+			else
+			{
+				$('#modalvotesmap').svg({onLoad: createLinearVoteMap}); 
+			}
 		})
 		
 		$('#votemapwindow').on('hide.bs.modal', function() {
