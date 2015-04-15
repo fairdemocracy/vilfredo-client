@@ -2250,7 +2250,11 @@ function createVoteMapLinear(svg)
     	$(triangle).data('add_vote_jqXHR', ajax_call);
     }
     // Record vote on votemap
-    $(triangle).on( "click", triangleClickHandlerLinear );
+    $(triangle).on("click", triangleClickHandlerLinear );
+    $(triangle).on("mouseup", function(e)
+    {
+        $('.dragged', this).trigger("mouseup");
+    });
 }
 
 
@@ -2680,6 +2684,7 @@ function beginDraggingVote(e)
 
 function voteAfterDragLinear(e)
 {
+    console.log("voteAfterDragLinear called...");
     e.preventDefault();
     e.stopPropagation();
     console.log("Mouseup on draggable vote!!!!!");
