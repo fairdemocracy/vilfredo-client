@@ -2250,10 +2250,14 @@ function createVoteMapLinear(svg)
     	$(triangle).data('add_vote_jqXHR', ajax_call);
     }
     // Record vote on votemap
-    $(triangle).on("click", triangleClickHandlerLinear );
+    $(triangle).on( "click", triangleClickHandlerLinear );
+    
     $(triangle).on("mouseup", function(e)
     {
-        $('.dragged', this).trigger("mouseup");
+        console.log("triangle mouseup...");
+        var dragged_vote = $('.dragged');
+        console.log(dragged_vote.length + " dragged_votes found...");
+        dragged_vote.trigger("mouseup");
     });
 }
 
