@@ -441,6 +441,7 @@ function setVoteLinear(proposal, dfd) // bosh
 	{
 		console.log("Moving existing vote");
 		$(vote).attr('x1', votex).attr('x2', votex).attr('stroke', fill_color);
+		$('.activelabel').attr('x', votex);
 		dfd.resolve();
 		//$(vote).animate({svgX1 : votex, svgX2 : votex, svgStroke: fill_color}, 1000);
 	}
@@ -2149,7 +2150,8 @@ function createVoteMapLinear(svg)
         // Display proposal ID
         var txtx = votex;
         var txty = LINEAR_MAP_OFFSET_Y - 20;
-        svg.text(g, txtx, txty, String(proposal.id()));
+        label = svg.text(g, txtx, txty, String(proposal.id()));
+        $(label).data('settings', {'pid': proposal.id()});
     });
     // Add active vote last
     var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()]; 
@@ -2167,6 +2169,16 @@ function createVoteMapLinear(svg)
         $(vote).data('settings', {'pid': proposal.id()});
         $(vote).on("mousedown", beginDraggingVoteLinear);
         $(vote).on("mouseup", voteAfterDragLinear);
+        
+        // Add label
+        var txtx = votex;
+        var txty = LINEAR_MAP_OFFSET_Y - 20;
+        var activelabel = svg.text(g, txtx, txty, String(proposal.id()), {'stroke': '#0000cc'});
+        $(activelabel).data('settings', {'pid': proposal.id()}).addClass("activelabel"); 
+        /*
+        var medlabel = svg.text(g, txtx, txty, String(pid));
+        $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
+        */
     }
     else
     {
@@ -2216,7 +2228,7 @@ function createVoteMapLinear(svg)
         
         //var triangle = $('#vote_map');
         var triangle = $(this);
-        triangle.off( "click", triangleClickHandlerLinear);
+        //triangle.off( "click", triangleClickHandlerLinear);
         
         var vote = $('.vote.draggable');
         if (vote && $(vote).hasClass('dragged'))
@@ -2308,7 +2320,6 @@ function createVoteMap(svg)
     $(triangle).data('offsets', {'x': 0, 'y': 0});
     //$(triangle).data('settings', {'add_vote_jqXHR': null});
     $(triangle).data('add_vote_jqXHR',  null);
-    
     
     var agree_oppose_y;
     if (questionViewModel.voting_type() == 1)
@@ -2772,6 +2783,7 @@ function trackDraggableVoteLinear(e)
 	else
 	{
         $('.vote.draggable').attr('x1', cx).attr('x2', cx).attr('stroke', fill_color);
+        $('.activelabel').attr('x', cx);
     }
 }
 function trackDraggableVote(e)
