@@ -34,6 +34,7 @@ var ALGORITHM_VERSION = 2;
 
 // radius of circle representing a vote
 var RADIUS = 10;
+var LINEAR_RESULTS_MAP_OFFSET_Y = 70;
 var LINEAR_MAP_OFFSET_Y = 200;
 var LINEAR_MAP_HEIGHT = 41;
 var LINEAR_MAP_VOTE_WIDTH = 2;
