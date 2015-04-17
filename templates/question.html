@@ -205,7 +205,8 @@
 			<h2>Results Map</h2>
 			<p>The results map shows the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
 			<p class="note"><strong>Update</strong> You can now drag your votes to various locations on the map to update your vote. This may also cause the median vote to change.</p>
-			<button id="clearvotes" type="button" class="btn btn-sm btn-info resultsmapcontrols">Show Medians Only</button>
+			<button data-bind="click: resultsShowMediansOnly()" id="clearvotes" type="button" class="btn btn-sm btn-primary resultsmapcontrols">Show Medians Only</button>
+			
 		<!--
 		 <div class="btn-group resultsmapcontrols" role="group">
 	 	   <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -1261,6 +1262,7 @@
 				
 		$("[data-toggle='tooltip']").tooltip();
 		
+		/*
 		$('#clearvotes').on( "click", function(e) {
  	   		e.stopPropagation();
 	        $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
@@ -1270,6 +1272,7 @@
 		    	triangle.data('settings', {'mode': 'default'});
 		    }
 	    });
+	*/
 	});	
 	</script>
 	</body>

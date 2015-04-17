@@ -69,12 +69,12 @@ var offset_y = 0;
             pos.x = e.pageX;
             pos.y = e.pageY;
             moved = false;
-            //console.log("mousedown.mclick moved = " + moved);
+            console.log("mousedown.mclick moved = " + moved);
         },
         'mouseup.mclick': function(e) {
             moved = abs(pos.x - e.pageX) > $.clickMouseMoved.threshold
                 || abs(pos.y - e.pageY) > $.clickMouseMoved.threshold;
-            //console.log("mouseup.mclick moved = " + moved);
+            console.log("mouseup.mclick moved = " + moved);
         }
     };
     
@@ -645,7 +645,7 @@ function addMedian(svg, pid, coords) // bang
 
     $(med).on( "click", function(e) {
         console.log('click on median...');
-        e.stopPropagation();
+        //e.stopPropagation();
         showProposalVotes(this, svg, threshold); // humbug
     });
     
@@ -698,7 +698,7 @@ function addProposalVote(med, svg, userid, userdata) // haha
     // harpo
     $(vote).on("click", function(e) {
         if ($.clickMouseMoved()) {
-            console.log('click aborted');
+            console.log('vote click: click aborted 1');
             return;           
         }
         //e.stopPropagation();
@@ -777,20 +777,20 @@ function showProposalVotesLinear(med, svg, threshold) // humbug
 
         $(vote).on("click", function(e) {
             if ($.clickMouseMoved()) {
-                console.log('click aborted');
+                console.log('click aborted 2');
                 return;           
             }
             //e.stopPropagation();
             console.log('click on user vote... showUserVotes');
-            //showUserVotes2D(this, svg, userid, coords.username, threshold);
+            //showUserVotesLinear(this, svg, userid, coords.username, threshold);
         })
         
         if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
             console.log("Make draggable for user id " + userid);
             $(vote).addClass('draggable').addClass('vote');
-            //$(vote).on("mousedown", beginDraggingVoteResults2D);
-            //$(vote).on("mouseup", voteAfterDragResults2D);
+            //$(vote).on("mousedown", beginDraggingVoteResultsLinear);
+            //$(vote).on("mouseup", voteAfterDragResultsLinear);
         }
 
         // Display username
@@ -816,7 +816,7 @@ function showProposalVotesLinear(med, svg, threshold) // humbug
     });
 }
 
-function showProposalVotes(med, svg, threshold) // humbug
+function showProposalVotes(med, svg, threshold) // stark
 {
     var triangle = $('#results_triangle');
     if (triangle.length == 0) 
@@ -838,9 +838,12 @@ function showProposalVotes(med, svg, threshold) // humbug
     //threshold = {'mapx': container_width * questionViewModel.mapx, 'mapy': container_height * questionViewModel.mapy}
     //console.log("Threshold at (" + threshold.mapx + ", " + threshold.mapy +")");
 
-    var g = svg.group(resultsmap, 'allvotes');
+    var resultsmap = $('#resultsmap')[0];
+    var g = svg.group(resultsmap, 'allvotes'); 
     var fill_color;
     var med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+    var voter_count = getKeys(voters).length;
+    var draw_marker = voter_count != 1 && voter_count != 3;
 
     jQuery.each(voters, function(userid, coords) {
         cx = container_width * coords.mapx;
@@ -850,13 +853,43 @@ function showProposalVotes(med, svg, threshold) // humbug
         // Draw line to connect vote with median
         var medline = svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {class: 'medline', strokeWidth: 1, stroke: fill_color});
         $(medline).data('settings', {'userid': parseInt(userid), 'pid': $(med).data('settings').pid});
+    });
+    
+    // Add marker over selected median if no vote lies on top
+    if (draw_marker)
+    {
+        //alert("draw marker");
+        var med_marker = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), RADIUS+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
+        $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
+
+        $(med_marker).on( "click", function(e) {
+            //e.stopPropagation();
+            $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
+    		var triangle = $('#results_triangle');
+    	    if (triangle.length == 1) 
+    	    {
+    	    	triangle.data('settings', {'mode': 'default'});
+    	    }
+        });
+    }
+    
+    jQuery.each(voters, function(userid, coords) {
+        cx = container_width * coords.mapx;
+        cy = container_height * coords.mapy;
+        fill_color = setMapColor(coords.mapx, coords.mapy);
+
+        // Draw line to connect vote with median
+        /*
+        var medline = svg.line(g, cx, cy, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), {class: 'medline', strokeWidth: 1, stroke: fill_color});
+        $(medline).data('settings', {'userid': parseInt(userid), 'pid': $(med).data('settings').pid});
+        */
 
         var vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'allvotes', fill: fill_color, title: 'User ' + userid}); 
         $(vote).data('settings', {'userid': parseInt(userid), 'username': coords.username, 'pid': parseInt(pid)}).addClass('uservote');
 
         $(vote).on("click", function(e) {
             if ($.clickMouseMoved()) {
-                console.log('click aborted');
+                console.log('click aborted 3');
                 return;           
             }
             //e.stopPropagation();
@@ -907,19 +940,6 @@ function showProposalVotes(med, svg, threshold) // humbug
         var vote_label = svg.text(g, txtx, txty, coords.username);  // rel="popover" 
         $(vote_label).data('settings', {'userid': parseInt(userid), 'username': coords.username, 'pid': parseInt(pid)}).addClass('vote_label');
     });
-    // Add marker over selected median
-    var med_marker = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), RADIUS+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
-    $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
-
-    $(med_marker).on( "click", function(e) {
-        e.stopPropagation();
-        $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
-		var triangle = $('#results_triangle');
-	    if (triangle.length == 1) 
-	    {
-	    	triangle.data('settings', {'mode': 'default'});
-	    }
-    });
 }
 
 function showUserVotes(clicked, svg, userid, username, threshold)
@@ -935,10 +955,10 @@ function showUserVotes(clicked, svg, userid, username, threshold)
     triangle.data('settings', settings);
     
     $('#allvotes', svg.root()).remove();
-
+    var resultsmap = $('#resultsmap')[0];
     var g = svg.group(resultsmap, 'alluservotes');
+    
     var fill_color;
-
     var votex = parseInt($(clicked).attr('cx'));
     var votey = parseInt($(clicked).attr('cy'));
 
@@ -986,6 +1006,11 @@ function showUserVotes(clicked, svg, userid, username, threshold)
             return true;
         }
         
+        var voter_count = getKeys(coords.voters).length;
+        var draw_marker = voter_count != 1 && voter_count != 3;
+        console.log("showUserVotes: coords.voters.length = " + voter_count);
+        console.log("showUserVotes: draw_marker = " + draw_marker);
+        
         cx = container_width * coords['voters'][parseInt(userid)]['mapx'];
         cy = container_height * coords['voters'][parseInt(userid)]['mapy'];
 
@@ -994,37 +1019,8 @@ function showUserVotes(clicked, svg, userid, username, threshold)
         // Draw line to connect vote with median
         var medline = svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
         $(medline).data('settings', {'userid': parseInt(userid), 'pid': parseInt(pid)}).addClass('medline');
-
-        //console.log("Create vote at " + cx + ', ' + cy);
-        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); 
-        $(vote).data('userid', userid);
-        $(vote).data('pid', pid);
-        $(vote).data('settings', {'userid': parseInt(userid), 'username': username, 'pid': parseInt(pid)}).addClass('uservote');
-
-        $(vote).on( "click", function(e) {
-            if ($.clickMouseMoved()) {
-                console.log('click aborted');
-                return;
-            }
-            e.stopPropagation();
-            var pid = parseInt($(this).data('pid'));
-            var med = $('.med').filter(function() {
-                return parseInt($(this).data('pid')) === pid;
-            });
-
-            if (med)
-            {
-                showProposalVotes(med, svg, threshold);
-            }
-        });
         
-        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
-        {
-            console.log("Make draggable for user id " + userid);
-            $(vote).addClass('draggable').addClass('vote');
-            $(vote).on("mousedown", beginDraggingVoteResults);
-            $(vote).on("mouseup", voteAfterDragResults);
-        }
+        
 
         var prop_title;
         var prop = proposalsViewModel.getProposal(pid);
@@ -1045,19 +1041,53 @@ function showUserVotes(clicked, svg, userid, username, threshold)
         });*/
         
         
-        // Add marker over selected median
-        var med_marker = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title});
-        $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
-		
-		$(med_marker).on( "click", function(e) {
-            e.stopPropagation();
-            $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
-    		var triangle = $('#results_triangle');
-    	    if (triangle.length == 1) 
-    	    {
-    	    	triangle.data('settings', {'mode': 'default'});
-    	    }
+        if (draw_marker)
+        {
+            var med_marker = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title});
+            $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
+    		{
+    		    $(med_marker).on( "click", function(e) {
+                    //e.stopPropagation();
+                    $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
+            		var triangle = $('#results_triangle');
+            	    if (triangle.length == 1) 
+            	    {
+            	    	triangle.data('settings', {'mode': 'default'});
+            	    }
+                });
+            }
+        }
+        
+        //console.log("Create vote at " + cx + ', ' + cy);
+        vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); 
+        $(vote).data('userid', userid);
+        $(vote).data('pid', pid);
+        $(vote).data('settings', {'userid': parseInt(userid), 'username': username, 'pid': parseInt(pid)}).addClass('uservote');
+
+        $(vote).on( "click", function(e) {
+            if ($.clickMouseMoved()) {
+                console.log('click aborted 4');
+                return;
+            }
+            //e.stopPropagation();
+            var pid = parseInt($(this).data('pid'));
+            var med = $('.med').filter(function() {
+                return parseInt($(this).data('pid')) === pid;
+            });
+
+            if (med.length > 0)
+            {
+                showProposalVotes(med, svg, threshold);
+            }
         });
+        
+        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+        {
+            console.log("Make draggable for user id " + userid);
+            $(vote).addClass('draggable').addClass('vote');
+            $(vote).on("mousedown", beginDraggingVoteResults);
+            $(vote).on("mouseup", voteAfterDragResults);
+        }
 
         /*
         var votex = parseInt($(vote).attr('cx'));
@@ -1493,6 +1523,7 @@ function updateResultsMap() // bang
 function updateResultsMapLinear() // bang
 {
     console.log("updateResultsMapLinear called...");
+    return;
     var triangle = $('#results_triangle');
     if (triangle.length == 0) 
     {
@@ -1534,7 +1565,7 @@ function updateResultsMapLinear() // bang
         if (med.length == 0)
         {
             console.log("updateResultsMap: med not found for pid " + pid);
-            med = addMedianLinear(svg, pid, coords);
+            //med = addMedianLinear(svg, pid, coords);
             //return;
         }
         else
@@ -1716,6 +1747,173 @@ function updateResultsMap2D() // bang
     });
 }
 
+function addSingleVoterVotesToResultsMapLinear(svg)
+{
+    var dimensions = calculateTriangleDimensions(svg);
+    var map_width = dimensions.width;
+    var map = $('#results_triangle');
+    var resultsmap = $('#resultsmap')[0];
+    var votes_group = svg.group(resultsmap, 'votes'); 
+    //var g = svg.group(resultsmap, 'currentuservotes');
+    //
+    // Add votes
+    //
+    console.log("Only show single voter's votes");
+    $.each(questionViewModel.voting_data, function(pid, coords) 
+    {
+        if (!coords['median'])
+        {
+            return;
+        }
+    
+        if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
+        {
+            return;
+        }
+    
+        console.log("pid is type " + typeof pid);
+
+        var votex = map_width * coords['median'].medx;
+        var pareto = coords['dominated_by'] == 0;
+        var stroke_color = setMapColorLinear(coords['median'].medx);
+        var title;
+        var prop = proposalsViewModel.getProposal(pid);
+
+        if (prop)
+        {
+             title = prop.title();
+        }
+        else
+        {
+            title = 'Proposal ID ' + pid
+        }
+
+        var cursor_type = 'arrow';
+        var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
+        var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+
+        vote = svg.line(g, votex, y1, votex, y2, {class: 'vote', stroke: stroke_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
+    
+        //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+        $(vote).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
+
+        // Display proposal ID
+        var txtx = votex;
+        var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
+        var label = svg.text(g, txtx, txty, String(pid));
+        $(label).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
+        if (pareto)
+        {
+            $(label).addClass('pareto');
+        }
+        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+        {
+            console.log("Make draggable for user id " + userid);
+            $(vote).addClass('draggable').addClass('vote');
+            //$(vote).on("mousedown", beginDraggingVoteResults2D);
+            //$(vote).on("mouseup", voteAfterDragResults2D);
+        }
+    });
+}
+
+function addMediansToResultsMapLinear(svg)
+{
+    var dimensions = calculateTriangleDimensions(svg);
+    var map_width = dimensions.width;
+    var resultsmap = $('#resultsmap')[0];
+    var g = svg.group(resultsmap, 'votes'); // mapgroup
+    //
+    // Add medians
+    //
+    $.each(questionViewModel.voting_data, function(pid, coords) 
+    {
+        if (!coords['median'])
+        {
+            return;
+        }
+    
+        if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
+        {
+            return;
+        }
+    
+        console.log("pid is type " + typeof pid);
+
+        var votex = triangle_width * coords['median'].medx;
+        var pareto = coords['dominated_by'] == 0;
+
+        var med_fill, med_selected_fill_color;
+        if  (pareto)
+        {
+            med_fill = MEDIAN_WINNER_COLOR;
+            med_selected_fill_color = MEDIAN_WINNER_SELECTED_COLOR;
+        }
+        else
+        {
+            med_fill = MEDIAN_COLOR;
+            med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+        }
+
+        med_fill = MEDIAN_COLOR;
+        med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+
+        // var title ='Proposal ' + pid;
+        var title;
+        var prop = proposalsViewModel.getProposal(pid);
+
+        //title = 'Coords (' + cx + ', ' + cy + ')';
+
+        if (prop)
+        {
+             title = prop.title();
+        }
+        else
+        {
+            title = 'Proposal ID ' + pid
+        }
+
+        var cursor_type = 'arrow';
+        var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
+        var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+
+        med = svg.line(g, votex, y1, votex, y2, {class: 'med', stroke: med_fill, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
+    
+        //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+        $(med).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
+
+        if (pareto)
+        {
+            $(med).addClass('pareto');
+        }
+
+        // Display proposal ID
+        var txtx = votex;
+        var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
+        var medlabel = svg.text(g, txtx, txty, String(pid));
+        $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
+        if (pareto)
+        {
+            $(medlabel).addClass('pareto');
+        }
+
+        $(med).on( "click", function(e) {
+            console.log('click on median linear...');
+            //e.stopPropagation();
+            //showProposalVotesLinear(this, svg, threshold); // humbug
+        });
+    });
+}
+
+function resultsShowMediansOnly()
+{
+    $('#resultstriangle #allvotes, #resultstriangle #alluservotes').remove();
+	var triangle = $('#results_triangle');
+    if (triangle.length == 1) 
+    {
+    	triangle.data('settings', {'mode': 'default'});
+    }
+}
+
 function createResultsMapLinear(svg) // strike
 {
 	console.log('createResultsMapLinear called...');
@@ -1724,7 +1922,6 @@ function createResultsMapLinear(svg) // strike
 	{
 	    console.log("User not finished voting: don't show results triengle.");
 	}
-	
 	
 	//console.log('createResultsMap called...');
 	var container_width = $(svg._container).innerWidth();
@@ -1747,18 +1944,9 @@ function createResultsMapLinear(svg) // strike
     var dimensions = calculateTriangleDimensions(svg);
     var triangle_width = dimensions.width;
     var triangle_height = dimensions.height;
-
-    var max_x = triangle_width;
-    var max_y = triangle_height;
-    var mid_x = triangle_width/2;
-    var mid_y = triangle_height/2;
-
     var resultsmap = svg.group('resultsmap');
-
 	var path = svg.createPath();
-	var triangle;
-            
-    triangle = svg.path(
+    var map = svg.path(
             resultsmap,
             path.move(0, LINEAR_RESULTS_MAP_OFFSET_Y)
             .line( triangle_width, 0, true )
@@ -1772,92 +1960,404 @@ function createResultsMapLinear(svg) // strike
                 id: 'results_triangle'
             }
         );
-    $(triangle).data('offsets', {'x': 0, 'y': 205});
-	$(triangle).data('settings', {'mode': 'default'});
-
-    var threshold_x = triangle_width*questionViewModel.mapx;
-    var threshold_y = triangle_height*questionViewModel.mapy;
-    var threshold = {'mapx': threshold_x, 'mapy': threshold_y};
+    //$(map).data('offsets', {'x': 0, 'y': 205});
+    
+    $(map).on("mouseup", function(e)
+    {
+        console.log("triangle mouseup...");
+        var dragged_vote = $('.vote.dragged');
+        console.log(dragged_vote.length + " dragged_votes found...");
+        console.log("Trigger mousup on dragged vote");
+        if (dragged_vote.length == 1)
+        {
+            var event = jQuery.Event( "mouseup" );
+            event.pageX = e.pageX;
+            event.pageY = e.pageY;
+            dragged_vote.trigger(e);
+        }
+    });
+    
+    var single_voter = questionViewModel.voters_voting_count() == 1 && questionViewModel.completed_voter_count() == 1;
+    
+	if (single_voter)
+	{
+	    $(map).data('settings', {'mode': 'single_voter'});
+	}
+	else
+	{
+	    $(map).data('settings', {'mode': 'default'});
+    }
+    
+    //
+    // Add medians or votes
+    //
     var g = svg.group(resultsmap, 'votes'); // mapgroup
-
-    $.each(questionViewModel.voting_data, function(pid, coords) {
-        if (!coords['median'])
+    if (questionViewModel.voters_voting_count() == 1 && questionViewModel.completed_voter_count() == 1)
+    //if (false)
+    {
+        console.log("Only show single voter's votes"); 
+        var userid = questionViewModel.voting_data.voter_ids[0];
+        $.each(questionViewModel.voting_data, function(pid, coords) 
         {
-            return;
-        }
+            if (!coords['median'])
+            {
+                return;
+            }
         
-        if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
-        {
-            return;
-        }
+            if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
+            {
+                return;
+            }
+            
         
-        console.log("pid is type " + typeof pid);
+            console.log("pid is type " + typeof pid);
 
-        var votex = triangle_width * coords['median'].medx;
-        var pareto = coords['dominated_by'] == 0;
+            var votex = triangle_width * coords['median'].medx;
+            var pareto = coords['dominated_by'] == 0;
+            var stroke_color = setMapColorLinear(coords['median'].medx);
+            var title;
+            var prop = proposalsViewModel.getProposal(pid);
 
-        var med_fill, med_selected_fill_color;
-        if  (pareto)
+            if (prop)
+            {
+                 title = prop.title();
+            }
+            else
+            {
+                title = 'Proposal ID ' + pid
+            }
+
+            var cursor_type = 'arrow';
+            var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
+            var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+
+            vote = svg.line(g, votex, y1, votex, y2, {class: 'vote', stroke: stroke_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
+        
+            //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+            $(vote).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
+
+            // Display proposal ID
+            var txtx = votex;
+            var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
+            var label = svg.text(g, txtx, txty, String(pid));
+            $(label).data('settings', {'pid': parseInt(pid)}).addClass('vote_label');
+            if (pareto)
+            {
+                $(label).addClass('pareto'); 
+            }
+            if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+            {
+                console.log("Make draggable for user id " + userid);
+                $(vote).addClass('draggable').addClass('vote');
+                //alert("Adding handlers");
+                $(vote).on("mousedown", beginDraggingVoteResultsLinear); // herebe
+                $(vote).on("mouseup", voteAfterDragResultsLinear);
+            }
+            else
+            {
+                //alert("NOT Adding handlers");
+            }
+        });
+    }
+    else
+    {
+        $.each(questionViewModel.voting_data, function(pid, coords) 
         {
-            med_fill = MEDIAN_WINNER_COLOR;
-            med_selected_fill_color = MEDIAN_WINNER_SELECTED_COLOR;
-        }
-        else
-        {
+            if (!coords['median'])
+            {
+                return;
+            }
+        
+            if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
+            {
+                return;
+            }
+        
+            console.log("pid is type " + typeof pid);
+
+            var votex = triangle_width * coords['median'].medx;
+            var pareto = coords['dominated_by'] == 0;
+
+            var med_fill, med_selected_fill_color;
+            if  (pareto)
+            {
+                med_fill = MEDIAN_WINNER_COLOR;
+                med_selected_fill_color = MEDIAN_WINNER_SELECTED_COLOR;
+            }
+            else
+            {
+                med_fill = MEDIAN_COLOR;
+                med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+            }
+    
             med_fill = MEDIAN_COLOR;
             med_selected_fill_color = MEDIAN_SELECTED_COLOR;
-        }
-    
-        med_fill = MEDIAN_COLOR;
-        med_selected_fill_color = MEDIAN_SELECTED_COLOR;
 
-        // var title ='Proposal ' + pid;
-        var title;
-        var prop = proposalsViewModel.getProposal(pid);
+            // var title ='Proposal ' + pid;
+            var title;
+            var prop = proposalsViewModel.getProposal(pid);
 
-        //title = 'Coords (' + cx + ', ' + cy + ')';
+            //title = 'Coords (' + cx + ', ' + cy + ')';
 
-        if (prop)
-        {
-             title = prop.title();
-        }
-        else
-        {
-            title = 'Proposal ID ' + pid
-        }
+            if (prop)
+            {
+                 title = prop.title();
+            }
+            else
+            {
+                title = 'Proposal ID ' + pid
+            }
 
-        var votex = triangle_width * coords['median'].medx; // strike
-        var cursor_type = 'arrow';
+            var cursor_type = 'arrow';
+            var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
+            var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+
+            med = svg.line(g, votex, y1, votex, y2, {class: 'med', stroke: med_fill, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
         
-        var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
-        var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+            //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+            $(med).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
 
-        med = svg.line(g, votex, y1, votex, y2, {class: 'med', stroke: med_fill, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
-        
-        //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
-        $(med).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
+            if (pareto)
+            {
+                $(med).addClass('pareto');
+            }
 
-        if (pareto)
-        {
-            $(med).addClass('pareto');
-        }
+            // Display proposal ID
+            var txtx = votex;
+            var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
+            var medlabel = svg.text(g, txtx, txty, String(pid));
+            $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
+            if (pareto)
+            {
+                $(medlabel).addClass('pareto');
+            }
 
-        // Display proposal ID
-        var txtx = votex;
-        var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
-        var medlabel = svg.text(g, txtx, txty, String(pid));
-        $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
-        if (pareto)
-        {
-            $(medlabel).addClass('pareto');
-        }
-
-        $(med).on( "click", function(e) {
-            console.log('click on median linear...');
-            e.stopPropagation();
-            //showProposalVotesLinear(this, svg, threshold); // humbug
+            $(med).on( "click", function(e) {
+                console.log('click on median linear...');
+                //e.stopPropagation();
+                //showProposalVotesLinear(this, svg, threshold); // humbug
+            });
         });
+    }
+}
+
+
+function createResultsMapLinear_v1(svg) // strike
+{
+	console.log('createResultsMapLinear called...');
+	
+	if (proposalsViewModel.votedAll() == false)
+	{
+	    console.log("User not finished voting: don't show results triengle.");
+	}
+	
+	//console.log('createResultsMap called...');
+	var container_width = $(svg._container).innerWidth();
+	//console.log('container_width = ' + container_width);
+    var container_height = 170;  //0.4 * container_width;
+    //console.log('container_height = ' + container_height);
+    resetSize(svg, container_width, container_height);
+    
+    // set height of results triangle container based on available space
+	//var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
+    //$('#resultstriangle').height(set_results_map_height);
+    
+    /*
+    $('#resultstriangle').on( "click", function(e) {
+    	e.stopPropagation();
+        $('#allvotes,#alluservotes').remove();
     });
+    */
+
+    var dimensions = calculateTriangleDimensions(svg);
+    var triangle_width = dimensions.width;
+    var triangle_height = dimensions.height;
+    var resultsmap = svg.group('resultsmap');
+	var path = svg.createPath();
+    var map = svg.path(
+            resultsmap,
+            path.move(0, LINEAR_RESULTS_MAP_OFFSET_Y)
+            .line( triangle_width, 0, true )
+            .line( 0, triangle_height, true )
+            .line( -triangle_width, 0, true )
+            .close(),
+            {
+                fill: 'white',
+                stroke: '#CDCDCD',
+                strokeWidth: 2,
+                id: 'results_triangle'
+            }
+        );
+    //$(map).data('offsets', {'x': 0, 'y': 205});
+    
+    var single_voter = questionViewModel.voters_voting_count() == 1 && questionViewModel.completed_voter_count() == 1;
+    
+	if (single_voter)
+	{
+	    $(map).data('settings', {'mode': 'single_voter'});
+	}
+	else
+	{
+	    $(map).data('settings', {'mode': 'default'});
+    }
+    
+    //
+    // Add medians or votes
+    //
+    
+    if (single_voter)
+	{
+	    addSingleVoterVotesToResultsMapLinear(svg);
+	}
+	else
+	{
+	    addMediansToResultsMapLinear(svg);
+    }
+    
+    
+    
+    /*
+    var g = svg.group(resultsmap, 'votes'); // mapgroup
+    if (questionViewModel.voters_voting_count() == 1 && questionViewModel.completed_voter_count() == 1)
+    {
+        console.log("Only show single voter's votes");
+        $.each(questionViewModel.voting_data, function(pid, coords) 
+        {
+            if (!coords['median'])
+            {
+                return;
+            }
+        
+            if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
+            {
+                return;
+            }
+        
+            console.log("pid is type " + typeof pid);
+
+            var votex = triangle_width * coords['median'].medx;
+            var pareto = coords['dominated_by'] == 0;
+            var stroke_color = setMapColorLinear(coords['median'].medx);
+            var title;
+            var prop = proposalsViewModel.getProposal(pid);
+
+            if (prop)
+            {
+                 title = prop.title();
+            }
+            else
+            {
+                title = 'Proposal ID ' + pid
+            }
+
+            var cursor_type = 'arrow';
+            var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
+            var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+
+            vote = svg.line(g, votex, y1, votex, y2, {class: 'vote', stroke: stroke_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
+        
+            //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+            $(vote).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
+
+            // Display proposal ID
+            var txtx = votex;
+            var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
+            var label = svg.text(g, txtx, txty, String(pid));
+            $(label).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
+            if (pareto)
+            {
+                $(label).addClass('pareto');
+            }
+            if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+            {
+                console.log("Make draggable for user id " + userid);
+                $(vote).addClass('draggable').addClass('vote');
+                //$(vote).on("mousedown", beginDraggingVoteResults2D);
+                //$(vote).on("mouseup", voteAfterDragResults2D);
+            }
+        });
+    }
+    else
+    {
+        $.each(questionViewModel.voting_data, function(pid, coords) 
+        {
+            if (!coords['median'])
+            {
+                return;
+            }
+        
+            if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
+            {
+                return;
+            }
+        
+            console.log("pid is type " + typeof pid);
+
+            var votex = triangle_width * coords['median'].medx;
+            var pareto = coords['dominated_by'] == 0;
+
+            var med_fill, med_selected_fill_color;
+            if  (pareto)
+            {
+                med_fill = MEDIAN_WINNER_COLOR;
+                med_selected_fill_color = MEDIAN_WINNER_SELECTED_COLOR;
+            }
+            else
+            {
+                med_fill = MEDIAN_COLOR;
+                med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+            }
+    
+            med_fill = MEDIAN_COLOR;
+            med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+
+            // var title ='Proposal ' + pid;
+            var title;
+            var prop = proposalsViewModel.getProposal(pid);
+
+            //title = 'Coords (' + cx + ', ' + cy + ')';
+
+            if (prop)
+            {
+                 title = prop.title();
+            }
+            else
+            {
+                title = 'Proposal ID ' + pid
+            }
+
+            var cursor_type = 'arrow';
+            var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
+            var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
+
+            med = svg.line(g, votex, y1, votex, y2, {class: 'med', stroke: med_fill, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
+        
+            //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+            $(med).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
+
+            if (pareto)
+            {
+                $(med).addClass('pareto');
+            }
+
+            // Display proposal ID
+            var txtx = votex;
+            var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
+            var medlabel = svg.text(g, txtx, txty, String(pid));
+            $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
+            if (pareto)
+            {
+                $(medlabel).addClass('pareto');
+            }
+
+            $(med).on( "click", function(e) {
+                console.log('click on median linear...');
+                e.stopPropagation();
+                //showProposalVotesLinear(this, svg, threshold); // humbug
+            });
+        });
+    }
+    */
 }
 
 function createResultsMap(svg)
@@ -1880,8 +2380,7 @@ function createResultsMap2D(svg) // bosh
 	{
 	    console.log("User not finished voting: don't show results triengle.");
 	}
-	
-	
+		
 	//console.log('createResultsMap2D called...');
 	var container_width = $(svg._container).innerWidth();
 	//console.log('container_width = ' + container_width);
@@ -2185,6 +2684,50 @@ function createVoteMapLinear(svg)
         console.log('no active vote coords');
     }
     
+    $(triangle).on( "mousemove", helpersMouseTrackerLinear);
+    
+    // Record vote on votemap
+    $(triangle).on( "click", triangleClickHandlerLinear );
+    
+    function triangleClickHandlerLinear(e) // bosh
+    {
+        console.log("triangleClickHandlerLinear called...");
+    
+        //var triangle = $('#vote_map');
+        var triangle = $(this);
+        //triangle.off( "click", triangleClickHandlerLinear);
+    
+        var vote = $('.vote.draggable');
+        if (vote && $(vote).hasClass('dragged'))
+        {
+            console.log("Dragged vote found. Ignore click *******");
+            $(vote).removeClass('dragged');
+            return;
+        }
+    
+        console.log('Linear voting map clicked!!!!! Recording vote...');
+    	var posX = $(this).offset().left;
+
+    	var cx;
+    	if (typeof $.browser.webkit == 'undefined')
+    	{
+    	    cx = e.pageX - posX - LINEAR_MAP_VOTE_WIDTH;
+    	}
+    	else
+    	{
+    	    cx = e.pageX - posX;
+    	}
+    	var svg = $('#modalvotesmap').svg('get');
+    	var dimensions = calculateLinearModalTriangleDimensions(svg);
+        var max_x = dimensions.width;
+
+    	// Endorse with normalised vote coordinates
+    	var n_cx = cx / max_x;
+    	var n_cy = 0.0;
+
+    	var ajax_call = proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal);
+    	$(triangle).data('add_vote_jqXHR', ajax_call);
+    }
     function helpersMouseTrackerLinear(e)
     {
         var posX = $(this).offset().left;
@@ -2220,56 +2763,16 @@ function createVoteMapLinear(svg)
     	$('#vubox').attr('height', vunderstand_val);
     }
     
-    $(triangle).on( "mousemove", helpersMouseTrackerLinear);
-    
-    function triangleClickHandlerLinear(e) // bosh
-    {
-        console.log("triangleClickHandlerLinear called...");
-        
-        //var triangle = $('#vote_map');
-        var triangle = $(this);
-        //triangle.off( "click", triangleClickHandlerLinear);
-        
-        var vote = $('.vote.draggable');
-        if (vote && $(vote).hasClass('dragged'))
-        {
-            console.log("Dragged vote found. Ignore click *******");
-            $(vote).removeClass('dragged');
-            return;
-        }
-        
-        console.log('Linear voting map clicked!!!!! Recording vote...');
-    	var posX = $(this).offset().left;
-
-    	var cx;
-    	if (typeof $.browser.webkit == 'undefined')
-    	{
-    	    cx = e.pageX - posX - LINEAR_MAP_VOTE_WIDTH;
-    	}
-    	else
-    	{
-    	    cx = e.pageX - posX;
-    	}
-    	var svg = $('#modalvotesmap').svg('get');
-    	var dimensions = calculateLinearModalTriangleDimensions(svg);
-        var max_x = dimensions.width;
-
-    	// Endorse with normalised vote coordinates
-    	var n_cx = cx / max_x;
-    	var n_cy = 0.0;
-
-    	var ajax_call = proposalsViewModel.mapEndorseWithIndex(n_cx, n_cy, voteMapViewModel.proposal);
-    	$(triangle).data('add_vote_jqXHR', ajax_call);
-    }
-    // Record vote on votemap
-    $(triangle).on( "click", triangleClickHandlerLinear );
-    
     $(triangle).on("mouseup", function(e)
     {
         console.log("triangle mouseup...");
-        var dragged_vote = $('.dragged');
+        var dragged_vote = $('.vote.dragged');
         console.log(dragged_vote.length + " dragged_votes found...");
-        dragged_vote.trigger("mouseup");
+        console.log("Trigger mousup on dragged vote");
+        var event = jQuery.Event( "mouseup" );
+        event.pageX = e.pageX;
+        event.pageY = e.pageY;
+        dragged_vote.trigger(e);
     });
 }
 
@@ -2439,52 +2942,6 @@ function createVoteMap(svg)
         console.log('no active vote coords');
     }
     
-    /*
-    $(triangle).on( "mouseup", function(e) {
-        $(this).off( "mousemove");
-        alert('mousemove listener off');
-    });*/
-    
-    function helpersMouseTracker(e)
-    {
-        var posX = $(this).offset().left;
-    	var posY = $(this).offset().top;
-
-    	var cx, cy;
-    	if (typeof $.browser.webkit == 'undefined')
-    	{
-    	    cx = e.pageX - posX - RADIUS;
-    	    cy = e.pageY - posY - RADIUS;
-    	}
-    	else
-    	{
-    	    cx = e.pageX - posX;
-    	    cy = e.pageY - posY;
-    	}
-    	
-    	//cx += triangle_offset_x;
-        //cy += triangle_offset_y;
-
-    	var max_x = $(svg._container).innerWidth();
-    	var max_y = $(svg._container).innerHeight();
-
-        var norm_cx = cx / max_x;
-    	var norm_cy = cy / max_y;
-
-    	var horizontal_width = 250;
-    	var vertical_height = 200;
-
-    	var agree_val = norm_cx * horizontal_width;
-    	var oppose_val = (1 - norm_cx) * horizontal_width;
-    	var understand_val = (1 - norm_cy) * horizontal_width;
-    	var vunderstand_val = norm_cy * vertical_height;
-
-    	$('#haobox').attr('width', oppose_val);
-    	$('#vubox').attr('height', vunderstand_val);
-    }
-    
-    $(triangle).on( "mousemove", helpersMouseTracker);
-    
     function triangleClickHandler(e) // bosh
     {
         console.log("triangleClickHandler called...");
@@ -2501,10 +2958,10 @@ function createVoteMap(svg)
         }
         
         var vote = $('.vote.active');
-        if (vote.length > 0 && vote.hasClass('dragged'))
+        
+        if (wasDragged(vote, e))
         {
-            console.log("******** Dragged vote found. Ignore click *******");
-            vote.removeClass('dragged');
+            console.log("******** Dragged vote found. Ignore click *******"); // fixer
             return;
         }
         
@@ -2546,12 +3003,71 @@ function createVoteMap(svg)
 		    $(triangle).on( "click", triangleClickHandler );
 	    });
     }
+
+    function helpersMouseTracker(e)
+    {
+        var posX = $(this).offset().left;
+    	var posY = $(this).offset().top;
+
+    	var cx, cy;
+    	if (typeof $.browser.webkit == 'undefined')
+    	{
+    	    cx = e.pageX - posX - RADIUS;
+    	    cy = e.pageY - posY - RADIUS;
+    	}
+    	else
+    	{
+    	    cx = e.pageX - posX;
+    	    cy = e.pageY - posY;
+    	}
+    	
+    	//cx += triangle_offset_x;
+        //cy += triangle_offset_y;
+
+    	var max_x = $(svg._container).innerWidth();
+    	var max_y = $(svg._container).innerHeight();
+
+        var norm_cx = cx / max_x;
+    	var norm_cy = cy / max_y;
+
+    	var horizontal_width = 250;
+    	var vertical_height = 200;
+
+    	var agree_val = norm_cx * horizontal_width;
+    	var oppose_val = (1 - norm_cx) * horizontal_width;
+    	var understand_val = (1 - norm_cy) * horizontal_width;
+    	var vunderstand_val = norm_cy * vertical_height;
+
+    	$('#haobox').attr('width', oppose_val);
+    	$('#vubox').attr('height', vunderstand_val);
+    }
+    
+    /*
+    $(triangle).on( "mouseup", function(e) {
+        $(this).off( "mousemove");
+        alert('mousemove listener off');
+    });*/
+    
+    $(triangle).on( "mousemove", helpersMouseTracker);
     
     // Record vote on votemap
     $(triangle).on( "click", triangleClickHandler );
 }
 
-// humbug
+// herebe
+function beginDraggingVoteResultsLinear(e)
+{
+    e.preventDefault();
+    //e.stopPropagation();
+    console.log("beginDraggingVoteResultsLinear: Mousedown on draggable results vote!!!!!");
+    if ($(this).hasClass('draggable'))
+    {
+        startDrag(this, e);
+        console.log("Add trackDraggableVote handler to triangle...");
+        var triangle = $('#results_triangle');
+        triangle.on( "mousemove", trackDraggableVoteResultsLinear);
+    }
+}
 // results triangle
 function beginDraggingVoteResults(e)
 {
@@ -2561,22 +3077,70 @@ function beginDraggingVoteResults(e)
     if ($(this).hasClass('draggable'))
     {
         $(this).addClass('dragged');
+        startDrag(this, e);
         console.log("Add trackDraggableVote handler to triangle...");
         var triangle = $('#results_triangle');
         triangle.on( "mousemove", trackDraggableVoteResults);
     }
 }
 
-// bosh
-function voteAfterDragResults(e)
+
+function startDrag(obj, e)
 {
-    e.preventDefault();
+    console.log("startDrag called...");
+    $(obj).data('dragstart', {'posx': e.pageX, 'posy': e.pageY}).addClass('dragged');
+    console.log("startDrag: X, Y: " + $(obj).data('dragstart').posx + ", " + $(obj).data('dragstart').posy);
+}
+function wasDragged(obj, e)
+{
+    console.log("wasDragged called...");
+    if (typeof $(obj).data('dragstart') == 'undefined')
+    {
+        console.log("wasDragged: data('dragstart') undefined!!!!!");
+        return false;
+    }
+    else
+    {
+        console.log("wasDragged: X, Y: " + $(obj).data('dragstart').posx + ", " + $(obj).data('dragstart').posy);
+        console.log("wasDragged: eX, eY: " + e.pageX + ", " + e.pageY);
+        console.log("Diff X: " + Math.abs($(obj).data('dragstart').posx - e.pageX));
+        console.log("Diff Y: " + Math.abs($(obj).data('dragstart').posy - e.pageY));
+        return Math.abs($(obj).data('dragstart').posx - e.pageX) > 2 || Math.abs($(obj).data('dragstart').posy - e.pageY) > 2;
+    }
+}
+function endDrag(obj, e)
+{
+    console.log("endDrag called...");
+    var was_dragged = wasDragged(obj, e);
+    $(obj).removeData('dragstart').removeClass('dragged');
+    return was_dragged;
+}
+
+
+// bosh
+function voteAfterDragResults(e) // stark
+{
+    //e.preventDefault();
     //e.stopPropagation();
     console.log("Mouseup on draggable vote!!!!!");
     var triangle = $('#results_triangle');
     triangle.off( "mousemove", trackDraggableVoteResults);
     
+    
+    var moved = endDrag(this, e);
+    if (!moved)
+    {
+        console.log("voteAfterDragResults: Mouse didn't move!");
+        return;
+    }
+    
     var vote = $('.vote.dragged');
+    console.log("voteAfterDragResults: " + vote.length + " dragged votes found");
+    if (vote.length == 0)
+    {
+        console.log("voteAfterDragResults: No dragged votes found!");
+        return;
+    }
     var cx = $(vote).attr('cx');
     var cy = $(vote).attr('cy');
     
@@ -2594,6 +3158,88 @@ function voteAfterDragResults(e)
 	var pid = vote.data('settings').pid;
 	
 	proposalsViewModel.resultsmapEndorseProposal(n_cx, n_cy, pid);
+}
+
+function voteAfterDragResultsLinear(e) // stark
+{
+    //e.preventDefault();
+    //e.stopPropagation();
+    console.log("voteAfterDragResultsLinear: Mouseup on draggable vote!!!!!");
+    var triangle = $('#results_triangle');
+    triangle.off( "mousemove", trackDraggableVoteResultsLinear);
+    
+    var vote = $('.vote.dragged');
+    
+    console.log("voteAfterDragResultsLinear: " + vote.length + " dragged votes found");
+    if (vote.length == 0)
+    {
+        console.log("voteAfterDragResultsLinear: No dragged votes found!");
+        return;
+    }
+    
+    var moved = endDrag(vote, e);
+    if (!moved)
+    {
+        console.log("voteAfterDragResultsLinear: Mouse didn't move - ignore... MMMMMMM"); // fixer
+        return;
+    }
+    
+    var cx = $(vote).attr('x1');
+    var svg = $('#resultstriangle').svg('get');
+    var dimensions = calculateTriangleDimensions(svg);
+    var max_x = dimensions.width;
+    
+    // Endorse with normalised vote coordinates
+	var n_cx = cx / max_x;
+	var n_cy = 0.0;
+	
+	var pid = vote.data('settings').pid;
+	
+	proposalsViewModel.resultsmapEndorseProposal(n_cx, n_cy, pid);
+}
+
+
+function trackDraggableVoteResultsLinear(e)
+{
+    console.log("trackDraggableVoteResultsLinear: mousemove on results triangle!!!!!");
+    var posX = $(this).offset().left;
+	var cx;
+	
+	if (typeof $.browser.webkit == 'undefined')
+	{
+	    cx = e.pageX - posX - LINEAR_MAP_VOTE_WIDTH;
+	}
+	else
+	{
+	    cx = e.pageX - posX;
+	}
+	
+	//var dimensions = getResultsMapDimensions();
+	var svg = $('#resultstriangle').svg('get');
+    var dimensions = calculateTriangleDimensions(svg);
+	var container_width = dimensions.width;
+	
+	var n_cx = cx / container_width;
+	
+	var fill_color = setMapColorLinear(n_cx);
+	var vote = $('.vote.dragged', svg.root());
+	if (vote.length == 0)
+	{
+	    console.log("trackDraggableVoteResultsLinear: NO VOTE FOUND !!!!");
+	}
+	else if (vote.length > 1)
+	{
+	    console.log("MORE THAN ONE VOTE FOUND !!!!");
+	}
+	else
+	{
+        $('.vote.dragged').attr('x1', cx).attr('x2', cx).attr('stroke', fill_color);
+    }
+    
+    var vote_label = $('.vote_label', svg.root()).filter(function() {
+		return $(this).data("settings").pid == vote.data('settings').pid;
+	});
+    $(vote_label).attr('x', cx);
 }
 
 function trackDraggableVoteResults(e)
@@ -2632,7 +3278,7 @@ function trackDraggableVoteResults(e)
 	var vote = $('.vote.dragged', svg.root());
 	if (vote.length == 0)
 	{
-	    console.log("NO VOTE FOUND !!!!");
+	    console.log("trackDraggableVoteResults: NO VOTE FOUND !!!!");
 	}
 	else if (vote.length > 1)
 	{
@@ -2673,12 +3319,13 @@ function trackDraggableVoteResults(e)
 function beginDraggingVoteLinear(e)
 {
     e.preventDefault();
-    e.stopPropagation();
-    console.log("Mousedown on draggable vote!!!!!");
+    //e.stopPropagation();
+    console.log("beginDraggingVoteLinear: Mousedown on draggable linear vote!!!!!");
     if ($(this).hasClass('draggable'))
     {
-        $(this).addClass('dragged');
-        console.log("Add trackDraggableVote handler to triangle...");
+        //$(this).addClass('dragged');
+        startDrag(this, e);
+        console.log("Add trackDraggableVoteLinear handler to triangle...");
         var triangle = $('#vote_map');
         triangle.on( "mousemove", trackDraggableVoteLinear);
     }
@@ -2686,11 +3333,12 @@ function beginDraggingVoteLinear(e)
 function beginDraggingVote(e)
 {
     e.preventDefault();
-    e.stopPropagation();
+    //e.stopPropagation();
     console.log("Mousedown on draggable vote!!!!!");
     if ($(this).hasClass('draggable'))
     {
-        $(this).addClass('dragged');
+        //$(this).addClass('dragged');
+        startDrag(this, e);
         console.log("Add trackDraggableVote handler to triangle...");
         var triangle = $('#vote_map');
         triangle.on( "mousemove", trackDraggableVote);
@@ -2701,12 +3349,20 @@ function voteAfterDragLinear(e)
 {
     console.log("voteAfterDragLinear called...");
     e.preventDefault();
-    e.stopPropagation();
+    //e.stopPropagation();
     console.log("Mouseup on draggable vote!!!!!");
     var triangle = $('#vote_map');
     $(triangle).off( "mousemove", trackDraggableVoteLinear);
+    var vote = $('.vote.dragged');
+    console.log("voteAfterDragLinear: " + vote.length + " dragged votes found");
     
-    var vote = $('.vote.draggable');
+    //if ($.clickMouseMoved() == false)
+    if (!endDrag(vote, e))
+    {
+        console.log("voteAfterDragLinear: Mouse didn't move - ignore... MMMMMMM"); // fixer
+        return;
+    }
+    
     var cx = $(vote).attr('x1');
     //cx -= triangle_offset_x;
     var svg = $('#modalvotesmap').svg('get');
@@ -2721,10 +3377,18 @@ function voteAfterDragLinear(e)
 function voteAfterDrag(e)
 {
     e.preventDefault();
-    e.stopPropagation();
+    //e.stopPropagation();
     console.log("Mouseup on draggable vote!!!!!");
     var triangle = $('#vote_map');
     $(triangle).off( "mousemove", trackDraggableVote);
+    
+    //if ($.clickMouseMoved() == false)
+    var moved = endDrag(this, e);
+    if (!moved)
+    {
+        console.log("voteAfterDrag: Mouse didn't move - ignore"); //fixer
+        return;
+    }
     
     var vote = $('.vote.draggable');
     var cx = $(vote).attr('cx');
@@ -2746,16 +3410,7 @@ function trackDraggableVoteLinear(e)
 {
     console.log("trackDraggableVoteLinear: mousemove on triangle!!!!!");
     var posX = $(this).offset().left;
-
 	var cx;
-	/*
-	var offset_x = 0, offset_y = 0;
-    var offsets = $('#modalvotesmap #vote_map').data('offsets');
-    if (typeof offsets != 'undefined')
-    {
-        offset_x = offsets.x;
-        offset_y = offsets.y;
-    }*/
 	
 	if (typeof $.browser.webkit == 'undefined')
 	{
@@ -2766,10 +3421,8 @@ function trackDraggableVoteLinear(e)
 	    cx = e.pageX - posX;
 	}
 	
-	//cx += triangle_offset_x;
-	
 	var svg = $('#modalvotesmap').svg('get');
-	var dimensions = calculateLinearModalTriangleDimensions(svg);
+	var dimensions = calculateTriangleDimensions(svg);
     var max_x = dimensions.width;
 	
 	var n_cx = cx / max_x;
