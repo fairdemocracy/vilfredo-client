@@ -6402,6 +6402,9 @@ td.green {
   margin: 0;
   padding: 0;
 }
+line.med.hidden {
+  display: none;
+}
 #resultstriangle {
   width: 100%;
   margin: 0;
