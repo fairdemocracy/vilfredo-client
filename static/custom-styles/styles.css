@@ -6409,11 +6409,17 @@ line.med.hidden,
 circle.med {
   fill: #BEBEBE;
 }
+line.med {
+  stroke: #BEBEBE;
+}
 circle.med_marker {
   fill: #7e7e7e;
 }
 circle.med.pareto {
   fill: #FFA500;
+}
+line.med.pareto {
+  stroke: #FFA500;
 }
 circle.med_marker.pareto {
   fill: #B77600;

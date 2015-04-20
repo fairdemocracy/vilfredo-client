@@ -585,6 +585,7 @@ function addMedian(svg, pid, coords) // bang
 
     //console.log("Draw result vote at (" + cx + ", " + cy +")");
 
+    /*
     var med_fill, med_selected_fill_color;
     if  (coords['dominated_by'] == 0)
     {
@@ -599,6 +600,7 @@ function addMedian(svg, pid, coords) // bang
     
     med_fill = MEDIAN_COLOR;
     med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+    */
     
     var title;
     var prop = proposalsViewModel.getProposal(pid);
@@ -612,10 +614,10 @@ function addMedian(svg, pid, coords) // bang
         title = 'Proposal ID ' + pid
     }
 
-    med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+    med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', title: title}); 
     $(med).data('settings', {'pid': pid});
 
-    if (coords['dominated_by'] == 0)
+    if (coords['pareto'] == 0)
     {
         $(med).addClass('pareto');
     }
@@ -1508,9 +1510,10 @@ function updateVoteLinear(vote, svg, votex, fill_color) // lanister
 	vote_label.animate({svgX : txtx}, 1000);
 }
 
-function updateMedianLinear(med, svg, medx) // lanister
+function updateMedianLinear(med, svg, medx, pareto) // lanister
 {
 	console.log("updateMedianLinear called...");
+	/*
 	var med_fill;
     if  (med.data('settings').pareto)
     {
@@ -1520,8 +1523,17 @@ function updateMedianLinear(med, svg, medx) // lanister
     {
         med_fill = MEDIAN_COLOR;
     }
-    
     med_fill = MEDIAN_COLOR;
+    */
+    
+    if (pareto)
+	{
+	    $(med).addClass('pareto');
+	}
+	else
+	{
+	    $(med).removeClass('pareto');
+	}
 	
 	// median
 	// Check if Median unchanged
@@ -1534,7 +1546,7 @@ function updateMedianLinear(med, svg, medx) // lanister
 	
 	var pid = $(med).data('settings').pid;
 	
-	$(med).animate({svgX1 : medx, svgX2 : medx, svgStroke: med_fill}, 1000);
+	$(med).animate({svgX1 : medx, svgX2 : medx}, 1000);
 	
 	// median label
 	var txtx = medx;
@@ -1688,7 +1700,7 @@ function updateResultsMapLinear() // lanister
         else
         {
             var medx = container_width * coords['median'].medx;
-            updateMedianLinear($(med), svg, medx);
+            updateMedianLinear($(med), svg, medx, coords['pareto']);
         }
 
         if (triangle.data('settings').mode == 'showProposalVotes' && pid == triangle.data('settings').pid)
@@ -1864,94 +1876,6 @@ function updateResultsMap2D() // loud
     });
 }
 
-function addMediansToResultsMapLinear(svg)
-{
-    var dimensions = calculateTriangleDimensions(svg);
-    var map_width = dimensions.width;
-    var resultsmap = $('#resultsmap')[0];
-    var g = svg.group(resultsmap, 'votes'); // mapgroup
-    //
-    // Add medians
-    //
-    $.each(questionViewModel.voting_data, function(pid, coords) 
-    {
-        if (!coords['median'])
-        {
-            return;
-        }
-    
-        if (questionViewModel.results_pf_only() && coords['dominated_by'] != 0)
-        {
-            return;
-        }
-    
-        console.log("pid is type " + typeof pid);
-
-        var votex = triangle_width * coords['median'].medx;
-        var pareto = coords['dominated_by'] == 0;
-
-        var med_fill, med_selected_fill_color;
-        if  (pareto)
-        {
-            med_fill = MEDIAN_WINNER_COLOR;
-            med_selected_fill_color = MEDIAN_WINNER_SELECTED_COLOR;
-        }
-        else
-        {
-            med_fill = MEDIAN_COLOR;
-            med_selected_fill_color = MEDIAN_SELECTED_COLOR;
-        }
-
-        med_fill = MEDIAN_COLOR;
-        med_selected_fill_color = MEDIAN_SELECTED_COLOR;
-
-        // var title ='Proposal ' + pid;
-        var title;
-        var prop = proposalsViewModel.getProposal(pid);
-
-        //title = 'Coords (' + cx + ', ' + cy + ')';
-
-        if (prop)
-        {
-             title = prop.title();
-        }
-        else
-        {
-            title = 'Proposal ID ' + pid
-        }
-
-        var cursor_type = 'arrow';
-        var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
-        var y2 = LINEAR_RESULTS_MAP_OFFSET_Y+LINEAR_MAP_HEIGHT;
-
-        med = svg.line(g, votex, y1, votex, y2, {class: 'med', stroke: med_fill, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
-    
-        //med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
-        $(med).data('settings', {'pid': parseInt(pid), 'pareto': pareto});
-
-        if (pareto)
-        {
-            $(med).addClass('pareto');
-        }
-
-        // Display proposal ID
-        var txtx = votex;
-        var txty = LINEAR_RESULTS_MAP_OFFSET_Y - 20;
-        var medlabel = svg.text(g, txtx, txty, String(pid));
-        $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
-        if (pareto)
-        {
-            $(medlabel).addClass('pareto');
-        }
-
-        $(med).on( "click", function(e) {
-            console.log('click on median linear...');
-            //e.stopPropagation();
-            showProposalVotesLinear(this, svg); // humbug
-        });
-    });
-}
-
 function resultsShowMediansOnly()
 {
     var triangle = $('#results_triangle');
@@ -2014,8 +1938,9 @@ function addMedianLinear(svg, pid, coords) // lanister
     var dimensions = calculateTriangleDimensions(svg);
     var triangle_width = dimensions.width;
     var medx = triangle_width * coords['median'].medx;
-    var pareto = coords['dominated_by'] == 0;
+    var pareto = coords['pareto'];
 
+    /*
     var med_fill, med_selected_fill_color;
     if  (pareto)
     {
@@ -2026,10 +1951,11 @@ function addMedianLinear(svg, pid, coords) // lanister
     {
         med_fill = MEDIAN_COLOR;
         med_selected_fill_color = MEDIAN_SELECTED_COLOR;
-    }
+    } 
 
     med_fill = MEDIAN_COLOR;
     med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+    */
 
     var title;
     var prop = proposalsViewModel.getProposal(pid);
@@ -2193,7 +2119,7 @@ function createResultsMapLinear(svg) // lanister
         var y1 = LINEAR_RESULTS_MAP_OFFSET_Y;
         var y2 = LINEAR_RESULTS_MAP_OFFSET_Y + LINEAR_MAP_HEIGHT;
 
-        med = svg.line(g, medx, y1, medx, y2, {class: 'med', stroke: med_fill, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
+        med = svg.line(g, medx, y1, medx, y2, {class: 'med', strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: title});
         if (pareto)
         {
             $(med).addClass('pareto');
