@@ -912,6 +912,7 @@ function showProposalVotes(med, svg) // loud
     var pid = $(med).data('settings').pid;
     var settings = {'mode': 'showProposalVotes', 'pid': pid};
     triangle.data('settings', settings);
+    $(med).addClass('selected');
     
     var dimensions = calculateTriangleDimensions(svg);
     var container_width = dimensions.width;
@@ -950,6 +951,11 @@ function showProposalVotes(med, svg) // loud
     // loud
     var med_marker = svg.circle(g, parseInt($(med).attr('cx')), parseInt($(med).attr('cy')), RADIUS+1, {class: 'allvotes', fill: med_selected_fill_color, title: $(med).attr('title')});
     $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
+    
+    if ($(med).hasClass('pareto'))
+    {
+        $(med_marker).addClass('pareto');
+    }
 
     $(med_marker).on( "click", function(e) {
         //e.stopPropagation();
@@ -1060,7 +1066,7 @@ function showUserVotes(svg, userid, username)
     var user_votes_label = svg.text(g, txtx, txty, label_text, {fontSize: '1.3em'});
     $(user_votes_label).data('settings', {'userid': parseInt(userid), 'username': username}).addClass('user_votes_label');
 
-    var med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+    //var med_selected_fill_color = MEDIAN_SELECTED_COLOR;
 
     // snow
     //var container_width = $(svg._container).innerWidth();
@@ -1090,8 +1096,6 @@ function showUserVotes(svg, userid, username)
         // Draw line to connect vote with median
         var medline = svg.line(g, cx, cy, medx, medy, {strokeWidth: 1, stroke: fill_color});
         $(medline).data('settings', {'userid': parseInt(userid), 'pid': parseInt(pid)}).addClass('medline');
-        
-        
 
         var prop_title;
         var prop = proposalsViewModel.getProposal(pid);
@@ -1111,10 +1115,10 @@ function showUserVotes(svg, userid, username)
             showProposalVotes(this, svg);
         });*/
         
-        
+        /*
         if (draw_marker)
-        {
-            var med_marker = svg.circle(g, medx, medy, RADIUS+1, {fill: med_selected_fill_color, title: prop_title});
+        {*/
+            var med_marker = svg.circle(g, medx, medy, RADIUS+1, {title: prop_title});
             $(med_marker).data('settings', {'pid': pid}).addClass("med_marker");
     		{
     		    $(med_marker).on( "click", function(e) {
@@ -1127,7 +1131,7 @@ function showUserVotes(svg, userid, username)
             	    }
                 });
             }
-        }
+       // }
         
         //console.log("Create vote at " + cx + ', ' + cy);
         vote = svg.circle(g, cx, cy, RADIUS+1, {class: 'alluservotes', fill: fill_color, title: 'User ' + userid}); 
@@ -1540,9 +1544,18 @@ function updateMedianLinear(med, svg, medx) // lanister
 	medlabel.animate({svgX : txtx}, 1000);
 }
 
-function updateMedian(med, svg, cx, cy) // loud
+function updateMedian(med, svg, cx, cy, pareto) // loud
 {
 	console.log("updateMedian called...");
+	
+	if (pareto)
+	{
+	    med.addClass('pareto');
+	}
+	else
+	{
+	    med.removeClass('pareto');
+	}
 	
 	var med_fill, med_selected_fill_color;
     if  (med.data('settings').pareto)
@@ -1600,6 +1613,16 @@ function updateMedian(med, svg, cx, cy) // loud
     {
         console.log("updateMedian: med_marker " + pid + " not found!!!");
     }
+    
+    if (pareto)
+	{
+	    med_marker.addClass('pareto');
+	}
+	else
+	{
+	    med_marker.removeClass('pareto');
+	}
+	
     $(med_marker).animate({svgCx : cx, svgCy : cy}, 1000);
 }
 
@@ -1777,9 +1800,10 @@ function updateResultsMap2D() // loud
         }
         else
         {
+            
             var med_cx = container_width * coords['median'].medx;
             var med_cy = container_height * coords['median'].medy;
-            updateMedian($(med), svg, med_cx, med_cy); // loud
+            updateMedian($(med), svg, med_cx, med_cy, coords['pareto']); // loud
         }
 
         if (triangle.data('settings').mode == 'showProposalVotes' && pid == triangle.data('settings').pid)
@@ -2302,7 +2326,7 @@ function createResultsMap2D(svg) // loud
         var pareto = coords['dominated_by'] == 0;
 
         //console.log("Draw result vote at (" + cx + ", " + cy +")");
-
+        /*
         var med_fill, med_selected_fill_color;
         if  (pareto)
         {
@@ -2317,6 +2341,7 @@ function createResultsMap2D(svg) // loud
     
         med_fill = MEDIAN_COLOR;
         med_selected_fill_color = MEDIAN_SELECTED_COLOR;
+        */
 
         // var title ='Proposal ' + pid;
         var title;
@@ -2333,7 +2358,7 @@ function createResultsMap2D(svg) // loud
             title = 'Proposal ID ' + pid
         }
 
-        med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', fill: med_fill, title: title}); 
+        med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', title: title}); 
         $(med).data('settings', {'pid': parseInt(pid), 'pareto': coords['dominated_by'] == 0});
 
         if (pareto)
