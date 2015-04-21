@@ -709,7 +709,7 @@ function addVote(svg, pid, coords, userid)
         showUserVotes(svg, userid, coords.voters[userid].username);
     })
     
-    if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+    if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
     {
         console.log("Make draggable for user id " + userid);
         $(vote).addClass('draggable').addClass('vote');
@@ -821,7 +821,7 @@ function showUserVotesLinear(clicked, svg, userid, username) // lanister
             }
         }); */
         
-        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+        if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
             console.log("Make draggable for user id " + userid);
             $(vote).addClass('draggable').addClass('vote');
@@ -888,7 +888,7 @@ function showProposalVotesLinear(med, svg) // lanister
             showUserVotesLinear(this, svg, userid, coords.username);
         })
         
-        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+        if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
             console.log("Make draggable for user id " + userid);
             $(vote).addClass('draggable').addClass('vote');
@@ -995,7 +995,7 @@ function showProposalVotes(med, svg) // loud
             showUserVotes(svg, userid, coords.username);
         })
         
-        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+        if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
             console.log("Make draggable for user id " + userid);
             $(vote).addClass('draggable').addClass('vote');
@@ -1158,7 +1158,7 @@ function showUserVotes(svg, userid, username)
             }
         });
         
-        if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+        if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
             console.log("Make draggable for user id " + userid);
             $(vote).addClass('draggable').addClass('vote');
@@ -1918,7 +1918,7 @@ function addVoteLinear(svg, pid, userid, coords) // lanister
         showUserVotesLinear(this, svg, userid, coords.username);
     })
     
-    if (questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
+    if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
     {
         console.log("Make draggable for user id " + userid);
         $(vote).addClass('draggable').addClass('vote');
@@ -2160,7 +2160,7 @@ function createResultsMap2D(svg) // loud
 {
 	console.log('createResultsMap2D V2 called...');
 	
-	if (proposalsViewModel.votedAll() == false)
+	if (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll() == false)
 	{
 	    console.log("User not finished voting: don't show results triengle.");
 	}

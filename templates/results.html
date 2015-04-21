@@ -72,32 +72,7 @@
 		</div>
 		<!-- final_results end -->
 
-		
-		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll)">
-				
-			<!--
-			<div class="btn-group" role="group">
-	 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-		      <span data-bind="text: show_pareto_results"></span>
-		      <span class="caret"></span>
-		    </button>
-		    <ul class="dropdown-menu" role="menu">
-		      <li><a data-bind="click: $root.select_pf_only.bind($data, false)" href="#">All Proposals</a></li>
-		      <li><a data-bind="click: $root.select_pf_only.bind($data, true)" href="#">Pareto Only</a></li>
-		    </ul>
-		   </div>
-			<br><br>
-			-->
-	
-			<h2>Results Map</h2>
-			<p>The results map show the <strong>median</strong> vote for each proposal in grey. Click on a median point to display the actual votes from each paticipant.</p>
-		
-			<div id="resultstriangle"></div>
-			<!-- resultstriangle table end -->
-		</div> 
-		<!-- results_map end -->
-		
-		
+
 		
 		<!-- Graphs -->
 		<div id="voting_graphs" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'writing' && generation() > 1)">
@@ -191,6 +166,31 @@
 		-->
 		
 		
+			<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'results')">
+				
+			<!--
+			<div class="btn-group" role="group">
+	 	   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+		      <span data-bind="text: show_pareto_results"></span>
+		      <span class="caret"></span>
+		    </button>
+		    <ul class="dropdown-menu" role="menu">
+		      <li><a data-bind="click: $root.select_pf_only.bind($data, false)" href="#">All Proposals</a></li>
+		      <li><a data-bind="click: $root.select_pf_only.bind($data, true)" href="#">Pareto Only</a></li>
+		    </ul>
+		   </div>
+			<br><br>
+			-->
+	
+			<h2>Final Results Map</h2>
+			<p>The results map below show the <strong>median</strong> vote for each proposal in grey and the winning proposals in orange. Click on a median point to display the actual votes from each participant.</p>
+		
+			<div id="resultstriangle"></div>
+			<!-- resultstriangle table end -->
+		</div> 
+		<!-- results_map end -->
+		
+		
 	</div><!-- /container -->
 
 
@@ -230,22 +230,28 @@
 
 	
 	<!-- View Proposal Modal -->
-	<div data-bind="with: proposal" id="viewproposal" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="ViewProposalBox" aria-hidden="true">
+	<div data-bind="with: proposal" id="viewproposal" class="modal fade" tabindex="=1" role="dialog" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div data-bind="css: endorse_type" class="vpheader modal-header">
-			<div data-bind="click: openvotemap.bind($data)" class="votebox"></div>
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="vptitle modal-title" data-bind="text: title"></h4>
-			<div class="controls">
-			<a data-bind="click: showProposalContent"><span class="glyphicon glyphicon-file"></span> Proposal</a>&nbsp;&nbsp;&nbsp;
-			<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
-			<a data-bind="click: showProposalQuestions"><span class="glyphicon glyphicon-question-sign"></span> Questions</a>
-			<!-- ko if: questionViewModel.phase() == 'voting' -->
-			<!-- /ko -->
-			<!-- ko if: $data.author_id() != currentUserViewModel.userid() && questionViewModel.phase() == 'voting' -->
-			<!-- /ko -->
-			</div> <!-- controls -->
+		  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		
+			<div class="row">	
+				<div class="col-md-9">
+					<div class="row">
+						<h4 class="vptitle modal-title"><span data-bind="text: id"></span>: <span data-bind="text: title"></span></h4>
+					</div>
+					<div class="row">
+						<div class="controls">
+						<a data-bind="click: showProposalContent"><span class="glyphicon glyphicon-file"></span> Proposal</a>&nbsp;&nbsp;&nbsp;
+						<a data-bind="click: showProposalComments"><span class="glyphicon glyphicon-comment"></span> Comments</a>&nbsp;&nbsp;&nbsp;
+						<a data-bind="click: showProposalQuestions"><span class="glyphicon glyphicon-question-sign"></span> Questions</a>
+						</div> <!-- controls -->
+								</div>
+				</div>
+					<div data-bind="click: openvotemap.bind($data)" class="votebox col-md-3"></div>
+			</div>
+						
 	      </div><!-- modal-header -->
 	      <div id="viewproposalbody" class="modal-body">
 		
@@ -253,43 +259,55 @@
 	
 		<div>				
 			<div id="propdetails">
-				<div data-bind="html: blurb">Hmm... This proposal has no content.</div>
+				<!-- ko if: questionViewModel.question_type() == 1 -->
+					<span data-bind="html: blurb"></span>  
+					<!-- /ko -->
+					<!-- ko if: questionViewModel.question_type() == 2 -->
+					<img data-bind="attr: { src: image_url() }" width="200px" height="200px"/> 
+					<!-- /ko -->
 			</div>
 			<div id="showcomments">
 				<div class="col-md-6">
 					<h4>Points For</h4>
-					<div class="comments">
+					<div class="comments for">
 					<!-- ko foreach: comments -->
 					<!-- ko if: comment_type() == 'for' -->
 					<div class="comment for">
-						<span data-bind="html: comment"></span>
+						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 						</div>
 					</div>					
 					<!-- /ko -->
 					<!-- /ko -->
+					
+					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: comment_for" id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'for')" id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</span>
+					
 					</div>
-					<!-- for comments end bang -->
+					<!-- for comments end -->
 				
 				</div>
 				<div class="col-md-6">
 					<h4>Points Against</h4>
-					<div class="comments">
+					<div class="comments against">
 					<!-- ko foreach: comments -->
 					<!-- ko if: comment_type() == 'against' -->
 					<div class="comment against">
-						<span data-bind="html: comment"></span>
+						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 						</div>
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
+					
+					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: comment_against" id="inputAgainstComment" class="form-control" rows="2" placeholder="Point Against"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'against')" id="inputAgainstCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</span>
 					</div>
 				</div>
 			</div> 
@@ -308,27 +326,26 @@
 					<div class="qabox row">
 						<div class="col-md-6">
 							<div class="comment question">
-								<span data-bind="html: comment"></span>
+								<div data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
 								<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-6 ans">
 							<!-- ko if: $parent.getAnswerObject(id) -->
 							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
-								<span data-bind="html: $data.comment"></span>
+								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
 								<button data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like</button>
 								</div>
 							</div>
 							<!-- /ko -->
-							
-							
+															
 							<!-- ko ifnot: $parent.getAnswerObject(id) -->
 							
-							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id -->
-							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment" class="form-control" rows="3" placeholder="Answer Question"></textarea>
+							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id && questionViewModel.phase() == 'voting'-->
+							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment form-control" rows="3" placeholder="Answer Question"></textarea>
 							<button data-bind="click: function() { $root.addcommentanswer(id()) }" type="button" class="btn btn-default btn-xs">answer</button>
 							<!-- /ko -->
 							
@@ -346,8 +363,10 @@
 					<!-- /ko -->
 					<div class="qabox row">
 					<div class="col-md-6">
+					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: question" id="inputQuestionComment" class="form-control" rows="2" placeholder="Question"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'question')" id="inputQuestionCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
+					</span>
 					</div>
 					<div class="col-md-6"></div>
 					</div>
@@ -448,7 +467,8 @@
 		$.when(currentUserViewModel.loadUser(), 
 			   questionViewModel.fetchQuestion(),
 			   proposalsViewModel.fetchPareto(),
-			   questionViewModel.fetchFinalResults()).done(function()
+			   questionViewModel.fetchFinalResults(),
+			   questionViewModel.fetchVotingData()).done(function()
 		{
 			console.log('User and question loaded...');
 			$('.question-view, .current-proposals').show();
@@ -509,6 +529,7 @@
 			if (questionViewModel.phase() == 'results')
 			{
 				console.log("Welcome to the results page...");
+				$('#resultstriangle').svg({onLoad: createResultsMap});
 			}
 			else
 			{
@@ -605,7 +626,7 @@
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
 		
 		//ko.applyBindings(questionViewModel, $('#participationtable')[0]);
-		ko.applyBindings(questionViewModel, $('#results_map')[0]);
+		//ko.applyBindings(questionViewModel, $('#results_map')[0]);
 		ko.applyBindings(questionViewModel, $('#voting_graphs')[0]);
 		
 		ko.applyBindings(questionViewModel, $('#goto_btn')[0]);
