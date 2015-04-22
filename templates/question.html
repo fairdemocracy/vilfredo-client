@@ -131,7 +131,7 @@
 		<br>
 		<div class="panel question-info">
 			<div class="well">
-				<span class="blurb" data-bind="html: blurb"></span>
+				<span class="blurb" data-bind="html: convertNewlines($data.blurb())"></span>
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>

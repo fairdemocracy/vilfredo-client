@@ -115,7 +115,10 @@ function gotomain()
 // knockout html binding should do this
 function convertNewlines(str)
 {
-    return str.replace(/\r?\n/g, '<br>');
+    if (str != undefined)
+        return str.replace(/\r?\n/g, '<br>');
+    else
+        return 'No text found';
 }
 
 function updateProgress(evt) 
