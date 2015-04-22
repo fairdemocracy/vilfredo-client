@@ -77,19 +77,19 @@
 	
 	<!-- ko if: questionViewModel.phase() == 'voting' -->
 	 <!-- ko if: participant_count() > 1 -->
-	  <!-- ko if: completed_voter_count() < 2 && completed_voter_count() < participant_count() -->
+	  <!-- ko if: completed_voter_count() < RESULTS_VOTING_MIN_VOTERS && completed_voter_count() < participant_count() -->
 	  <div class="alert alert-info alert-dismissible" role="alert">
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	  <p>Once a minimum of 2 participants have finished voting you can move the question to the results phase or to the next generation. Try to get everyone to vote.</p>
+	  <p>Once a minimum of <span data-bind="text: RESULTS_VOTING_MIN_VOTERS"></span> participant(s) have finished voting you can move the question to the results phase or to the next generation. Try to get everyone to vote.</p>
 	   </div>
 	<!-- /ko -->
-	<!-- ko if: completed_voter_count() >= 2 && completed_voter_count() < participant_count() -->
+	<!-- ko if: completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && completed_voter_count() < participant_count() -->
 	<div class="alert alert-success alert-dismissible" role="alert">
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	  <p>Once a minimum of 2 participants have finished voting you can move the question to the results phase or to the next generation. Try to get everyone to vote.</p>
+	  <p>Once a minimum of <span data-bind="text: RESULTS_VOTING_MIN_VOTERS"></span> participant(s) have finished voting you can move the question to the results phase or to the next generation. Try to get everyone to vote.</p>
 	   </div>
 	<!-- /ko -->
-	<!-- ko if: completed_voter_count() >= 2 && completed_voter_count() == participant_count() -->
+	<!-- ko if: completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && completed_voter_count() == participant_count() -->
 	<div class="alert alert-success alert-dismissible" role="alert">
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	  <p>Congratulations! Everyone has voted! You can now move to results or to the next generation.</p>
