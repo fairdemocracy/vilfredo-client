@@ -6458,6 +6458,10 @@ circle.med_marker.pareto {
 .partial2full {
   color: blue;
 }
+#fullquestionblurb .question_text {
+  overflow: auto;
+  height: 300px;
+}
 .keyplayer {
   margin: 10px auto;
   background-color: #E0EEEE;
@@ -6564,6 +6568,9 @@ circle.med_marker.pareto {
 }
 .panel.oppose > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #ebccd1;
+}
+.select_comment button {
+  color: #d3d3d3;
 }
 .select_comment.supports button {
   color: #ffffff;

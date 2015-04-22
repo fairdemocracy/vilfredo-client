@@ -600,7 +600,7 @@
 							<div class="comment question">
 								<div data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-								<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree</button>
+								<button title="I have the same question" data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs"> <span class="glyphicon glyphicon-ok"></span> </button>
 								</div>
 							</div>
 						</div>
