@@ -893,16 +893,15 @@
 			{
 				$('head').append( template );
 			});
-			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( data ) 
+			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( template ) 
 			{
-				$( "#navbar" ).html( data );
+				$( "#navbar" ).html( template );
 				ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
 				$('.home').attr('href', VILFREDO_URL);
-				$('.navbar-brand').attr('href', VILFREDO_URL);
 			});
-			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( data ) 
+			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( template ) 
 			{
-				$( "#footer" ).html( data );
+				$( "#footer" ).html( template );
 				ko.applyBindings(currentUserViewModel, $('#footer')[0]);
 			});
 			
@@ -924,6 +923,8 @@
 					registerViewModel().clear();
 				});
 			});
+			
+			
 			
 			$.get( VILFREDO_URL + "/static/templates/participants.template.html", function( template ) 
 			{
@@ -1016,6 +1017,8 @@
 		
 		$('#viewproposal').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
+			viewProposalViewModel.displayProposalContent();
+			
 			if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
 			{
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle_b.svg'});
@@ -1032,7 +1035,11 @@
 			   default:
 			       break;
 			}
-		})
+		});
+		$('#viewproposal').on('hidden.bs.modal', function () {
+			console.log('viewproposal hidden...');
+			viewProposalViewModel.reset();
+		});	
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
 			//console.log('votemapwindow modal shown...');
@@ -1044,17 +1051,17 @@
 			{
 				$('#modalvotesmap').svg({onLoad: createVoteMapLinear}); 
 			}
-		})
+		});
 		
 		$('#votemapwindow').on('hide.bs.modal', function() {
 			console.log('votemapwindow modal about to close, destroy map...');
 			$('#modalvotesmap').svg('destroy');
 			$('#votemap-thisprop').html('');
-		})
+		});
 		
 		$('#fullt_text').on('hide.bs.modal', function() {
 			$("#full_text .modal-body").html('');
-		})
+		});
 		
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 		
@@ -1109,14 +1116,6 @@
 			$(this).find('.show3waytriangle').svg('destroy');
 		});
 		
-		$('#viewproposal').on('hidden.bs.modal', function () {
-  			console.log('viewproposal hidden...');
-			viewProposalViewModel.reset();
-		});	
-		$('#viewproposal').on('shown.bs.modal', function () {
-			viewProposalViewModel.displayProposalContent();
-		});
-		
 		$('#editproposal').on('shown.bs.modal', function () {
 			$("#inputEditProposalBlurb, #inputEditProposalAbstract, #inputEditProposalTitle").trigger('setcharcount');
 		});
@@ -1141,10 +1140,11 @@
 			}
 		});*/
 		
+		/*
 		$('#viewproposal').on('shown.bs.modal', function(e) {
 			$(this).find("textarea").val('');
 		});
-		
+		*/
 		
 		//
 		// comment boxes
