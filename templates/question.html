@@ -360,7 +360,7 @@
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
 					
-					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
+					<div data-bind="click: $parent.openvotemap.bind($data), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
 			</div>
@@ -411,7 +411,7 @@
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
 
-					<div data-bind="click: $parent.openvotemap.bind($data, $index()), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
+					<div data-bind="click: $parent.openvotemap.bind($data), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
 			</div>

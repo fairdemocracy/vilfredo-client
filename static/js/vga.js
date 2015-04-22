@@ -4885,6 +4885,7 @@ function EditProposalViewModel()
 function ViewProposalViewModel()
 {
 	var self = this;
+	self.proposal;
 	self.id = ko.observable();
 	self.title = ko.observable();
 	self.blurb = ko.observable();
@@ -5262,16 +5263,16 @@ function ViewProposalViewModel()
 		self.index = index;
 	}
 
-	self.openvotemap = function(proposal)
+	
+	self.openvotemap = function() // ViewProposalViewModel
 	{
-		console.log("ViewProposalViewModel.openvotemap called with proposal " + proposal.id());
 		if (questionViewModel.phase() != 'voting') return;
-		var index = proposalsViewModel.getProposalIndex(proposal.id()); // booms
-		voteMapViewModel.proposal = proposal;
-		voteMapViewModel.proposal_index(index);
-		voteMapViewModel.proposal_id(proposal.id());
-		voteMapViewModel.endorse_type(proposal.endorse_type());
-		$('#votemap-thisprop').html(proposal.title());
+		//var index = proposalsViewModel.getProposalIndex(proposal.id()); // booms
+		voteMapViewModel.proposal = self.proposal;
+		//voteMapViewModel.proposal_index(index);
+		voteMapViewModel.proposal_id(self.proposal.id());
+		voteMapViewModel.endorse_type(self.proposal.endorse_type());
+		$('#votemap-thisprop').html(self.proposal.title());
 		$('#votemapwindow').modal('show');
 	}
 
@@ -5785,11 +5786,11 @@ function ProposalsViewModel()
 	    index = self.fetchIndex(id);
 	}
 
-	self.openvotemap = function(index, proposal)
+	self.openvotemap = function(proposal) // ProposalsViewModel
 	{
-		console.log("ProposalsViewModel.openvotemap called with index " + index + ' and proposal ' + proposal.id());
-		voteMapViewModel.proposal = proposal;
-		voteMapViewModel.proposal_index(index);
+		console.log("ProposalsViewModel.openvotemap called for proposal " + proposal.id());
+		voteMapViewModel.proposal = proposal; // booms
+		//voteMapViewModel.proposal_index(index);
 		voteMapViewModel.proposal_id(proposal.id());
 		voteMapViewModel.endorse_type(proposal.endorse_type());
 		$('#votemap-thisprop').html(proposal.title());
