@@ -1243,7 +1243,7 @@ function resetResultsMap()
 }
 
 
-// haha
+// hound
 function redoResultsMap()
 {
     console.log('redoResultsMap called...');
@@ -1253,12 +1253,6 @@ function redoResultsMap()
 	    {
 	        console.log("redoResultsMap: call updateResultsMap...");
 	        updateResultsMap();
-	    }
-	    else
-	    {
-	        //var svg = $('#resultstriangle').svg('get');
-            //createResultsMap(svg);
-            $('#resultstriangle').svg({onLoad: createResultsMap});
 	    }
     });
 }
@@ -2410,7 +2404,7 @@ function createVoteMapLinear(svg)
     {
         if (isNaN(proposal.mapx()) || isNaN(proposal.mapy()))
         {
-            console.log('no map coords');
+            console.log('no map coords'); // createVoteMapLinear
             return true;
         }
         
@@ -2653,7 +2647,7 @@ function createVoteMap(svg)
     {
         if (isNaN(proposal.mapx()) || isNaN(proposal.mapy()))
         {
-            console.log('no map coords');
+            console.log('no map coords');   // createvotemap
             return true;
         }
         
@@ -2702,7 +2696,7 @@ function createVoteMap(svg)
     });
     // Add active vote last
     //var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()]; // don't use index!!!
-    var proposal = voteMapViewModel.proposal; 
+    var proposal = voteMapViewModel.proposal; // booms
     
     if (isNaN(proposal.mapx()) == false && isNaN(proposal.mapy()) == false)
     {
@@ -5265,7 +5259,7 @@ function ViewProposalViewModel()
 
 	
 	self.openvotemap = function() // ViewProposalViewModel
-	{
+	{ 
 		if (questionViewModel.phase() != 'voting') return;
 		//var index = proposalsViewModel.getProposalIndex(proposal.id()); // booms
 		voteMapViewModel.proposal = self.proposal;
