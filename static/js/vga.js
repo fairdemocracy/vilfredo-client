@@ -139,7 +139,7 @@ function updateProgress(evt)
     }
 }
 
-function displayCommentText(str, len)
+function displayCommentText(str, len) // king
 {
     var len = (len == undefined) ? MAX_COMMENT_DISAPLAY_CHARS : len;
     return (str.length <= len) ? str : str.substr(0, len) + '...' + ' ( <a>read more</a> )';
@@ -149,7 +149,7 @@ function viewFullText(item)
 {
     if (item.comment().length > MAX_COMMENT_DISAPLAY_CHARS)
     {
-        $("#full_text .modal-body").html(item.comment());
+        $("#full_text .modal-body").html(item.comment().replace(/\r?\n/g, '<br>'));
         $("#full_text").modal('show');
     }
 }
@@ -5351,7 +5351,7 @@ function ViewProposalViewModel()
 		  		var supporters = JSON.parse(data.comments[i].supporters)
 				fetched_comments.push({
 		      		id: ko.observable(data.comments[i].id),
-					comment: ko.observable(data.comments[i].comment.replace(/\r?\n/g, '<br>')),
+					comment: ko.observable(data.comments[i].comment), // king
 		      		comment_type: ko.observable(data.comments[i].comment_type),
 		      		created: ko.observable(data.comments[i].created),
 					reply_to: ko.observable(data.comments[i].reply_to),
@@ -6149,7 +6149,7 @@ function ProposalsViewModel()
 				
 				if (proposalsViewModel.votedAll())
 				{
-				    redoResultsMap(); // king
+				    redoResultsMap();
 				}
 				
 				questionViewModel.fetchQuestion();
