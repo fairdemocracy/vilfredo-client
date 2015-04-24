@@ -2438,7 +2438,7 @@ function createVoteMapLinear(svg)
         $(label).data('settings', {'pid': proposal.id()});
     });
     // Add active vote last
-    var proposal = proposalsViewModel.proposals()[voteMapViewModel.proposal_index()]; 
+    var proposal = voteMapViewModel.proposal; 
 
     if (isNaN(proposal.mapx()) == false && isNaN(proposal.mapy()) == false)
     {
