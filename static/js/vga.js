@@ -1257,6 +1257,10 @@ function redoResultsMap()
 	        console.log("redoResultsMap: call updateResultsMap...");
 	        updateResultsMap();
 	    }
+	    else
+	    {
+	        $('#resultstriangle').svg({onLoad: createResultsMap});
+	    }
     });
 }
 
@@ -6140,7 +6144,7 @@ function ProposalsViewModel()
 				
 				if (proposalsViewModel.votedAll())
 				{
-				    redoResultsMap();
+				    redoResultsMap(); // king
 				}
 				
 				questionViewModel.fetchQuestion();
