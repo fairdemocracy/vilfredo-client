@@ -473,7 +473,7 @@
 		{
 			console.log('loadUser completed...');
 			
-			currentUserViewModel.fetchNewInvites();
+			//currentUserViewModel.fetchNewInvites();
 			
 			// Load Templates
 			//
@@ -529,13 +529,6 @@
 				$('body').append( template )
 				ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]);
 			});
-			
-			
-			if (currentUserViewModel.isLoggedIn())
-			{
-				console.log("User logged in: call fetchQuestions");
-				questionsViewModel.fetchQuestions();
-			}
 			
 			checkVGAMessages();
 			

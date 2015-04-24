@@ -3914,9 +3914,12 @@ function CurrentUserViewModel()
 			self.username(data.user.username);
 			self.avatar_url(data.user.avatar_url)
 
-			if (typeof(questionsViewModel) != 'undefined')
+			if (currentUserViewModel.isLoggedIn())
 			{
-			    questionsViewModel.fetchQuestions();
+			    if (questionsViewModel != undefined)
+		    	{
+    			    questionsViewModel.fetchQuestions();
+    			}
 			    currentUserViewModel.fetchNewInvites();
 			}
 
