@@ -3916,12 +3916,14 @@ function CurrentUserViewModel()
 
 			if (currentUserViewModel.isLoggedIn())
 			{
-			    if (questionsViewModel != undefined)
+			    if (typeof(questionsViewModel) != 'undefined')
 		    	{
     			    questionsViewModel.fetchQuestions();
     			}
 			    currentUserViewModel.fetchNewInvites();
 			}
+			
+
 
 			if (proposalsViewModel)
 			{
