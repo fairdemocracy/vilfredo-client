@@ -33,7 +33,17 @@ var VILFREDO_API_URL = VILFREDO_URL;
 var ALGORITHM_VERSION = 2;
 
 // radius of circle representing a vote
-var RADIUS = 10;
+var RADIUS;
+var width = $(window).width(), height = $(window).height();
+if ((width <= 1023) && (height >= 768)) 
+{
+    RADIUS = 10;
+}
+else
+{
+    RADIUS = 5;
+}  
+
 var LINEAR_RESULTS_MAP_OFFSET_Y = 70;
 var LINEAR_MAP_OFFSET_Y = 200;
 var LINEAR_MAP_HEIGHT = 41;

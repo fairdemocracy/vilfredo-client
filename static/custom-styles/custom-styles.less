@@ -369,12 +369,25 @@ circle.med_marker.pareto {
   }
 }
 
+.map_guide {
+	@media (max-width: 500px) 
+	{
+    	display: none;
+	}
+}
+
 #votemapwindow 
 {
   .modal-dialog {
 	 width: 63%;
      /*height: 800px !important;*/
      overflow-y: hidden;
+
+	@media (max-width: 500px) 
+	{
+    	width: 100%;
+	}
+
 	 .modal-body {
      }
   }

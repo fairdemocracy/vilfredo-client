@@ -6657,6 +6657,11 @@ fieldset[disabled] .select_comment.supports button.active {
     width: 16.666666666666664%;
   }
 }
+@media (max-width: 500px) {
+  .map_guide {
+    display: none;
+  }
+}
 #votemapwindow {
   z-index: 5000;
 }
@@ -6664,6 +6669,11 @@ fieldset[disabled] .select_comment.supports button.active {
   width: 63%;
   /*height: 800px !important;*/
   overflow-y: hidden;
+}
+@media (max-width: 500px) {
+  #votemapwindow .modal-dialog {
+    width: 100%;
+  }
 }
 #viewproposal .modal-dialog {
   width: 90%;

@@ -2175,13 +2175,6 @@ function createResultsMap2D(svg) // loud
     // set height of results triangle container based on available space
 	var set_results_map_height = $(window).height() - $('.navbar').outerHeight();
     $('#resultstriangle').height(set_results_map_height);
-    
-    /*
-    $('#resultstriangle').on( "click", function(e) {
-    	e.stopPropagation();
-        $('#allvotes,#alluservotes').remove();
-    });
-    */
 
     var dimensions = calculateTriangleDimensions(svg);
     var triangle_width = dimensions.width;
@@ -2624,14 +2617,14 @@ function createVoteMap(svg)
     }
     var agree_oppose_text_y = agree_oppose_y + 10;
     
-    var agree_oppose = svg.rect(20, container_height-agree_oppose_y, 250, 30, 5, 5, {fill: 'green', stroke: 'grey', strokeWidth: 3});
-    var agree_oppose_fill = svg.rect(20, container_height-agree_oppose_y, 125, 30, {id: 'haobox', fill: 'red', stroke: 'none'});
-    svg.text(15, container_height-agree_oppose_text_y, 'Oppose', {id: 'uboxtext', fill: 'red', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
-    svg.text(210, container_height-agree_oppose_text_y, 'Agree', {id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
+    var agree_oppose = svg.rect(20, container_height-agree_oppose_y, 250, 30, 5, 5, {class: 'map_guide', fill: 'green', stroke: 'grey', strokeWidth: 3});
+    var agree_oppose_fill = svg.rect(20, container_height-agree_oppose_y, 125, 30, {class: 'map_guide', id: 'haobox', fill: 'red', stroke: 'none'});
+    svg.text(15, container_height-agree_oppose_text_y, 'Oppose', {class: 'map_guide', id: 'uboxtext', fill: 'red', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
+    svg.text(210, container_height-agree_oppose_text_y, 'Agree', {class: 'map_guide', id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
 
-  var vunderstand = svg.rect(container_width-110, container_height-230, 30, 200, 5, 5, {fill: 'yellow', stroke: 'grey', stroke: 'none'});
-        var vunderstand_fill = svg.rect(container_width-110, container_height-230, 30, 100, {id: 'vubox', fill: '#cdcdcd', stroke: 'none'});
-        svg.text(container_width-165, container_height-240, 'Understand', {id: 'aboxtext', fill: 'yellow', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana'});
+  var vunderstand = svg.rect(container_width-110, container_height-230, 30, 200, 5, 5, {class: 'map_guide', fill: 'yellow', stroke: 'grey', stroke: 'none'});
+        var vunderstand_fill = svg.rect(container_width-110, container_height-230, 30, 100, {class: 'map_guide', id: 'vubox', fill: '#cdcdcd', stroke: 'none'});
+        svg.text(container_width-165, container_height-240, 'Understand', {class: 'map_guide', id: 'aboxtext', fill: 'yellow', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana'});
 
 
     var g = svg.group(tg, 'votes');
