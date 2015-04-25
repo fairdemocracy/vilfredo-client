@@ -2404,7 +2404,7 @@ function createVoteMapLinear(svg)
           
     triangle = svg.path(
         tg,
-        path.move(0, 200)
+        path.move(0, LINEAR_MAP_OFFSET_Y)
         .line( triangle_width, 0, true )
         .line( 0, triangle_height, true )
         .line( -triangle_width, 0, true )
@@ -2419,13 +2419,13 @@ function createVoteMapLinear(svg)
     );
     $(triangle).data('offsets', {'x': 0, 'y': LINEAR_MAP_OFFSET_Y});
 
-    var agree_oppose_y = 130;
-    var agree_oppose_text_y = agree_oppose_y + 10;
+    var agree_oppose_y = LINEAR_MAP_OFFSET_Y + 100;
+    var agree_oppose_text_y = agree_oppose_y - 10;
     
-    var agree_oppose = svg.rect(20, container_height-agree_oppose_y, 250, 30, 5, 5, {class: 'map_guide', fill: 'green', stroke: 'grey', strokeWidth: 3});
-    var agree_oppose_fill = svg.rect(20, container_height-agree_oppose_y, 125, 30, {class: 'map_guide', id: 'haobox', fill: 'red', stroke: 'none'});
-    svg.text(15, container_height-agree_oppose_text_y, 'Oppose', {class: 'map_guide', id: 'uboxtext', fill: 'red', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
-    svg.text(210, container_height-agree_oppose_text_y, 'Agree', {class: 'map_guide', id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
+    var agree_oppose = svg.rect(20, agree_oppose_y, 250, 30, 5, 5, {class: 'map_guide', fill: 'green', stroke: 'grey', strokeWidth: 3});
+    var agree_oppose_fill = svg.rect(20, agree_oppose_y, 125, 30, {class: 'map_guide', id: 'haobox', fill: 'red', stroke: 'none'});
+    svg.text(15, agree_oppose_text_y, 'Oppose', {class: 'map_guide', id: 'uboxtext', fill: 'red', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
+    svg.text(210, agree_oppose_text_y, 'Agree', {class: 'map_guide', id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
 
     var g = svg.group(tg, 'votes');
     /*
