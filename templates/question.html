@@ -981,13 +981,18 @@
 			$('#invited_intro').show();
 			
 			checkVGAMessages();
-				
-			//
-			$( window ).resize(function() {
-				console.log('window resized');
-				resizeResultsMap();
-			});
-			//
+			
+			var resize_timer;
+    		$(window).resize(function() 
+			{
+		        clearTimeout(resize_timer);
+		        resize_timer = setTimeout(function() 
+				{
+					resizeResultsMap();
+					resizeSingleGraph();
+					resizeVoteMap();
+		        }, 500);
+		    });
 		});
 	}
 	

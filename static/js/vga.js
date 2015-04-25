@@ -1214,6 +1214,17 @@ function drawVoteNowTriangle(svg)
 	);
 }
 
+
+
+function resizeSingleGraph()
+{
+    console.log('resizeGraph called...');
+    var svg = $('.singlegraph').svg('get');
+    if (svg != null)
+    {
+        setGraphSize(svg);
+    }
+}
 function resizeResultsMap()
 {
     console.log('resizeResultsMap called...');
@@ -1223,14 +1234,37 @@ function resizeResultsMap()
         return;
     }
     
-    $.when(questionViewModel.fetchVotingData()).done(function()
-    {
-	    //var results = $('#resultstriangle');
-	    $('#resultsmap').remove();
-	    var svg = $('#resultstriangle').svg('get');
-        createResultsMap(svg);
-    });
+    //var results = $('#resultstriangle');
+    $('#resultsmap').remove();
+    var svg = $('#resultstriangle').svg('get');
+    createResultsMap(svg);
 }
+function resizeVoteMap()
+{
+    console.log('resizeVoteMap called...');
+    
+    if ($('#modalvotesmap').length == 0)
+    {
+        return;
+    }
+    
+    //var results = $('#resultstriangle');
+    $('#votemap').remove();
+    var svg = $('#modalvotesmap').svg('get');
+    console.log(svg);
+    if (svg != null)
+    {
+        if (questionViewModel.voting_type() == 1)
+        {
+            createVoteMap(svg);
+        }
+        else
+        {
+            createVoteMapLinear(svg);
+        }
+    }
+}
+
 
 // haha
 function resetResultsMap()
@@ -2365,7 +2399,7 @@ function createVoteMapLinear(svg)
     var triangle_width = max_x;
     var triangle_height = max_y;
     
-    var tg = svg.group();
+    var tg = svg.group('votemap');
 	var path = svg.createPath();
           
     triangle = svg.path(
@@ -2564,7 +2598,7 @@ function createVoteMap(svg)
 {
 	//alert('createVoteMap called');
 
-	console.log('createVotesMap called...');
+	console.log('createVoteMap called...');
 	
 	var container_width = $(svg._container).innerWidth();
 	//console.log('container_width = ' + container_width);
@@ -2586,7 +2620,7 @@ function createVoteMap(svg)
     var triangle_width = max_x;
     var triangle_height = max_y;
     
-    var tg = svg.group();
+    var tg = svg.group('votemap');
 	var path = svg.createPath();
 	
     var triangle = svg.path(

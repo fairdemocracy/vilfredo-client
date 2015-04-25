@@ -185,7 +185,7 @@ function initGraph(svg)
 {
 	setGraphSize(svg);
 	var graph = $(this);
-	setGraphData(graph);
+	//setGraphData(graph);
 	setProposalModals(svg);
 	return;
 	var userid = currentUserViewModel.userid();

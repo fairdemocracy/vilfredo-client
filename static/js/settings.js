@@ -38,7 +38,7 @@ var width = $(window).width(), height = $(window).height();
 
 if ((width <= 500) && (height <= 500)) 
 {
-    RADIUS = 5;
+    RADIUS = 6;
 }
 else
 {
