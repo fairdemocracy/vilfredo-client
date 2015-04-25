@@ -35,13 +35,14 @@ var ALGORITHM_VERSION = 2;
 // radius of circle representing a vote
 var RADIUS;
 var width = $(window).width(), height = $(window).height();
-if ((width <= 1023) && (height >= 768)) 
+
+if ((width <= 500) && (height <= 500)) 
 {
-    RADIUS = 10;
+    RADIUS = 5;
 }
 else
 {
-    RADIUS = 5;
+    RADIUS = 10;
 }  
 
 var LINEAR_RESULTS_MAP_OFFSET_Y = 70;
