@@ -45,6 +45,7 @@ else
     RADIUS = 10;
 }  
 
+var DEFAULT_MAP_TYPE = 'all';
 var LINEAR_RESULTS_MAP_OFFSET_Y = 70;
 var LINEAR_MAP_OFFSET_Y = 100;
 var LINEAR_MAP_HEIGHT = 41;

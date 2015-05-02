@@ -33,8 +33,6 @@ console.log(room);
 //var room = $.url().param('room') ? $.url().param('room') : '';
 //var room = getQuerySegment('room');
 
-var DEFAULT_MAP_TYPE = 'all';
-
 var currentUserViewModel;
 var proposalsViewModel;
 var questionViewModel;
