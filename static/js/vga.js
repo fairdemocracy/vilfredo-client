@@ -5659,7 +5659,7 @@ function ProposalsViewModel()
 	    self.proposals([]);
 	    self.key_players([]);
 	    self.inherited_proposals([]);
-	};
+	}
 	
 	self.hasVoted = ko.pureComputed(function() {
 		var proposals = self.proposals();
@@ -6322,7 +6322,7 @@ function ProposalsViewModel()
 	}
 
 
-	self.fetchProposals = function(options) { // bang
+	self.fetchProposals = function(options) {
 	    console.log('fetchProposals() called...');
 	    self.clearData();
 		var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
