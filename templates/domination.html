@@ -65,61 +65,7 @@
 		{{ flask_util_js.js }}
     </head>
     <body>
-	<!-- Fixed navbar -->
-	<div class="navbar navbar-inverse navbar-fixed-top main">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button> <a class="navbar-brand" href="#">Vilfredo</a>
-			</div>
-			<div class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li class="active">
-						<a class="home" href="">Home</a>
-					</li>
-					<li data-bind="visible: isLoggedIn" class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">My Activity<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li>
-								<a href="#">My Questions</a>
-							</li>
-							<li>
-								<a href="#">Key Player</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li>
-						<a href="https://github.com/fairdemocracy/vilfredo-core/wiki">About</a>
-					</li>
-					<li data-bind="visible: isLoggedOut"> 
-						<a data-toggle="modal" data-target="#login" href="#login">Login</a>
-					</li>
-					<li data-bind="visible: isLoggedOut"> 
-						<a data-toggle="modal" data-target="#register" href="#register">Register</a>
-					</li>
-					<!-- Account dropdown begin -->
-					<li data-bind="visible: userid" class="userdata dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span data-bind="text: username" id="currentuser"></span><b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li class="dropdown-header">Account
-							</li>
-							<li>
-								<a href="#">My Details</a>
-							</li>
-							<li>
-								<a href="#">Change Password</a>
-							</li>
-							<li>
-								<a data-bind="click: logout" href="#">Logout</a>
-							</li>
-						</ul>
-					</li><!-- Account dropdown end -->
-				</ul>
-			</div><!--/.nav-collapse -->
-		</div>
-	</div>
-	<!-- navbar -->
+	<div id="navbar"></div>
 
 	<div class="container main">
 
@@ -528,11 +474,7 @@
 	</div><!-- /container -->
 
 
-	<div id="footer">
-	    <div class="container">
-	      <p class="text-muted credit">&copy; 2009-2013 Pietro Speroni & Derek Paterson </p>
-	    </div>
-	</div>
+	<div id="footer"></div> <!-- page end -->
 	
 	
 	<!-- Tri Voting Modal -->
@@ -876,6 +818,41 @@
 		{
 			console.log('User and question loaded...');
 			
+			// Load Templates
+			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
+			{
+				$('head').append( template );
+			});
+			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( template ) 
+			{
+				$( "#navbar" ).html( template );
+				ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
+				$('.home').attr('href', VILFREDO_URL);
+			});
+			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( template ) 
+			{
+				$( "#footer" ).html( template );
+				ko.applyBindings(currentUserViewModel, $('#footer')[0]);
+			});
+			$.get( VILFREDO_URL + "/static/templates/login.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(loginViewModel, $('#login')[0]);
+				$('#login').on('hide.bs.modal', function(e) {
+					loginViewModel().clear();
+				});
+				$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
+			});
+			
+			$.get( VILFREDO_URL + "/static/templates/register.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(registerViewModel, $('#register')[0]);
+				$('#register').on('hide.bs.modal', function(e) {
+					registerViewModel().clear();
+				});
+			});
+			
 			questionViewModel.selected_algorithm(2);
 			fetchGenerationGraph(questionViewModel.selected_generation(), questionViewModel.selected_algorithm());
 			
@@ -941,7 +918,6 @@
 		    ko.applyBindings(questionViewModel, $(this)[0]);
 		});
 	
-		ko.applyBindings(loginViewModel, $('#login')[0]);
 		$(".proposals").each(function(){
 		    ko.applyBindings(proposalsViewModel, $(this)[0]);
 		});
@@ -954,9 +930,7 @@
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal #showquestions')[0]);
 		ko.applyBindings(viewProposalViewModel, $('#viewproposal .vpheader')[0]);
 		ko.applyBindings(newCommentViewModel, $('.newcommentpanel')[0]);
-		ko.applyBindings(currentUserViewModel, $('.navbar')[0]);
 		
-		ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(addProposalViewModel, $('#addproposal')[0]);
 		ko.applyBindings(threeWayVoteViewModel, $('#vote3waywindow')[0]);
 		
