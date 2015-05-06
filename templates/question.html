@@ -889,23 +889,23 @@
 			$('html head title').text('Vilfredo - ' + questionViewModel.title())
 			
 			// Load Templates
-			$.get( VILFREDO_URL + "/static/templates/analytics.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
 			{
 				$('head').append( template );
 			});
-			$.get( VILFREDO_URL + "/static/templates/navbar.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/navbar.template.html", function( template ) 
 			{
 				$( "#navbar" ).html( template );
 				ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
 				$('.home').attr('href', VILFREDO_URL);
 			});
-			$.get( VILFREDO_URL + "/static/templates/footer.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/footer.template.html", function( template ) 
 			{
 				$( "#footer" ).html( template );
 				ko.applyBindings(currentUserViewModel, $('#footer')[0]);
 			});
 			
-			$.get( VILFREDO_URL + "/static/templates/login.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/login.template.html", function( template ) 
 			{
 				$('body').append( template )
 				ko.applyBindings(loginViewModel, $('#login')[0]);
@@ -915,7 +915,7 @@
 				$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
 			});
 			
-			$.get( VILFREDO_URL + "/static/templates/register.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/register.template.html", function( template ) 
 			{
 				$('body').append( template )
 				ko.applyBindings(registerViewModel, $('#register')[0]);
@@ -924,15 +924,13 @@
 				});
 			});
 			
-			
-			
-			$.get( VILFREDO_URL + "/static/templates/participants.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/participants.template.html", function( template ) 
 			{
 				$('body').append( template )
 				ko.applyBindings(permissionsViewModel, $('#participants')[0]);
 			});
 			
-			$.get( VILFREDO_URL + "/static/templates/add_users.template.html", function( template ) 
+			$.get( STATIC_FILES + "/templates/add_users.template.html", function( template ) 
 			{
 				$('body').append( template )
 				ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]);
