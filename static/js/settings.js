@@ -34,7 +34,7 @@ var ALGORITHM_VERSION = 2;
 
 // radius of circle representing a vote
 var RADIUS;
-var width = $(window).width(), height = $(window).height();
+var width = window.innerWidth, height = window.innerHeight;
 
 if ((width <= 500) && (height <= 500)) 
 {
