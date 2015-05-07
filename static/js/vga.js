@@ -3525,6 +3525,31 @@ function add_modal_alert(modal_id, alert, text)
 	$(alert).fadeIn();
 }
 
+function add_form_alert(containerid, alert, text, class_id) // thrones
+{
+    if (typeof(class_id) == 'undefined')
+    {
+        class_id = '';
+    }
+    else
+    {
+        // Do not add alert box if one with this class already displayed
+        if ($('.'+class_id).length)
+        {
+            return;
+        }
+    }
+
+    var alertbox = '<div class="main alert alert-'+ alert +' alert-dismissable ' + class_id + '">';
+	alertbox = alertbox + '	<span class="flash">' + alert_flash[alert] + '</span> <span class="text">';
+	alertbox = alertbox + text + '</span>';
+	alertbox = alertbox +  '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button></div>';
+
+	var container = $('#'+containerid);
+	container.prepend(alertbox);
+	$(alertbox).fadeIn();
+}
+
 function add_page_alert(alert, text, class_id) // bear
 {
     if (typeof(class_id) == 'undefined')
