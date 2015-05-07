@@ -131,7 +131,7 @@
 		<br>
 		<div class="panel question-info">
 			<div class="well">
-				<span class="blurb" data-bind="html: convertNewlines($data.blurb())"></span>
+				<span class="blurb" data-bind="html: Autolinker.link(convertNewlines($data.blurb()), {email: false, phone: false, twitter: false})"></span>
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
@@ -858,6 +858,8 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
+		
 		{{ flask_util_js.js }}
 	
 	<script type="text/javascript">
