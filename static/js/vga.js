@@ -4095,6 +4095,19 @@ function NewQuestionViewModel()
 	{
 		console.log("NewQuestionViewModel.addQuestion() called...");
 		
+		// Check link count
+		var content = Autolinker.link(self.blurb());
+		var numlinks = (content.match(/http/g) || []).length;
+		if (numlinks > MAX_LINKS_IN_QUESTION)
+		{
+		    var message = 'You are only permitted to embed ' + MAX_LINKS_IN_QUESTION + ' links in each question.';
+			//add_page_alert('danger', message);
+			$('.message .alert').text(message); // thrones
+			add_form_alert('addquestion_error', 'danger', message);
+		    return;
+		}
+		console.log(numlinks + " links found. OK!!!");
+		
 		question = {
             title: self.title(),
             blurb: self.blurb(),
@@ -4128,18 +4141,18 @@ function NewQuestionViewModel()
 			{
 				console.log(jqXHR.status);
 				var message = getJQXHRMessage(jqXHR, 'There was a problem adding your question');
-				add_page_alert('danger', message);
+				add_form_alert('addquestion_error', 'danger', message);
 			}
 		}).fail(function(jqXHR) {
             console.log('addQuestion: There was an error. Error ' + jqXHR.status);
             // Set alert
             var message = getJQXHRMessage(jqXHR, 'There was a problem adding your question');
-			add_page_alert('danger', message);
+			add_form_alert('addquestion_error', 'danger', message);
         });
 	}
 }
 
-function RegisterViewModel() //thrones
+function RegisterViewModel()
 {
     var self = this;
     self.username = ko.observable('').extend({ required: true, maxLength: 50, minLength:2 });
