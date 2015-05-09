@@ -4098,25 +4098,25 @@ function NewQuestionViewModel()
 		// Check link count
 		var content = Autolinker.link(self.blurb());
 		var numlinks = (content.match(/http/g) || []).length;
-		if (numlinks > MAX_LINKS_IN_QUESTION)
+		var recaptcha = $('#g-recaptcha-response').val();
+		if (numlinks > MAX_LINKS_IN_QUESTION && (recaptcha == undefined || recaptcha.length == 0))
 		{
-		    var message = 'You are only permitted to embed ' + MAX_LINKS_IN_QUESTION + ' links in each question.';
-			//add_page_alert('danger', message);
-			$('.message .alert').text(message); // thrones
-			add_form_alert('addquestion_error', 'danger', message);
+			$('#addquestion .recaptcha').show();
 		    return;
 		}
 		console.log(numlinks + " links found. OK!!!");
 		
-		question = {
+		var question = {
             title: self.title(),
-            blurb: self.blurb(),
+            blurb: content,
             question_type: self.question_type(),
             voting_type: self.voting_type(),
-            minimum_time: 1,
-            maximum_time: 2592000
+            recaptcha: recaptcha
         };
 		console.log(question);
+		
+		
+		//var question = new FormData($('#newquestionform')[0]);
 		
 		var URI = VILFREDO_API + '/questions';
 		ajaxRequest(URI, 'POST', question).done(function(data, textStatus, jqXHR) {
@@ -4132,6 +4132,7 @@ function NewQuestionViewModel()
 		  		self.created(true);
 		        var message = "You're new question \"" + data.question.title + "\" was created!";
                 add_page_alert('success', message);
+                $('#addquestion .recaptcha').hide();
 		  		$.when(questionViewModel.fetchQuestion()).done(function()
 		        {
 		  		    permissionsViewModel.open_permissions();
@@ -4753,11 +4754,28 @@ function EditQuestionViewModel()
 			return;
 		}
 		
+		// Check link count
+		var content = Autolinker.link(self.blurb());
+		var numlinks = (content.match(/http/g) || []).length;
+		var recaptcha = $('#g-recaptcha-response').val();
+		if (numlinks > MAX_LINKS_IN_QUESTION && (recaptcha == undefined || recaptcha.length == 0))
+		{
+			$('#editquestion .recaptcha').show();
+		    return;
+		}
+		console.log(numlinks + " links found. OK!!!");
+		
+		var updates = {
+            title: self.title(),
+            blurb: content,
+            recaptcha: recaptcha
+        };
+		
 		var EDIT_URL = VILFREDO_API + '/questions/' + self.question.id();
-		var updates = {'title': self.title(), 'blurb': self.blurb()}
 	    console.log('updateQuestion called...');
 	    ajaxRequest(EDIT_URL, 'POST', updates).done(function(data) {
 		    console.log(data);
+		    $('#editquestion .recaptcha').hide();
 		    self.question.title(self.title());
 		    self.question.blurb(self.blurb());
 		    self.close();

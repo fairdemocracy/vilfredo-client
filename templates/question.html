@@ -488,6 +488,12 @@
 			<textarea data-bind="value: blurb" id="inputEditQuestionBlurb" class="form-control" rows="6" placeholder="Type your question here"></textarea>
 		    </div>
 		  </div>
+		<div class="form-group recaptcha">
+		    <div class="col-sm-offset-2 col-sm-10">
+				<p>We've detected a lot of links in your text. Please prove you are a person and not a bot.</p>
+		      <div class="g-recaptcha" data-sitekey="6LcSkgYTAAAAALuB_Ioey0cKPnjWnxkLts_YVNdU"></div>
+		    </div>
+		  </div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
 		      <button data-bind="click: updateQuestion" type="button" class="btn btn-primary">Save Changes</button>
@@ -859,7 +865,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
-		
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		{{ flask_util_js.js }}
 	
 	<script type="text/javascript">

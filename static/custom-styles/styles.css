@@ -6958,6 +6958,10 @@ a.plain {
   height: 120px;
   overflow-y: scroll;
 }
+#addquestion .recaptcha,
+#editquestion .recaptcha {
+  display: none;
+}
 .proposal-footer {
   height: 50px;
 }

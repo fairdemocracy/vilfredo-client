@@ -40,7 +40,7 @@
 		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
 		-->
 
-    </head>
+	</head>
     <body>
 	
 	<div id="navbar"></div>
@@ -64,13 +64,13 @@
 			  </div>
 			</div>
 
-			<form autocomplete="off" class="form-horizontal" role="form"> 
+			<form id="newquestionform" autocomplete="off" class="form-horizontal" role="form"> 
 			<div class="form-group">
 		    <label for="inputQuestionType" class="col-sm-2 control-label">Question Type</label>
 			
 			<div class="col-sm-2">
 		 	  <div id="inputQuestionType" class="btn-group selectquestiontype" role="group">
-	 	   		<select size=1 data-bind="
+	 	   		<select name="questiontype" size=1 data-bind="
     				options: questionTypes,
 				    optionsText: 'name',
 				    optionsValue: 'id',
@@ -90,7 +90,7 @@
 			
 			<div class="col-sm-2">
 		 	  <div id="inputVotingType" class="btn-group selectquestiontype" role="group">
-	 	   		<select size=1 data-bind="
+	 	   		<select name="votingtype" size=1 data-bind="
     				options: votingTypes,
 				    optionsText: 'name',
 				    optionsValue: 'id',
@@ -109,19 +109,25 @@
 		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: title"></span>
-		      <input data-bind="value: title" type="text" class="form-control input-lg" id="inputQuestionTitle" placeholder="Title">
+		      <input name="title" data-bind="value: title" type="text" class="form-control input-lg" id="inputQuestionTitle" placeholder="Title">
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="inputQuestionBlurb" class="col-sm-2 control-label">Question Text</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: blurb"></span>
-			<textarea data-bind="value: blurb" id="inputQuestionBlurb" class="form-control input-lg" rows="6" placeholder="Type your question here"></textarea>
+			<textarea name="blurb" data-bind="value: blurb" id="inputQuestionBlurb" class="form-control input-lg" rows="6" placeholder="Type your question here"></textarea>
+		    </div>
+		  </div>
+		<div class="form-group recaptcha">
+		    <div class="col-sm-offset-2 col-sm-10">
+				<p>We've detected a lot of links in your text. Please prove you are a person and not a bot.</p>
+		      <div class="g-recaptcha" data-sitekey="6LcSkgYTAAAAALuB_Ioey0cKPnjWnxkLts_YVNdU"></div>
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button data-bind="click: addQuestion, enable: isValid()" type="button" class="btn btn-primary">Submit</button>
+		      <button data-bind="click: addQuestion" type="button" class="btn btn-primary">Submit</button>
 		    </div>
 		  </div>
 		</form>
@@ -153,6 +159,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		{{ flask_util_js.js }}
 
 	<script type="text/javascript">

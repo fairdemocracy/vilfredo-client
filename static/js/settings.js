@@ -18,7 +18,7 @@
 #
 ****************************************************************************/
 // client domain
-var VILFREDO_URL = 'http://0.0.0.0:8080';
+var VILFREDO_URL = 'http://127.0.0.1:8080';
 
 // API version
 var API_VERSION = 'v2';
