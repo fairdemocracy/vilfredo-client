@@ -639,7 +639,7 @@
 							<div class="comment question">
 								<div data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-								<button title="I would also like this question answered" data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs"> <span class="glyphicon glyphicon-ok"></span> </button>
+								<button title="I would also like this question answered" data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like</button>
 								</div>
 							</div>
 						</div>
@@ -648,7 +648,7 @@
 							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
 								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
-								<button title="I think this answers the question" data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs"> <span class="glyphicon glyphicon-ok"></span> </button>
+								<button title="I think this answers the question" data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like</button>
 								</div>
 							</div>
 							<!-- /ko -->
