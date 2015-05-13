@@ -6789,6 +6789,7 @@ function QuestionViewModel() // bang
     self.consensus_found = ko.observable();
     self.inherited_proposal_count = ko.observable();
     self.voting_type = ko.observable();
+    self.my_permissions = ko.observable();
     
     self.finished_writing = ko.observable(0);
     self.show_finished_writing = ko.computed(function() {
@@ -6942,6 +6943,7 @@ function QuestionViewModel() // bang
     		self.mapy = parseFloat(data.question.mapy);
     		self.can_vote = data.question.can_vote;
     		self.can_propose = data.question.can_propose;
+    		self.my_permissions(data.question.my_permissions);
     		self.can_propose_ob(data.question.can_propose);
     		// User permissions will be set if user is question author
     		self.permissions(data.question.user_permissions);

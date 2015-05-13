@@ -59,6 +59,7 @@
 			<br>
 		</div>	
 		
+	<!-- author controls start -->
 	<div class="author_controls" data-bind="visible: author_id() == currentUserViewModel.userid()">
 	  <!-- ko if: questionViewModel.phase() == 'writing' -->
 	  <!-- ko if: proposalsViewModel.proposals().length < 2 -->
@@ -125,7 +126,34 @@
 	<button data-bind="click: move_on" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> Move to Next Generation</button>
 	<!-- /ko -->
 	</div>
-	<!-- author controls -->
+	<!-- author controls end -->
+	
+	<div class="question_access">	
+	<!-- ko if: my_permissions() == 1 -->
+	<br>
+	<div class="alert alert-info" role="alert">
+	  <h3>Read Only</h3>
+	  <h4>You have been granted read only access to this question.</h4>
+	<p>This allows you to follow the deliberation process but you are unable to submit proposals or vote.</p>
+	</div>
+	<!-- /ko -->
+	<!-- ko if: phase() == 'voting' && my_permissions() == 5 -->
+	<br>
+	<div class="alert alert-info" role="alert">
+	<h3>Propose Only !!!</h3>
+	<h4>You have been granted propose access to this question.</h4>
+	<p>This allows you to write proposals but you are unable to vote.</p>
+	</div>
+	<!-- /ko -->
+	<!-- ko if: phase() == 'writing' && my_permissions() == 5 -->
+	<br>
+	<div class="alert alert-info" role="alert">
+	  <h3>Vote Only !!!</h3>
+	<h4>You have been granted vote access to this question.</h4>
+	<p>This allows you to vote but you are unable to submit your own proposals.</p>
+	</div>
+	<!-- /ko -->
+	</div>
 		
 		
 		<br>
@@ -312,7 +340,7 @@
 			<p data-bind="visible: proposals().length > 0">Vote on all the proposals below:</p>
 			<p class="guide"><em>Click on the blue triangles to open the triangular voting map, then click on the map to place your vote. Follow the guides to locate your vote at the location which best represents how much you understand a proposal, and how much you agree or disagree with it.</em></p>
 		</div>
-		<div data-bind="visible: questionViewModel.phase() == 'writing'" class="page-header">
+		<div data-bind="visible: questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="page-header">
 			<h2>
 				Your New Proposals
 			</h2>
@@ -1085,6 +1113,8 @@
 		});
 		
 		ko.applyBindings(questionViewModel, $('.author_controls')[0]);
+		ko.applyBindings(questionViewModel, $('.question_access')[0]);
+		
 		
 		ko.applyBindings(questionViewModel, $('#completed_box')[0]);
 		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
@@ -1124,7 +1154,6 @@
 		ko.applyBindings(threeWayVoteViewModel, $('#vote3waywindow')[0]);
 		
 		ko.applyBindings(voteMapViewModel, $('#votemapwindow')[0]);
-		
 
 		$('#vote3waywindow').on('hidden.bs.modal', function () {
   			console.log('vote3waywindow hidden...');
