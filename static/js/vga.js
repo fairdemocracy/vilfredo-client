@@ -6367,6 +6367,7 @@ function ProposalsViewModel()
 					generation_created: ko.observable(data.proposals[i].generation_created),
 					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
 					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
+					image_url: ko.observable(data.proposals[i].image_url),
 					mapx: ko.observable(mapx),
 					mapy: ko.observable(mapy),
 					box_background: ko.observable(background), 
