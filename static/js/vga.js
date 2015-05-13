@@ -95,10 +95,16 @@ function readURL(input)
         var reader = new FileReader();
 
         reader.onload = function (e) {
+            var w = this.width;
+            var h = this.height;
+            var max = Math.max(w, h);
+            var show_w = w / max * 200;
+            var show_h = h / max * 200;
+            
             $('#selected_image')
                 .attr('src', e.target.result)
-                .width(200)
-                .height(200);
+                .width(show_w)
+                .height(show_h);
         };
 
         reader.readAsDataURL(input.files[0]);
