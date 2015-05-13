@@ -588,7 +588,7 @@ function addMedian(svg, pid, coords) // bang
 
     /*
     var med_fill, med_selected_fill_color;
-    if  (coords['dominated_by'] == 0)
+    if  (coords['pareto'])
     {
         med_fill = MEDIAN_WINNER_COLOR;
         med_selected_fill_color = MEDIAN_WINNER_SELECTED_COLOR;
@@ -637,7 +637,7 @@ function addMedian(svg, pid, coords) // bang
     console.log("Draw med label at " + txtx + ", " + txty);
     var medlabel = svg.text(g, txtx, txty, String(pid));
     $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
-    if (coords['dominated_by'] == 0)
+    if (coords['pareto'])
     {
         $(medlabel).addClass('pareto');
     }
@@ -2120,7 +2120,8 @@ function createResultsMapLinear(svg) // lanister
         console.log("pid is type " + typeof pid);
 
         var medx = triangle_width * coords['median'].medx;
-        var pareto = coords['dominated_by'] == 0;
+        //var pareto = coords['pareto'];
+        var pareto = coords['pareto'];
 
         var med_fill, med_selected_fill_color;
         if  (pareto)
@@ -2275,7 +2276,8 @@ function createResultsMap2D(svg) // loud
         var cx = triangle_width * coords['median'].medx;
         var cy = triangle_height * coords['median'].medy;
         cy += triangle_offset_y;
-        var pareto = coords['dominated_by'] == 0;
+        //var pareto = coords['pareto'];
+        var pareto = coords['pareto'];
 
         //console.log("Draw result vote at (" + cx + ", " + cy +")");
         /*
@@ -2311,7 +2313,7 @@ function createResultsMap2D(svg) // loud
         }
 
         med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', title: title}); 
-        $(med).data('settings', {'pid': parseInt(pid), 'pareto': coords['dominated_by'] == 0});
+        $(med).data('settings', {'pid': parseInt(pid), 'pareto': coords['pareto']});
 
         if (pareto)
         {
@@ -2331,7 +2333,7 @@ function createResultsMap2D(svg) // loud
         }
         var medlabel = svg.text(g, txtx, txty, String(pid));
         $(medlabel).data('settings', {'pid': parseInt(pid)}).addClass('medlabel');
-        if (coords['dominated_by'] == 0)
+        if (coords['pareto'])
         {
             $(medlabel).addClass('pareto');
         }
