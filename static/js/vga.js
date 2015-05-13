@@ -93,21 +93,31 @@ function readURL(input)
     {
         $('#avatar_placeholder').hide();
         var reader = new FileReader();
-
-        reader.onload = function (e) {
-            var w = this.width;
-            var h = this.height;
-            var max = Math.max(w, h);
-            var show_w = w / max * 200;
-            var show_h = h / max * 200;
-            
-            $('#selected_image')
-                .attr('src', e.target.result)
-                .width(show_w)
-                .height(show_h);
-        };
-
+        var image  = new Image();
+        
         reader.readAsDataURL(input.files[0]);
+        reader.onload = function (_file) 
+        {
+            image.src    = _file.target.result;
+            image.onload = function() 
+            {
+                var w = this.width;
+                console.log('w = ' + w);
+                var h = this.height;
+                console.log('h = ' + h);
+                var max = Math.max(w, h);
+                console.log('max = ' + max);
+                var show_w = w / max * 200;
+                console.log('show_w = ' + show_w);
+                var show_h = h / max * 200;
+                console.log('show_h = ' + show_h);
+        
+                $('#selected_image')
+                    .attr('src', image.src)
+                    .width(show_w)
+                    .height(show_h);
+            };
+        };
     }
 }
 
@@ -4550,15 +4560,31 @@ function AddProposalViewModel()
         {
             $('#proposal_image_placeholder').hide();
             var reader = new FileReader();
-
-            reader.onload = function (e) {
-                $('#selected_proposal_image')
-                    .attr('src', e.target.result)
-                    .width(200)
-                    .height(200);
-            };
-
+            var image  = new Image();
+            
             reader.readAsDataURL(input.files[0]);
+            reader.onload = function (_file) 
+            {
+                image.src    = _file.target.result;
+                image.onload = function() 
+                {
+                    var w = this.width;
+                    console.log('w = ' + w);
+                    var h = this.height;
+                    console.log('h = ' + h);
+                    var max = Math.max(w, h);
+                    console.log('max = ' + max);
+                    var show_w = w / max * 200;
+                    console.log('show_w = ' + show_w);
+                    var show_h = h / max * 200;
+                    console.log('show_h = ' + show_h);
+            
+                    $('#selected_proposal_image')
+                        .attr('src', image.src)
+                        .width(show_w)
+                        .height(show_h);
+                };
+            };
         }
     }
 
@@ -4861,22 +4887,37 @@ function EditProposalViewModel()
 	
 	self.readImageURL = function(input) 
     {
-        console.log("EditProposalViewModel: readEditImageURL called...");
+        console.log('AddProposalViewModel.readImageURL called AGAIN!!!....');
         if (input.files && input.files[0]) 
         {
             $('#edit_proposal_current_image').hide();
             $('#edit_proposal_image_placeholder').hide();
             var reader = new FileReader();
-
-            reader.onload = function (e) {
-                self.image_changed(true);
-                $('#edit_proposal_image')
-                    .attr('src', e.target.result)
-                    .width(200)
-                    .height(200);
-            };
-
+            var image  = new Image();
+            
             reader.readAsDataURL(input.files[0]);
+            reader.onload = function (_file) 
+            {
+                image.src    = _file.target.result;
+                image.onload = function() 
+                {
+                    var w = this.width;
+                    console.log('w = ' + w);
+                    var h = this.height;
+                    console.log('h = ' + h);
+                    var max = Math.max(w, h);
+                    console.log('max = ' + max);
+                    var show_w = w / max * 200;
+                    console.log('show_w = ' + show_w);
+                    var show_h = h / max * 200;
+                    console.log('show_h = ' + show_h);
+            
+                    $('#edit_proposal_image')
+                        .attr('src', image.src)
+                        .width(show_w)
+                        .height(show_h);
+                };
+            };
         }
     }
 	
