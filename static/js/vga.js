@@ -85,7 +85,44 @@ var offset_y = 0;
     $.clickMouseMoved.threshold = 3;
 })(jQuery);
 
+function scaleProposalImages()
+{
+    console.log('scaleProposalImages called...');
+    $('.proposal-blurb').each(function() {
+    	var container = $(this);
+    	var prop_image = $(this).find('img');
+    	if (prop_image.length > 0)
+    	{
+    		var image = new Image();
+    		image.src = prop_image.attr('src');
+    		var w = image.width;
+    		var h = image.height;
+    		var container_w = container.innerWidth();
+    		var container_h = container.innerHeight();
+		
+    		console.log('w ==> ' + w);
+    		console.log('h ==> ' + h);
+		
+    		console.log('container_w ==> ' + container_w);
+    		console.log('container_h ==> ' + container_h);
+	
+    		if (container_w < container_h)
+    		{
+                var show_h = container_w / w  * h;
+                var show_w = container_w;
+    		}
+    		else
+    		{
+    			var show_w = container_h / h  * w;
+                var show_h = container_h;
+    		}
 
+    		prop_image
+    			.width(show_w)
+                .height(show_h);
+    	}
+    });
+}
 
 function readURL(input) 
 {
