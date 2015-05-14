@@ -5310,6 +5310,7 @@ function ViewProposalViewModel()
 				console.log(data.message);
 				console.log('Updating comment ' + comment.id());
 				comment.supporters(JSON.parse(data.supporters));
+				comment.num_supporters(data.num_supporters);
 			}
 			else
 			{
@@ -5373,6 +5374,7 @@ function ViewProposalViewModel()
 		      		created: ko.observable(data.comment.created),
 					reply_to: ko.observable(data.comment.reply_to),
 					author_id: ko.observable(data.comment.author_id),
+					num_supporters: ko.observable(data.comment.num_supporters),
 					supporters: ko.observableArray(JSON.parse(data.comment.supporters))
 		  		});
 
@@ -5510,17 +5512,17 @@ function ViewProposalViewModel()
 		ajaxRequest(VILFREDO_API + '/questions/'+ question_id +'/proposals/'+ self.proposal.id() +'/comments',
 					'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Comments data returned...');
-			console.log(data);
 			var fetched_comments = [];
 			for (var i = 0; i < data.comments.length; i++) {
 		  		var supporters = JSON.parse(data.comments[i].supporters)
 				fetched_comments.push({
 		      		id: ko.observable(data.comments[i].id),
-					comment: ko.observable(data.comments[i].comment), // king
+					comment: ko.observable(data.comments[i].comment), // fordy
 		      		comment_type: ko.observable(data.comments[i].comment_type),
 		      		created: ko.observable(data.comments[i].created),
 					reply_to: ko.observable(data.comments[i].reply_to),
 					author_id: ko.observable(data.comments[i].author_id),
+					num_supporters: ko.observable(data.comments[i].num_supporters),
 					supporters: ko.observableArray(JSON.parse(data.comments[i].supporters))
 		  		});
 			}
