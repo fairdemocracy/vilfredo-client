@@ -536,7 +536,11 @@
 				window.location.replace(VILFREDO_URL);
 			}
 			
-			scaleProposalImages();
+			if (questionViewModel.question_type() == 2)
+			{
+				$('.proposal-blurb').css('padding', '0');
+				scaleProposalImages();
+			}
 		
 			var qid = questionViewModel.id();
 			var gid = questionViewModel.generation();

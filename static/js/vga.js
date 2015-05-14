@@ -4027,8 +4027,6 @@ function CurrentUserViewModel()
     			}
 			    currentUserViewModel.fetchNewInvites();
 			}
-			
-
 
 			if (proposalsViewModel)
 			{
@@ -6081,6 +6079,7 @@ function ProposalsViewModel()
 		  		addProposalViewModel().close();
 		  		questionViewModel.fetchQuestion();
 		  		questionViewModel.fetchParticipationTable();
+		  		scaleProposalImages();
 			
 		}).fail(function(jqXHR) {
            var message = getJQXHRMessage(jqXHR, 'There was a problem uploading your file.'); // stuffit
