@@ -295,6 +295,20 @@ function arrayDiff(arr1, arr2)
     return diff;
 }
 
+function checkForNewQuestion()
+{
+    console.log("checkForNewQuestion called... ");
+    if ($.cookie('vganewquestion')) 
+    {
+        console.log("vganewquestion cookie found = " + $.cookie('vganewquestion'));
+        if ($.cookie('vganewquestion') == questionViewModel.id() && questionViewModel.author_id() == currentUserViewModel.userid())
+        {
+            $.cookie('vganewquestion', null, { path: '/' });
+            permissionsViewModel.open_permissions();
+        }
+    }
+}
+
 function checkVGAMessages()
 {
     if ($.cookie('vgamessage'))
@@ -4180,6 +4194,9 @@ function NewQuestionViewModel()
 			{
 				self.clear();
 		  		// Question added - show permissions modal
+		  		$.cookie('vganewquestion', data.question.id, { path: '/' });
+		  		window.location.replace(VILFREDO_URL+"/question/"+data.question.id);
+		  		/*
 		  		question_id = data.question.id;
 		  		self.id(data.question.id);
 		  		self.created(true);
@@ -4189,7 +4206,7 @@ function NewQuestionViewModel()
 		  		$.when(questionViewModel.fetchQuestion()).done(function()
 		        {
 		  		    permissionsViewModel.open_permissions();
-		  		});
+		  		});*/
 			}
 			else
 			{
@@ -5550,33 +5567,11 @@ function QuestionsViewModel()
 
 			if (jqXHR.status == 201)
 			{
-				//newQuestionViewModel().close();
 				newQuestionViewModel().clear();
-
-				console.log('Updating questions list');
-				self.questions.push({
-		      		id: ko.observable(data.question.id),
-					title: ko.observable(data.question.title),
-		      		blurb: ko.observable(data.question.blurb),
-		      		author: ko.observable(data.question.author),
-					uri: ko.observable(data.question.url),
-					phase: ko.observable(data.question.phase),
-					question_type: ko.observable(data.question.question_type),
-					last_move_on : ko.observable(parseInt(data.question.last_move_on)),
-            		minimum_time : ko.observable(parseInt(data.question.minimum_time)),
-            		maximum_time : ko.observable(parseInt(data.question.maximum_time)),
-					author_id: ko.observable(parseInt(data.question.author_id)),
-					avatar_url:ko.observable(data.question.avatar_url),
-					generation: ko.observable(parseInt(data.question.generation)),
-					proposal_count: ko.observable(parseInt(data.question.proposal_count)),
-					new_proposal_count: ko.observable(parseInt(data.question.new_proposal_count)),
-					new_proposer_count: ko.observable(parseInt(data.question.new_proposer_count)),
-					consensus_found: ko.observable(data.question.consensus_found),
-					inherited_proposal_count: ko.observable(parseInt(data.question.inherited_proposal_count)),
-					link: VILFREDO_URL + "/question/" + data.question.id
-		  		});
+				window.location.replace(VILFREDO_URL+"/question/"+data.question.id+"?new=true");
 		  		
 		  		// Question added - show permissions modal
+		  		/*
 		  		question_id = data.question.id;
 		  		newQuestionViewModel().id(data.question.id);
 		  		newQuestionViewModel().created(true);
@@ -5585,7 +5580,7 @@ function QuestionsViewModel()
 		  		$.when(questionViewModel.fetchQuestion()).done(function()
 		        {
 		  		    permissionsViewModel.open_permissions();
-		  		});
+		  		});*/
 			}
 			else
 			{
@@ -6748,7 +6743,7 @@ function InviteUsersViewModel()
 	}
 	self.close_add_users = function()
 	{
-	    console.log("close_permissions called...");
+	    console.log("close_add_users called...");
 	    self.user_emails('');
         self.emails_sent('');
         self.emails_rejected('');

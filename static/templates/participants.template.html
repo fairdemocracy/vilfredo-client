@@ -4,7 +4,7 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title">Participants</h4>
+	        <h4 class="modal-title">Current Participants</h4>
 	      </div>
 	      <div class="modal-body">
 			<div class="message alert alert-danger"></div>
@@ -52,8 +52,8 @@
 			<!-- Buttons -->
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-			      <button data-bind="click: close_permissions(), enable: true" type="button" class="btn btn-primary">Close</button>
-				  <button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-default">Invite More Users</button>
+			      <button data-bind="click: close_permissions.bind(), enable: true" type="button" class="btn btn-primary">Close</button>
+				  <button data-bind="click: add_users.bind(), enable: true" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Invite More Users</button>
 			    </div>
 			</div>
 			</form>		
