@@ -22,13 +22,13 @@
 				Vote
 			</div>
 			<div class="col-sm-2">
-				Author
-			</div>
+				Read
+			</div> 
 			</div>
 				
 			<!-- ko foreach: permissions -->
 			<div class="form-group">
-				<div data-bind="text: username" class="col-sm-4"></div>
+				<div data-bind="text: username, attr: { title: 'Submitted the question' }, css: {author: questionViewModel.author_id() == user_id}" class="col-sm-4 participant"></div>
 				<div class="col-sm-3">
 					<!-- Can Propose -->					
 					<div data-bind="if: $parent.userPerms($data, Q_PROPOSE)">
@@ -42,7 +42,7 @@
 					</div>
 				</div>
 				<div class="col-sm-2">
-					<div data-bind="if: questionViewModel.author_id() == user_id">
+					<div>
 						<span class="glyphicon glyphicon-ok"></span>
 					</div>
 				</div>

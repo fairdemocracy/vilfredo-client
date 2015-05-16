@@ -6259,6 +6259,9 @@ body {
 .current-proposals {
   display: none;
 }
+.participant.author {
+  color: blue;
+}
 @media (min-width: 1200px) {
   .container {
     max-width: 970px;
