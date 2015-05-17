@@ -49,6 +49,7 @@
 			</div>
 			<!-- /ko -->
 			<br>
+			<div data-bind="visible: invitations_sent().length || invitations_sent().length">
 			<h4>Invitations Pending</h4>
 			<!-- ko foreach: invitations_sent -->
 			<div class="form-group">
@@ -95,6 +96,7 @@
 			</div>
 			<!-- /ko -->
 			<br>
+			</div>
 			<!-- Buttons -->
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
