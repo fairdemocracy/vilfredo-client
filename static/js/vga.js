@@ -195,6 +195,18 @@ function displayCommentText(str, len) // king
     var len = (len == undefined) ? MAX_COMMENT_DISAPLAY_CHARS : len;
     return (str.length <= len) ? str : str.substr(0, len) + '...' + ' ( <a>read more</a> )';
 }
+function displayEmail(str, len) // king
+{
+    var len = (len == undefined) ? MAX_EMAIL_DISAPLAY_CHARS : len;
+    var part_len = Math.round(len/2);
+    return (str.length <= len) ? str : str.substr(0, part_len) + '...' + str.substr(str.length-part_len);
+}
+function displayUsername(str, len) // king
+{
+    var len = (len == undefined) ? MAX_USERNAME_DISAPLAY_CHARS : len;
+    var part_len = Math.round(len/2);
+    return (str.length <= len) ? str : str.substr(0, part_len) + '...' + str.substr(str.length-part_len);
+}
 
 function viewFullText(item)
 {
@@ -6756,7 +6768,9 @@ function InviteUsersViewModel()
 function PermissionsViewModel() // wolf
 {
     var self = this;
-    self.permissions = ko.observableArray([]);
+    self.permissions = ko.observableArray();
+    self.invitations_sent = ko.observableArray();
+    self.email_invitations_sent = ko.observableArray();
 
     self.questionPermissions = ko.observable([
        {name: "Read", id: 1},
@@ -6789,7 +6803,8 @@ function PermissionsViewModel() // wolf
 		    console.log('Question permissions returned...');
 			//self.permissions(data.permissions);
 			var fetched_permissions = [];
-			for (var i = 0; i < data.permissions.length; i++) {
+			for (var i = 0; i < data.permissions.length; i++) 
+			{
 				fetched_permissions.push({
 		      		user_id: data.permissions[i].user_id,
 					username: data.permissions[i].username,
@@ -6797,6 +6812,29 @@ function PermissionsViewModel() // wolf
 		  		});
 			}
 			self.permissions(fetched_permissions);
+			
+			self.invitations_sent();
+			var fetched_invites = [];
+			for (var i = 0; i < data.invitations_sent.length; i++) 
+			{
+		  		fetched_invites.push({
+		  		    id: data.invitations_sent[i].id,
+					permissions: data.invitations_sent[i].permissions,
+					username: data.invitations_sent[i].username
+		  		});
+			}
+			self.invitations_sent(fetched_invites);
+			
+			self.email_invitations_sent();
+			var fetched_invites = [];
+			for (var i = 0; i < data.email_invitations_sent.length; i++) 
+			{
+		  		fetched_invites.push({
+					permissions: data.email_invitations_sent[i].permissions,
+					email: data.email_invitations_sent[i].email
+		  		});
+			}
+			self.email_invitations_sent(fetched_invites);
 		});
 	}
 	self.open_permissions = function()

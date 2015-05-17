@@ -6262,6 +6262,9 @@ body {
 .participant.author {
   color: blue;
 }
+.participant.pending {
+  font-style: italic;
+}
 @media (min-width: 1200px) {
   .container {
     max-width: 970px;
@@ -7151,7 +7154,8 @@ a {
 a.disabled {
   color: grey;
 }
-#add_users.modal {
+#add_users.modal,
+participants.modal {
   overflow: scroll;
 }
 #propdetails {
