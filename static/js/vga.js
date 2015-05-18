@@ -6813,6 +6813,15 @@ function PermissionsViewModel() // wolf
 			}
 			self.permissions(fetched_permissions);
 			
+			// Update question particpant_count
+			if (fetched_permissions.length > questionViewModel.participant_count())
+			{
+			    console.log('New partiipants added. Updating question and participation table');
+			    //questionViewModel.participant_count(fetched_permissions.length);
+			    questionViewModel.fetchQuestion();
+			    questionViewModel.fetchParticipationTable();
+			}
+			
 			self.invitations_sent();
 			var fetched_invites = [];
 			for (var i = 0; i < data.invitations_sent.length; i++) 

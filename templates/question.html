@@ -123,7 +123,7 @@
    <!-- /ko --> <!-- participants == 1 -->
   <!-- /ko --> <!-- voting -->
 		
-		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people"><span class="glyphicon glyphicon-user"></span> Participants</button>
+		<button data-bind="click: permissionsViewModel.open_permissions.bind(), visible: author_id() == currentUserViewModel.userid()" class="btn btn-primary" title="View current Participants and invite new people"><span class="glyphicon glyphicon-user"></span> Participants <span data-bind="text: participant_count" class="badge"></span></button>
 		
 		<button data-bind="click: questionViewModel.edit, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit Question</button>
 		<button data-bind="click: questionViewModel.delete, visible: proposal_count() == 0" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span> Delete Question</button>
