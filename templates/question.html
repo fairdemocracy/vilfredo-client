@@ -315,7 +315,7 @@
 					<span data-bind="html: convertNewlines($data.blurb())"></span>  
 					<!-- /ko -->
 					<!-- ko if: questionViewModel.question_type() == 2 -->
-					<img data-bind="attr: { src: image_url }" width="200px" height="200px"/> 
+					<img data-bind="attr: { src: image_url }, scaleimage: image_url" width="200px" height="200px"/> 
 					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
@@ -387,7 +387,7 @@
 					<span data-bind="html: convertNewlines($data.blurb())"></span>  
 					<!-- /ko -->
 					<!-- ko if: questionViewModel.question_type() == 2 -->
-					<img data-bind="attr: { src: image_url }" width="200px" height="200px"/> 
+					<img data-bind="attr: { src: image_url }, scaleimage: image_url" width="200px" height="200px"/> 
 					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
@@ -438,7 +438,9 @@
 					<span data-bind="html: convertNewlines($data.blurb())"></span>  
 					<!-- /ko -->
 					<!-- ko if: questionViewModel.question_type() == 2 -->
-					<img data-bind="attr: { src: image_url }" width="200px" height="200px"/> 
+		<!--			<img data-bind="attr: { src: image_url }" width="200px" height="200px"/> -->
+				<img data-bind="attr: { src: image_url }, scaleimage: image_url" width="200px" height="200px"/> 
+		<!--			<img data-bind="propimgsrc: image_url" width="200px" height="200px"/> -->
 					<!-- /ko -->
 				</div>
 				<div class="panel-footer proposal-footer">
@@ -584,7 +586,7 @@
 					<span data-bind="html: convertNewlines(blurb())"></span>  
 					<!-- /ko -->
 					<!-- ko if: questionViewModel.question_type() == 2 -->
-					<img class="viewproposalimage" data-bind="attr: { src: image_url() }"/> 
+					<img class="viewproposalimage" data-bind="attr: { src: image_url() }, scaleimage: image_url"/> 
 					<!-- /ko -->
 			</div>
 			<div id="showcomments">
@@ -1003,7 +1005,7 @@
 					questionViewModel.fetchParticipationTable();
 					if (questionViewModel.question_type() == 2)
 					{
-						scaleProposalImages();
+						//scaleProposalImages();
 					}
 					checkForNewQuestion();
 				});
@@ -1022,7 +1024,7 @@
 					if (questionViewModel.question_type() == 2)
 					{
 						$('.proposal-blurb').css('padding', '0');
-						scaleProposalImages();
+						//scaleProposalImages();
 					}
 					
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots

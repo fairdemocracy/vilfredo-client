@@ -85,6 +85,51 @@ var offset_y = 0;
     $.clickMouseMoved.threshold = 3;
 })(jQuery);
 
+function scaleProposalImage(img)
+{
+	console.log('scaleProposalImage called...');
+	var prop_image = $(img);
+	var container = $(prop_image).parent('.proposal-blurb');
+	if (container.length == 1)
+	{
+		container.css('padding', '0');
+		var image = new Image();
+		image.src = prop_image.attr('src');
+		console.log('prop_image src ==> ' + prop_image.attr('src'));
+		image.onload = function()
+		{
+		    var w = image.width;
+		    var h = image.height;
+    		var container_w = container.innerWidth();
+    		var container_h = container.innerHeight();
+	
+    		console.log('w ==> ' + w);
+    		console.log('h ==> ' + h);
+	
+    		console.log('container_w ==> ' + container_w);
+    		console.log('container_h ==> ' + container_h);
+		
+    		var show_h, show_w;
+
+    		if (container_w < container_h)
+    		{
+                show_h = container_w / w  * h;
+                show_w = container_w;
+    		}
+    		else
+    		{
+    			show_w = container_h / h  * w;
+                show_h = container_h;
+    		}
+
+    		prop_image
+    			.width(show_w)
+                .height(show_h);
+		};
+	}
+}
+
+
 function scaleProposalImages()
 {
     console.log('scaleProposalImages called...');
@@ -5815,6 +5860,14 @@ function ProposalsViewModel()
 	    self.key_players([]);
 	    self.inherited_proposals([]);
 	}
+	
+	ko.bindingHandlers.scaleimage = 
+	{
+        'update': function(element, valueAccessor) {
+            console.log('bindingHandler scaleimages called..');
+            scaleProposalImage(element);
+        }
+    };
 
 	self.hasVoted = ko.pureComputed(function() {
 		var proposals = self.proposals();
@@ -6095,12 +6148,13 @@ function ProposalsViewModel()
 		  		questionViewModel.fetchQuestion();
 		  		questionViewModel.fetchParticipationTable();
 		  		
+		  		/*
 		  		var scale_timer;
 		        clearTimeout(scale_timer);
 		        scale_timer = setTimeout(function() 
 				{
 					scaleProposalImages();
-		        }, 500);
+		        }, 500);*/
 		  		
 			
 		}).fail(function(jqXHR) {
@@ -7533,10 +7587,7 @@ function QuestionViewModel() // bang
 			    	   proposalsViewModel.fetchProposals({user_only: true})).done(function()
 			    {
 					fetchGraphs(questionViewModel.selected_algorithm()); // boots
-					if (currentUserViewModel.isLoggedIn())
-					{
-						//resetGraphsForUser();
-					}
+					//scaleProposalImages();
 				});
 		        
 		    }
@@ -7544,6 +7595,10 @@ function QuestionViewModel() // bang
 		    {
 		        console.log('fetchCurrentUser: Fetching all proposals');
 		        proposalsViewModel.fetchProposals();
+		        $.when(proposalsViewModel.fetchProposals()).done(function()
+			    {
+					//scaleProposalImages();
+				});
 		    }
     		/*
     		if (questionViewModel.phase() == 'voting' && questionViewModel.can_vote)
@@ -7557,7 +7612,6 @@ function QuestionViewModel() // bang
 				});
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
 			}*/
-			
 			
 	    });
 	}
