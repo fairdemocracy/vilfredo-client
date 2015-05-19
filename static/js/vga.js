@@ -5746,24 +5746,26 @@ function QuestionsViewModel()
 	        }
 	        
             var not_finished = question.voters_voting_count() - question.completed_voter_count();
-    	    html = html + "Out of " + question.participant_count() + ' participants';
-    	    if (question.voters_voting_count() == 0)
+            if (question.voters_voting_count() == 0)
     	    {
-    	        html = html + " no one started voting. Be the first!";
+    	        html = html + "No one started voting. Be the first!";
     	    }
-    	    if (not_finished && question.completed_voter_count())
+    	    else
     	    {
-    	        html = html + ", " + question.completed_voter_count() + " finished voting, " +  not_finished +  " started voting";
-    	    }
-    	    else if (question.completed_voter_count())
-    	    {
-    	        html = html + ", " + question.completed_voter_count() + " finished voting";
-    	    }
-    	     else if (not_finished)
-    	    {
-    	        html = html + ", " +  not_finished +  " started voting";
-    	    }
-	        
+    	        html = html + "Out of " + question.participant_count() + ' participants';
+        	    if (not_finished && question.completed_voter_count())
+        	    {
+        	        html = html + ", " + question.completed_voter_count() + " finished voting, " +  not_finished +  " started voting";
+        	    }
+        	    else if (question.completed_voter_count())
+        	    {
+        	        html = html + ", " + question.completed_voter_count() + " finished voting";
+        	    }
+        	     else if (not_finished)
+        	    {
+        	        html = html + ", " +  not_finished +  " started voting";
+        	    }
+	        }
 	    }
 	    else if (question.phase() == 'results')
 	    {
@@ -7019,23 +7021,28 @@ function QuestionViewModel() // bang
 	    else if (self.phase() == 'voting')
 	    {
 	        var not_finished = self.voters_voting_count() - self.completed_voter_count();
-	        html = "Out of " + self.participant_count() + ' participants ';
-    	    if (self.voters_voting_count() == 0)
+	        var html;
+	        
+	        if (self.voters_voting_count() == 0)
     	    {
-    	        html = html + "no one started voting. Be the first!";
+    	        html = "No one started voting. Be the first!";
     	    }
-    	    if (not_finished && self.completed_voter_count())
+    	    else
     	    {
-    	        html = html + ", " + self.completed_voter_count() + " finished voting, " +  not_finished +  " started voting";
-    	    }
-    	    else if (self.completed_voter_count())
-    	    {
-    	        html = html + ", " + self.completed_voter_count() + " finished voting";
-    	    }
-    	     else if (not_finished)
-    	    {
-    	        html = html + ", " +  not_finished +  " started voting";
-    	    }
+	            html = "Out of " + self.participant_count() + ' participants ';
+        	    if (not_finished && self.completed_voter_count())
+        	    {
+        	        html = html + ", " + self.completed_voter_count() + " finished voting, " +  not_finished +  " started voting";
+        	    }
+        	    else if (self.completed_voter_count())
+        	    {
+        	        html = html + ", " + self.completed_voter_count() + " finished voting";
+        	    }
+        	     else if (not_finished)
+        	    {
+        	        html = html + ", " +  not_finished +  " started voting";
+        	    }
+        	}
 	    }
 	    else if (self.phase() == 'results')
 	    {
