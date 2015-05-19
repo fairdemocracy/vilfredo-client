@@ -90,11 +90,13 @@ function scaleProposalImages()
     console.log('scaleProposalImages called...');
     $('.proposal-blurb').each(function() {
     	var container = $(this);
+    	container.css('padding', '0');
     	var prop_image = $(this).find('img');
     	if (prop_image.length > 0)
     	{
     		var image = new Image();
     		image.src = prop_image.attr('src');
+    		console.log('prop_image src ==> ' + prop_image.attr('src'));
     		var w = image.width;
     		var h = image.height;
     		var container_w = container.innerWidth();
@@ -105,16 +107,18 @@ function scaleProposalImages()
 		
     		console.log('container_w ==> ' + container_w);
     		console.log('container_h ==> ' + container_h);
+    		
+    		var show_h, show_w;
 	
     		if (container_w < container_h)
     		{
-                var show_h = container_w / w  * h;
-                var show_w = container_w;
+                show_h = container_w / w  * h;
+                show_w = container_w;
     		}
     		else
     		{
-    			var show_w = container_h / h  * w;
-                var show_h = container_h;
+    			show_w = container_h / h  * w;
+                show_h = container_h;
     		}
 
     		prop_image
@@ -5811,7 +5815,7 @@ function ProposalsViewModel()
 	    self.key_players([]);
 	    self.inherited_proposals([]);
 	}
-	
+
 	self.hasVoted = ko.pureComputed(function() {
 		var proposals = self.proposals();
 		if (proposals.length == 0)
@@ -6090,7 +6094,14 @@ function ProposalsViewModel()
 		  		addProposalViewModel().close();
 		  		questionViewModel.fetchQuestion();
 		  		questionViewModel.fetchParticipationTable();
-		  		scaleProposalImages();
+		  		
+		  		var scale_timer;
+		        clearTimeout(scale_timer);
+		        scale_timer = setTimeout(function() 
+				{
+					scaleProposalImages();
+		        }, 500);
+		  		
 			
 		}).fail(function(jqXHR) {
            var message = getJQXHRMessage(jqXHR, 'There was a problem uploading your file.'); // stuffit
