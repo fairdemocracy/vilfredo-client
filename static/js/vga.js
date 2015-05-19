@@ -89,6 +89,7 @@ function scaleProposalImage(img)
 {
 	console.log('scaleProposalImage called...');
 	var prop_image = $(img);
+	prop_image.hide();
 	var container = $(prop_image).parent('.proposal-blurb');
 	if (container.length == 1)
 	{
@@ -124,7 +125,8 @@ function scaleProposalImage(img)
 
     		prop_image
     			.width(show_w)
-                .height(show_h);
+                .height(show_h)
+                .show();
 		};
 	}
 }
