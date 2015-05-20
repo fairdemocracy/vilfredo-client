@@ -96,20 +96,12 @@ function scaleProposalImage(img)
 		container.css('padding', '0');
 		var image = new Image();
 		image.src = prop_image.attr('src');
-		console.log('prop_image src ==> ' + prop_image.attr('src'));
 		image.onload = function()
 		{
 		    var w = image.width;
 		    var h = image.height;
     		var container_w = container.innerWidth();
     		var container_h = container.innerHeight();
-	
-    		console.log('w ==> ' + w);
-    		console.log('h ==> ' + h);
-	
-    		console.log('container_w ==> ' + container_w);
-    		console.log('container_h ==> ' + container_h);
-		
     		var show_h, show_w;
 
     		if (container_w < container_h)
@@ -206,6 +198,19 @@ function readURL(input)
                     .height(show_h);
             };
         };
+    }
+}
+
+function getVoteMapIconPath()
+{
+    var voting_type = (questionViewModel.voting_type()) ? questionViewModel.voting_type() : 1;
+    if (voting_type == 2)
+    {
+    	return '/images/linear_map.svg';
+    } 
+    else
+    {
+    	return '/images/triangle_b.svg';
     }
 }
 
@@ -2210,7 +2215,7 @@ function createResultsMapLinear(svg) // lanister
             .line( -triangle_width, 0, true )
             .close(),
             {
-                fill: 'white',
+                fill: '#ffe0bd',
                 stroke: '#CDCDCD',
                 strokeWidth: 2,
                 id: 'results_triangle'
@@ -2522,7 +2527,7 @@ function createVoteMapLinear(svg)
     //var dimensions = getResultsMapDimensions();
     var dimensions = calculateLinearModalTriangleDimensions(svg);
     var max_x = dimensions.width;
-    var max_y = dimensions.height;
+    var max_y = dimensions.height; // bah
     
     //var max_x = container_width;
     //var max_y = container_height;
@@ -2540,7 +2545,7 @@ function createVoteMapLinear(svg)
         .line( -triangle_width, 0, true )
         .close(),
         {
-            fill: 'white',
+            fill: '#ffe0bd',
             stroke: '#CDCDCD',
             strokeWidth: 2,
             id: 'vote_map',
@@ -6406,7 +6411,7 @@ function ProposalsViewModel()
 					//console.log('check if pid added ==> ' + $(this).data('pid'));
 					console.log('Load triangle into proposal box');
 					//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
-					$(this).svg({loadURL: STATIC_FILES + '/images/triangle_b.svg'});//,
+					$(this).svg({loadURL: STATIC_FILES + getVoteMapIconPath()});//,
 					//			 onLoad: init3WayTriangle});
 				});
 				
@@ -6606,7 +6611,7 @@ function ProposalsViewModel()
 					//console.log('check if pid added ==> ' + $(this).data('pid'));
 					console.log('Load triangle into proposal box');
 					//$(this).svg({loadURL: flask_util.url_for('static', {filename:'images/triangle.svg'}),
-					$(this).svg({loadURL: STATIC_FILES + '/images/triangle_b.svg'});//,
+					$(this).svg({loadURL: STATIC_FILES + getVoteMapIconPath()});//,
 					//			 onLoad: init3WayTriangle});
 				});
 				//self.fetchKeyPlayers();
