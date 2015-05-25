@@ -4,4 +4,9 @@
 	<rect x="0" y="0" width="100%" height="100%" fill="#dbdbdb" /> 
 	<path d="M0,100l744,0l0,41l-744,0z" fill="blue" stroke="#6666ff" stroke-width="2" id="vote_map" class="linear"/>
 	</g>
+	<defs>
+	<linearGradient id="lineargradient" x1="0" y1="0" x2="50" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF0000" stop-opacity="1"/><stop offset="1" stop-color="#00FF00" stop-opacity="1"/>
+	</linearGradient>
+	</defs>
 </svg>
+

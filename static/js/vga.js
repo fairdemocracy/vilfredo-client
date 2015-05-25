@@ -564,7 +564,7 @@ function setVoteLinear(proposal, dfd) // bosh
     var max_y = dimensions.height;
 	var votex = max_x * proposal.mapx(); 
 	var votesgroup = $('.votes', svg.root());
-    var fill_color = setMapColorLinear(proposal.mapx());
+    var fill_color = 'white';//setMapColorLinear(proposal.mapx());
 
 	// If a vote is already plotted, move it
 	var vote = $('.vote', svg.root()).filter(function() {
@@ -919,7 +919,7 @@ function showUserVotesLinear(clicked, svg, userid, username) // lanister
         }
         
         var votex = container_width * coords['voters'][parseInt(userid)]['mapx'];
-        var stroke_color = setMapColorLinear(coords['voters'][parseInt(userid)]['mapx']);
+        var stroke_color = 'white';//setMapColorLinear(coords['voters'][parseInt(userid)]['mapx']);
 
         var prop_title;
         var prop = proposalsViewModel.getProposal(pid);
@@ -1008,7 +1008,7 @@ function showProposalVotesLinear(med, svg) // lanister
     jQuery.each(voters, function(userid, coords) {
         userid = parseInt(userid);
         votex = container_width * coords.mapx;
-        stroke_color = setMapColorLinear(coords.mapx);
+        stroke_color = 'white';// setMapColorLinear(coords.mapx);
         cursor_type = (userid == currentUserViewModel.userid()) ? 'pointer' : 'arrow';
 
         var vote = svg.line(g, votex, y1, votex, y2, {class: 'vote allvotes', stroke: stroke_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: 'User ' + userid});
@@ -1658,7 +1658,7 @@ function updateVote(vote, svg, cx, cy, fill_color)
 	vote_label.animate({svgX : txtx, svgY : txty}, 1000);
 }
 
-function updateVoteLinear(vote, svg, votex, fill_color) // lanister
+function updateVoteLinear(vote, svg, votex) // lanister
 {
 	console.log("*********************************");
 	console.log("updateVoteLinear called...");
@@ -1667,7 +1667,7 @@ function updateVoteLinear(vote, svg, votex, fill_color) // lanister
 	var userid = vote.data('settings').userid;
 	console.log("updateVoteLinear: Update vote pid " + pid + " for user " + userid);
 	
-	vote.animate({svgX1 : votex, svgX2 : votex, svgStroke: fill_color}, 1000);
+	vote.animate({svgX1 : votex, svgX2 : votex}, 1000);
 	
 	// vote label
     var txtx = votex;
@@ -1893,7 +1893,7 @@ function updateResultsMapLinear() // lanister
                 if (vote.length == 1)
                 {
                     console.log("********>>> Update vote pid " + pid + " for user " + userid);
-                    updateVoteLinear($(vote), svg, votex, stroke_color);/////
+                    updateVoteLinear($(vote), svg, votex);/////
                 }
                 else
                 {
@@ -1914,7 +1914,7 @@ function updateResultsMapLinear() // lanister
             });
             if (vote.length == 1)
             {
-                updateVoteLinear($(vote), svg, votex, stroke_color);////
+                updateVoteLinear($(vote), svg, votex);////
             }
             else
             {
@@ -2205,6 +2205,10 @@ function createResultsMapLinear(svg) // lanister
     var dimensions = calculateTriangleDimensions(svg);
     var triangle_width = dimensions.width;
     var triangle_height = dimensions.height;
+    
+    var defs = svg.defs();
+    svg.linearGradient(defs, 'lineargradient', [[0, 'red', 1], [1, 'green', 1]], 0, 0, triangle_width, 0, {gradientUnits: 'userSpaceOnUse'}); 
+    
     var resultsmap = svg.group('resultsmap');
 	var path = svg.createPath();
     var map = svg.path(
@@ -2215,7 +2219,7 @@ function createResultsMapLinear(svg) // lanister
             .line( -triangle_width, 0, true )
             .close(),
             {
-                fill: '#ffe0bd',
+                fill: 'url(#lineargradient)',
                 stroke: '#CDCDCD',
                 strokeWidth: 2,
                 id: 'results_triangle'
@@ -2450,9 +2454,17 @@ function createResultsMap2D(svg) // loud
         med = svg.circle(g, cx, cy, RADIUS+1, {class: 'med', title: title}); 
         $(med).data('settings', {'pid': parseInt(pid), 'pareto': coords['pareto']});
 
+        // expo
         if (pareto)
         {
-            $(med).addClass('pareto');
+            if (questionViewModel.phase() != 'results')
+            {
+                $(med).addClass('pareto');
+            }
+            else
+            {
+                fill_color = setMapColor(coords['median'].medx, coords['median'].medy);
+            }
         }
 
         // Display proposal ID
@@ -2536,6 +2548,10 @@ function createVoteMapLinear(svg)
     
     var tg = svg.group('votemap');
 	var path = svg.createPath();
+	
+	var defs = svg.defs();
+    svg.linearGradient(defs, 'lineargradient', [[0, '#FF0000', 1], [1, '#00FF00', 1]], 0, 0, max_x, 0, {gradientUnits: 'userSpaceOnUse'}); 
+
           
     triangle = svg.path(
         tg,
@@ -2545,7 +2561,7 @@ function createVoteMapLinear(svg)
         .line( -triangle_width, 0, true )
         .close(),
         {
-            fill: '#ffe0bd',
+            fill: 'url(#lineargradient)',
             stroke: '#CDCDCD',
             strokeWidth: 2,
             id: 'vote_map',
@@ -2557,10 +2573,8 @@ function createVoteMapLinear(svg)
     var agree_oppose_y = LINEAR_MAP_OFFSET_Y + 100;
     var agree_oppose_text_y = agree_oppose_y - 10;
     
-    var agree_oppose = svg.rect(20, agree_oppose_y, 250, 30, 5, 5, {class: 'map_guide', fill: 'green', stroke: 'grey', strokeWidth: 3});
-    var agree_oppose_fill = svg.rect(20, agree_oppose_y, 125, 30, {class: 'map_guide', id: 'haobox', fill: 'red', stroke: 'none'});
     svg.text(15, agree_oppose_text_y, 'Oppose', {class: 'map_guide', id: 'uboxtext', fill: 'red', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
-    svg.text(210, agree_oppose_text_y, 'Agree', {class: 'map_guide', id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
+    svg.text(triangle_width-100, agree_oppose_text_y, 'Agree', {class: 'map_guide', id: 'aboxtext', fill: 'green', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana',});
 
     var g = svg.group(tg, 'votes');
     /*
@@ -2609,7 +2623,7 @@ function createVoteMapLinear(svg)
     if (isNaN(proposal.mapx()) == false && isNaN(proposal.mapy()) == false)
     {
         votex = triangle_width * proposal.mapx();
-        fill_color = setMapColorLinear(proposal.mapx());
+        fill_color = 'white';//setMapColorLinear(proposal.mapx());
         cursor_type = 'pointer';
         
         // {class: 'vote active', stroke: fill_color, strokeWidth: LINEAR_MAP_VOTE_WIDTH, cursor: cursor_type, title: proposal.title()}
@@ -3174,7 +3188,7 @@ function trackDraggableVoteResultsLinear(e)
 	
 	var n_cx = cx / container_width;
 	
-	var fill_color = setMapColorLinear(n_cx);
+	//var fill_color = setMapColorLinear(n_cx);
 	var vote = $('.vote.dragged', svg.root());
 	if (vote.length == 0)
 	{
@@ -3186,7 +3200,7 @@ function trackDraggableVoteResultsLinear(e)
 	}
 	else
 	{
-        vote.attr('x1', cx).attr('x2', cx).attr('stroke', fill_color);
+        vote.attr('x1', cx).attr('x2', cx);
         var vote_label = $('.vote_label', svg.root()).filter(function() {
     		return $(this).data("settings").pid == vote.data('settings').pid && $(this).data("settings").userid == vote.data('settings').userid;
     	});
@@ -3380,7 +3394,6 @@ function trackDraggableVoteLinear(e)
 	
 	var n_cx = cx / max_x;
 	
-	var fill_color = setMapColorLinear(n_cx);
 	var vote = $('.vote.draggable');
 	if (vote.length == 0)
 	{
@@ -3388,7 +3401,7 @@ function trackDraggableVoteLinear(e)
 	}
 	else
 	{
-        $('.vote.draggable').attr('x1', cx).attr('x2', cx).attr('stroke', fill_color);
+        $('.vote.draggable').attr('x1', cx).attr('x2', cx);
         $('.activelabel').attr('x', cx);
     }
 }
