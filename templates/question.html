@@ -1108,7 +1108,7 @@
 		});	
 		
 		$('#votemapwindow').on('shown.bs.modal', function() {
-			//console.log('votemapwindow modal shown...');
+			console.log('votemapwindow modal shown...');
 			if (questionViewModel.voting_type() == 1)
 			{
 				$('#modalvotesmap').svg({onLoad: createVoteMap}); 
