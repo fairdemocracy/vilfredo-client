@@ -2834,7 +2834,7 @@ function createVoteMap(svg)
 
   var vunderstand = svg.rect(container_width-110, container_height-230, 30, 200, 5, 5, {class: 'map_guide', fill: 'yellow', stroke: 'grey', stroke: 'none'});
         var vunderstand_fill = svg.rect(container_width-110, container_height-230, 30, 100, {class: 'map_guide', id: 'vubox', fill: '#cdcdcd', stroke: 'none'});
-        svg.text(container_width-165, container_height-240, 'Understand', {class: 'map_guide', id: 'aboxtext', fill: 'yellow', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana'});
+        svg.text(container_width-165, container_height-240, 'Understand', {class: 'map_guide', id: 'aboxtext', fill: '#885ead', strokeWidth: 2, fontSize: '20', fontFamily: 'Verdana'});
 
 
     var g = svg.group(tg, 'votes');
