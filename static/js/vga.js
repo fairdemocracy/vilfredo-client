@@ -2,7 +2,7 @@
 #
 # This file is part of the Vilfredo Client.
 #
-# Copyright © 2009-2014 Pietro Speroni di Fenizio / Derek Paterson.
+# Copyright © 2009-2015 Pietro Speroni di Fenizio / Derek Paterson.
 #
 # VilfredoReloadedCore is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -7038,11 +7038,11 @@ function QuestionViewModel() // bang
     self.show_finished_writing = ko.computed(function() {
         if (self.finished_writing() == 0)
         {
-		    return 'Ok I\'m Finish Writing';
+		    return 'I have no more Proposals';
 		}
 		else
 		{
-		    return 'Resume Writing';
+		    return 'Resume Proposing';
 		} 
     }, this);
 
