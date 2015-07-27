@@ -6553,7 +6553,9 @@ function ProposalsViewModel()
 		return ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
 		    console.log('Proposals data returned...');
 			console.log(data);
-			self.proposals([]);
+			// Clear inherited_proposals list
++           self.inherited_proposals([]);
+			
 			fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
 		  		
