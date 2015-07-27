@@ -214,7 +214,7 @@
                 <div class="panel-body">
 				<div class="">
 					<!-- ko foreach: questions -->
-					<!-- ko if: !consensus_found() && phase() == "writing" -->
+					<!-- ko if: phase() == "writing" -->
 					
 					<div class="item">
 					<a data-toggle="tooltip" title="" data-bind="attr: { href: link, title: $root.settooltip($data) }">
