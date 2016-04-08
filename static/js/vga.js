@@ -4186,6 +4186,15 @@ function NewQuestionViewModel()
     self.question_type = ko.observable(1);
     self.voting_type = ko.observable(1);
     
+    self.questionPermissions = ko.observable([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.selectedPermissions = 7;
+    
     self.questionTypes = ko.observableArray([
        {name: "Standard", id: 1},
        {name: "Image", id: 2}
@@ -4237,6 +4246,7 @@ function NewQuestionViewModel()
 		console.log("NewQuestionViewModel.resetform() called ...");
         self.title('');
         self.blurb('');
+        self.questionPermissions(7);
         self.question_type(1);
         self.voting_type(1);
         self.title.isModified(false);
@@ -4284,6 +4294,7 @@ function NewQuestionViewModel()
 		var question = {
             title: self.title(),
             blurb: content,
+            permissions: self.selectedPermissions,
             question_type: self.question_type(),
             voting_type: self.voting_type(),
             recaptcha: recaptcha

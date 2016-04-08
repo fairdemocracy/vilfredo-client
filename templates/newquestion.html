@@ -66,6 +66,19 @@
 
 			<form id="newquestionform" autocomplete="off" class="form-horizontal" role="form"> 
 			<div class="form-group">
+			
+			<label for="inputQuestionType" class="col-sm-2 control-label">Set your permission level</label>
+			
+	    	<div class="form-group">
+				<select size=1 data-bind="
+    				options: questionPermissions,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: selectedPermissions">
+				</select>
+			</div>
+			    
+			    
 		    <label for="inputQuestionType" class="col-sm-2 control-label">Proposal Type</label>
 			
 			<div class="col-sm-2">
