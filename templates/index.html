@@ -546,7 +546,6 @@
 	$(function() {
 		currentUserViewModel = new CurrentUserViewModel();
 		questionsViewModel = new QuestionsViewModel();
-		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
 		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() ); 
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
@@ -596,7 +595,6 @@
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
-		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
 		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
 		ko.applyBindings(loginViewModel, $('#invited_intro')[0]);
 		//ko.applyBindings(registerViewModel, $('#register')[0]);
@@ -627,12 +625,6 @@
 		$('body').on('hidden.bs.popover', function() {
   			console.log('popover hidden...');
 		});	
-		
-		$('#addquestion').on('hide.bs.modal', function(e) {
-			$(this).find(".form-control").val('').trigger("setcharcount");
-			newQuestionViewModel().clear();
-			$(this).find("button").removeAttr('disabled');
-		});
 		
 		$('body').tooltip({
 		    selector: "[data-toggle='tooltip']",
