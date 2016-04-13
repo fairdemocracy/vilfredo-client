@@ -950,10 +950,13 @@
 			$('html head title').text('Vilfredo - ' + questionViewModel.title())
 			
 			// Load Templates
+			if (typeof(LOAD_GOOGLE_ANALYTICS) != "undefined" && LOAD_GOOGLE_ANALYTICS)
+			{
 			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
 			{
-				$('head').append( template );
+    				$('head').prepend( template );
 			});
+			}
 			$.get( STATIC_FILES + "/templates/navbar.template.html", function( template ) 
 			{
 				$( "#navbar" ).html( template );
