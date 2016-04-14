@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!--
+****************************************************************************
+#
+# This file is part of the Vilfredo Client.
+#
+# Copyright © 2009-2015 Pietro Speroni di Fenizio / Derek Paterson.
+#
+# VilfredoReloadedCore is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation version 3 of the License.
+#
+# VilfredoReloadedCore is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License
+# for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with VilfredoReloadedCore.  If not, see <http://www.gnu.org/licenses/>.
+#
+****************************************************************************
+-->
+<html> 
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Vilfredo - Fair Decision-Making</title>
+        <meta name="description" content="Vilfredo allows groups from 5 to 20 people to ask open questions and reach consensus in a easy and fair way.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-title" content="Vilfredo">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--
+		<link rel="stylesheet" type="text/css" href="static/bootstrap/dist/css/bootstrap.css"/>
+		-->
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.css') }}">
+        
+		<!--
+		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
+		-->
+
+	</head>
+    <body>
+	
+	<div id="navbar"></div>
+
+	<div class="container main">
+		
+		<div id="authorcontrols" data-bind="visible: created">
+		<h4>Your New Question</h4>
+		<button data-bind="click: permissionsViewModel.open_permissions.bind()" class="btn btn-primary" title="View current Participants and invite new people">Participants</button>
+		<button data-bind="click: gotopage.bind()" class="btn btn-primary" title="Go to the question page">Go to Question Page</button>
+		<button data-bind="click: gotomain.bind()" class="btn btn-primary" title="Go to main page">View All Questions</button>
+		</div>
+		
+		<h1>Edit Question</h1>
+		<div id="editquestion">
+			<h4>Submit your new question below.</h4>
+			<div class="container row">
+			  <div id="editquestion_error" class="message-container col-sm-12">
+			   <div class="message alert alert-danger">
+			   </div>
+			  </div>
+			</div>
+
+			<form id="newquestionform" autocomplete="off" class="form-horizontal" role="form"> 
+			
+			
+			    <div class="form-group">
+    		    <label for="inputPermissions" class="col-sm-2 control-label">Permissions</label>
+
+    			<div class="col-sm-2">
+    		 	  <div id="inputPermissions" class="btn-group selectpermissions" role="group">
+    	 	   		  <select size=1 data-bind="
+                      	options: questionPermissions,
+                          optionsText: 'name',
+                          optionsValue: 'id',
+                      	value: permissions">
+                      </select>
+    		   </div>
+    			</div>
+
+    			<div class="col-sm-8">
+                <span data-bind="visible: permissions() == 1">Select "Read" if you want follow but not participate</span>
+                <span data-bind="visible: permissions() == 3">Select "Vote" if you want to be able to vote but not write proposals</span>
+                <span data-bind="visible: permissions() == 5">Select "Propose" if you want to be able to write proposals but not vote</span>
+                <span data-bind="visible: permissions() == 7">Select "Vote and Propose" if you want to both vote and write proposals</span>
+                </div>
+    		 </div>
+			
+			<div class="form-group">
+		    <label for="inputQuestionType" class="col-sm-2 control-label">Proposal Type</label>
+			
+			<div class="col-sm-2">
+		 	  <div id="inputQuestionType" class="btn-group selectquestiontype" role="group">
+	 	   		<select name="questiontype" size=1 data-bind="
+    				options: questionTypes,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: question_type">
+				</select>
+		   </div>
+			</div>
+			
+			<div class="col-sm-8">
+			<span data-bind="visible: question_type() == 2">Select "Image" if you want to to receive proposals containing a single image</span>
+			<span data-bind="visible: question_type() == 1">Select "Standard" if you want to receive text-only proposals</span>
+		    </div>
+		 </div>
+		
+		<div class="form-group">
+		    <label for="inputVotingType" class="col-sm-2 control-label">Voting Type</label>
+			
+			<div class="col-sm-2">
+		 	  <div id="inputVotingType" class="btn-group selectquestiontype" role="group">
+	 	   		<select name="votingtype" size=1 data-bind="
+    				options: votingTypes,
+				    optionsText: 'name',
+				    optionsValue: 'id',
+					value: voting_type">
+				</select>
+		   </div>
+			</div>
+			
+			<div class="col-sm-8">
+			<span data-bind="visible: voting_type() == 1">Select "Triangle" to evaluate proposals based on how much they are understood and liked</span>
+			<span data-bind="visible: voting_type() == 2">Select "Linear" to evaluate proposals based only on how much they are liked</span>
+		    </div>
+		 </div>
+		
+		<div class="form-group">
+		    <label for="inputQuestionTitle" class="col-sm-2 control-label">Title</label>
+		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: title"></span>
+		      <input name="title" data-bind="value: title" type="text" class="form-control input-lg" id="inputQuestionTitle" placeholder="Title">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputQuestionBlurb" class="col-sm-2 control-label">Question Text</label>
+		    <div class="col-sm-10">
+			<span class="errormsg" data-bind="validationMessage: blurb"></span>
+			<textarea name="blurb" data-bind="value: blurb" id="inputQuestionBlurb" class="form-control input-lg" rows="20" placeholder="Type your question here"></textarea>
+		    </div>
+		  </div>
+		<div class="form-group recaptcha">
+		    <div class="col-sm-offset-2 col-sm-10">
+				<p>We've detected a lot of links in your text. Please prove you are a person and not a bot.</p>
+		      <div class="g-recaptcha" data-sitekey="6LcSkgYTAAAAALuB_Ioey0cKPnjWnxkLts_YVNdU"></div>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button data-bind="click: updateQuestion" type="button" class="btn btn-primary">Submit</button>
+		      <button data-bind="click: cancel" type="button" class="btn btn-primary">Cancel</button>
+		    </div>
+		  </div>
+		</form>
+	</div>
+		
+	</div><!-- container -->
+
+
+	<div id="footer"></div>
+	
+	<!-- HTML5 shim and Respond.js IE8 agree of HTML5 elements and media queries -->
+    	<!--[if lt IE 9]>
+      	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    	<![endif]-->
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery/1.10.2/jquery.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.2.0.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-mapping-debug.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/cookies/jquery.cookie.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/purl-master/purl.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/charCount.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/amplify.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+		{{ flask_util_js.js }}
+
+	<script type="text/javascript">
+	function initPage()
+	{
+		console.log('initPage called...');
+		$('.current-questions').show();
+		
+		$.when(currentUserViewModel.loadUser()).then(function()
+		{
+			console.log('loadUser completed...');
+			
+			// Load Templates
+			//
+			if (typeof(LOAD_GOOGLE_ANALYTICS) != "undefined" && LOAD_GOOGLE_ANALYTICS)
+			{
+			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
+			{
+				$('head').prepend( template );
+			});
+			}
+			
+			$.get( STATIC_FILES + "/templates/navbar.template.html", function( data ) 
+			{
+				$( "#navbar" ).html( data );
+				ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
+				$('.home').attr('href', VILFREDO_URL);
+				$('.navbar-brand').attr('href', VILFREDO_URL);
+			});
+			$.get( STATIC_FILES + "/templates/footer.template.html", function( data ) 
+			{
+				$( "#footer" ).html( data );
+			});
+			
+			$.get( STATIC_FILES + "/templates/login.template.html", function( template ) 
+			{
+				//$( "#login-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(loginViewModel, $('#login')[0]);
+				$('#login').on('hide.bs.modal', function(e) {
+					loginViewModel().clear();
+				});
+				$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
+			});
+			
+			$.get( STATIC_FILES + "/templates/register.template.html", function( template ) 
+			{
+				//$( "#register-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(registerViewModel, $('#register')[0]);
+				$('#register').on('hide.bs.modal', function(e) {
+					registerViewModel().clear();
+				});
+			});
+			
+			$.get( STATIC_FILES + "/templates/participants.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(permissionsViewModel, $('#participants')[0]);
+			});
+			$.get( STATIC_FILES + "/templates/add_users.template.html", function( template ) 
+			{
+				$('body').append( template )
+				ko.applyBindings(inviteUsersViewModel, $('#add_users')[0]);
+			});
+		
+		});
+	}
+	
+	$(function() {
+		currentUserViewModel = new CurrentUserViewModel();
+		questionsViewModel = new QuestionsViewModel();
+		permissionsViewModel = new PermissionsViewModel();
+		inviteUsersViewModel = new InviteUsersViewModel();
+		questionViewModel = new QuestionViewModel();
+		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
+		
+		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
+		loginViewModel = ko.validatedObservable( new LoginViewModel() );
+		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
+		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
+		
+		ko.applyBindings(newQuestionViewModel, $('#authorcontrols')[0]);
+		
+		$.cookieBar({
+			fixed: true, bottom: true,
+			forceShow: false, zindex: '1040',
+			effect: 'slide', autoEnable: false
+		});
+		
+		initPage();
+		
+		//$('.votesmap').svg({onLoad: createVotesMap});
+		
+		$('#votenowwindow').on('show.bs.modal', function() {
+			//console.log('votenowwindow modal shown...');
+			$('.modalvotesmap').svg({onLoad: createVoteMap});
+		})
+		
+		
+		$('#login').on('hide.bs.modal', function(e) {
+			loginViewModel().clear();
+		})
+		$('#register').on('hide.bs.modal', function(e) {
+			registerViewModel().clear();
+		})
+		
+		$("#inputQuestionTitle").charCount({
+			allowed: 120,		
+			warning: 10,
+			counterText: "Left" + " "
+		});
+		
+		$("#inputQuestionBlurb").charCount({
+			allowed: 10000,		
+			warning: 9950,
+			counterText: "Left" + " "
+		});
+			
+		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
+			
+	});
+	</script>
+	</body>
+</html>

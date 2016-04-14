@@ -64,7 +64,7 @@
 			<span class="status" data-bind="html: set_question_status()"></span></strong></p>
         </div>
     </div>
-</div>
+</div>	
 			<br>
 		</div>	
 	<div>
@@ -934,6 +934,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/amplify.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		{{ flask_util_js.js }}
@@ -1095,7 +1096,7 @@
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		voteMapViewModel = new VoteMapViewModel();
 		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
-		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
+		//editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
 
 		
 		//newCommentViewModel = new NewCommentViewModel();
@@ -1163,12 +1164,14 @@
 		    ko.applyBindings(questionViewModel, $(this)[0]);
 		});
 		
+		
+		ko.applyBindings(questionViewModel, $('#info_panel')[0]);
 		ko.applyBindings(questionViewModel, $('.author_controls')[0]);
 		ko.applyBindings(questionViewModel, $('.question_access')[0]);
 		
 		
 		ko.applyBindings(questionViewModel, $('#completed_box')[0]);
-		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
+		//ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
 		//ko.applyBindings(questionViewModel, $('#edit_question_buttons')[0]);
 	
 		//ko.applyBindings(loginViewModel, $('#login')[0]);

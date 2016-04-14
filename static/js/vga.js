@@ -30,6 +30,17 @@ var generation_id = parseInt(getQuerySegment('gen'));
 var room = getQuerySegment('room');
 console.log(room);
 
+
+// Add function to delete all keys from Amplify storage if defined
+if (typeof(amplify) != "undefined")
+{
+    amplify.clearStore = function() {
+        $.each(amplify.store(), function (storeKey) {
+            amplify.store(storeKey, null);
+        });
+    };
+}
+
 //var room = $.url().param('room') ? $.url().param('room') : '';
 //var room = getQuerySegment('room');
 
@@ -4922,15 +4933,52 @@ function EditQuestionViewModel()
 {
     var self = this;
     self.question;
-    self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength:1 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 1 });
+    self.storedQuestion = amplify.store( "editquestion" );
+    self.title = ko.observable(self.storedQuestion.title).extend({ required: true, maxLength: 120, minLength:1 });
+    self.blurb = ko.observable(self.storedQuestion.blurb).extend({ required: true, maxLength: 10000, minLength: 1 });
+    self.id = ko.observable(self.storedQuestion.id);
+    self.question_type = ko.observable(self.storedQuestion.question_type);
+    self.voting_type = ko.observable(self.storedQuestion.voting_type);
+    self.permissions = ko.observable(self.storedQuestion.permissions);
+    
+    
+    self.questionPermissions = ko.observableArray([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.selectedPermissions = self.storedQuestion.permissions;
+    
+    self.questionTypes = ko.observableArray([
+       {name: "Standard", id: 1},
+       {name: "Image", id: 2}
+    ]);
+    self.votingTypes = ko.observableArray([
+       {name: "Triangle", id: 1},
+       {name: "Linear", id: 2}
+    ]);
 	
 	self.setQuestion = function(question)
 	{
+		self.title(self.storedQuestion.title);
+		self.blurb(self.storedQuestion.blurb);
+		/*
 		self.question = question;
 		self.title(question.title());
 		self.blurb(question.blurb());
+		*/
 	}
+	
+	self.cancel = function()
+	{
+	    // Clear cache
+	    amplify.store( "editquestion", null );
+	    // Go back to question
+	    window.location.replace(VILFREDO_URL+"/question/"+self.id());
+	}
+	
 	self.close = function()
 	{
 	    self.question = null;
@@ -4940,7 +4988,7 @@ function EditQuestionViewModel()
 	}
 	self.show = function()
 	{
-	    $('#editquestion').modal('show'); // banger
+	    $('#editquestion').modal('show');
 	}
 	self.updateQuestion = function() 
 	{
@@ -4966,17 +5014,26 @@ function EditQuestionViewModel()
 		var updates = {
             title: self.title(),
             blurb: content,
+            permissions: self.permissions(),
+            question_type: self.question_type(),
+            voting_type: self.voting_type(),
             recaptcha: recaptcha
         };
 		
-		var EDIT_URL = VILFREDO_API + '/questions/' + self.question.id();
+		var EDIT_URL = VILFREDO_API + '/questions/' + self.id();
 	    console.log('updateQuestion called...');
 	    ajaxRequest(EDIT_URL, 'POST', updates).done(function(data) {
+		    // Clear cache
+		    amplify.store( "editquestion", null );
+		    // Goto question
+		    window.location.replace(VILFREDO_URL+"/question/"+self.id());
+		    /*
 		    console.log(data);
 		    $('#editquestion .recaptcha').hide();
 		    self.question.title(self.title());
 		    self.question.blurb(self.blurb());
 		    self.close();
+		    */
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
 			console.log('editproposal: There was an error editing the question. Status: ' + textStatus); // maison
@@ -7056,6 +7113,19 @@ function QuestionViewModel() // bang
 
 	self.participation_table = ko.observable();
 	self.num_proposals = ko.observable();
+	
+	self.edit = function()
+	{
+		console.log("QuestionViewModel.edit called...");
+		
+		//editQuestionViewModel().setQuestion(self);
+		//editQuestionViewModel().show();
+		
+		amplify.store( "editquestion", { blurb: self.blurb(), title: self.title(), id: self.id(),
+		                                question_type: self.question_type(), voting_type: self.voting_type(),
+		                                permissions: self.my_permissions()} );
+		window.location.replace(VILFREDO_URL+"/editquestion");
+	}
 
     self.show_finished_writing_in_table = function(finished) {
         if (finished == 0)
@@ -7247,14 +7317,6 @@ function QuestionViewModel() // bang
             var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
             add_page_alert('danger', message);
         });
-	}
-	
-	// chat
-	self.edit = function()
-	{
-		console.log("QuestionViewModel.edit called...");
-		editQuestionViewModel().setQuestion(self);
-		editQuestionViewModel().show();
 	}
     
     self.select_pf_only = function(pf_only, $data) // bang
