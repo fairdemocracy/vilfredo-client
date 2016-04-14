@@ -4185,8 +4185,9 @@ function NewQuestionViewModel()
     self.id = ko.observable(0);
     self.question_type = ko.observable(1);
     self.voting_type = ko.observable(1);
+    self.permissions = ko.observable(7);
     
-    self.questionPermissions = ko.observable([
+    self.questionPermissions = ko.observableArray([
        {name: "Read", id: 1},
        {name: "Vote", id: 3},
 	   {name: "Propose", id: 5},
@@ -4204,21 +4205,15 @@ function NewQuestionViewModel()
        {name: "Linear", id: 2}
     ]);
 
-    self.availableTimePeriods = ko.observableArray([
-       new TimePeriod("1 second", 1),
-       new TimePeriod("1 minute", 60),
-       new TimePeriod("1 hour", 3600),
-       new TimePeriod("1 day", 86400),
-       new TimePeriod("1 week", 604800),
-       new TimePeriod("30 days", 2592000)
-    ]);
-
-    self.minimum_time = ko.observable(self.availableTimePeriods()[2]);
-    self.maximum_time = ko.observable(self.availableTimePeriods()[3]);
 
     self.clear = function()
     {
         self.resetform();
+    }
+    
+    self.select_permissions = function(permissions, $data)
+    {
+        self.permissions(permissions);
     }
     
     self.select_question_type = function(question_type, $data)
@@ -4249,6 +4244,7 @@ function NewQuestionViewModel()
         self.questionPermissions(7);
         self.question_type(1);
         self.voting_type(1);
+        self.permissions(7);
         self.title.isModified(false);
         self.blurb.isModified(false);
         //self.minimum_time(self.availableTimePeriods()[2]);
@@ -4294,24 +4290,21 @@ function NewQuestionViewModel()
 		var question = {
             title: self.title(),
             blurb: content,
-            permissions: self.selectedPermissions,
+            permissions: self.permissions(),
             question_type: self.question_type(),
             voting_type: self.voting_type(),
             recaptcha: recaptcha
         };
-		console.log(question);
-		
-		
+		//console.log(question);
 		//var question = new FormData($('#newquestionform')[0]);
 		
 		var URI = VILFREDO_API + '/questions';
 		ajaxRequest(URI, 'POST', question).done(function(data, textStatus, jqXHR) {
-		    console.log('Add question data returned...');
-			console.log(data);
+		    //console.log('Add question data returned...');
+			//console.log(data);
 
 			if (jqXHR.status == 201)
 			{
-				self.clear();
 		  		// Question added - show permissions modal
 		  		$.cookie('vganewquestion', data.question.id, { path: '/' });
 		  		window.location.replace(VILFREDO_URL+"/question/"+data.question.id);

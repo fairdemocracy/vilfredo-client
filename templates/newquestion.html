@@ -65,20 +65,33 @@
 			</div>
 
 			<form id="newquestionform" autocomplete="off" class="form-horizontal" role="form"> 
+			    
+			    
+		        <div class="form-group">
+    		    <label for="inputPermissions" class="col-sm-2 control-label">Permissions</label>
+
+    			<div class="col-sm-2">
+    		 	  <div id="inputPermissions" class="btn-group selectpermissions" role="group">
+    	 	   		  <select size=1 data-bind="
+                      	options: questionPermissions,
+                          optionsText: 'name',
+                          optionsValue: 'id',
+                      	value: permissions">
+                      </select>
+    		   </div>
+    			</div>
+
+    			<div class="col-sm-8">
+                <span data-bind="visible: permissions() == 1">Select "Read" if you want follow but not participate</span>
+                <span data-bind="visible: permissions() == 3">Select "Vote" if you want to be able to vote but not write proposals</span>
+                <span data-bind="visible: permissions() == 5">Select "Propose" if you want to be able to write proposals but not vote</span>
+                <span data-bind="visible: permissions() == 7">Select "Vote and Propose" if you want to both vote and write proposals</span>
+                </div>
+    		 </div>
+			
+			
+			
 			<div class="form-group">
-			
-			<label for="inputQuestionType" class="col-sm-2 control-label">Set your permission level</label>
-			
-	    	<div class="form-group">
-				<select size=1 data-bind="
-    				options: questionPermissions,
-				    optionsText: 'name',
-				    optionsValue: 'id',
-					value: selectedPermissions">
-				</select>
-			</div>
-			    
-			    
 		    <label for="inputQuestionType" class="col-sm-2 control-label">Proposal Type</label>
 			
 			<div class="col-sm-2">
@@ -129,7 +142,7 @@
 		    <label for="inputQuestionBlurb" class="col-sm-2 control-label">Question Text</label>
 		    <div class="col-sm-10">
 			<span class="errormsg" data-bind="validationMessage: blurb"></span>
-			<textarea name="blurb" data-bind="value: blurb" id="inputQuestionBlurb" class="form-control input-lg" rows="6" placeholder="Type your question here"></textarea>
+			<textarea name="blurb" data-bind="value: blurb" id="inputQuestionBlurb" class="form-control input-lg" rows="20" placeholder="Type your question here"></textarea>
 		    </div>
 		  </div>
 		<div class="form-group recaptcha">
