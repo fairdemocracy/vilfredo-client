@@ -71,16 +71,20 @@
 	    
 	<div id="info_panel">	
 	<!-- ko if: questionViewModel.my_permissions() == 1 -->
-	<button title="You have Read Only permission for this question. This means you can follow what's going on but you cannot write proposals or vote." class="btn btn-primary"><span class="glyphicon glyphicon-eye-open"></span> Read Only</button>
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-eye-open"></span> Read Only</strong></p>
+	<p>You have Read Only permission for this question. This means you can follow what's going on but you cannot write proposals or vote.</p>
 	<!-- /ko -->
 	<!-- ko if: questionViewModel.my_permissions() == 3 -->
-	<button title="You have Vote Only permission for this question. This means you can follow what's going on and vote but you cannot write proposals of your own." class="btn btn-primary"><span class="glyphicon glyphicon-thumbs-up"></span> Vote Only</button>
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> Vote Only</strong></p>
+	<p>You have Vote Only permission for this question. This means you can follow what's going on and vote but you cannot write proposals of your own.</p>
 	<!-- /ko -->
 	<!-- ko if: questionViewModel.my_permissions() == 5 -->
-	<button title="You have Propose Only permission for this question. This means you can follow what's going on and write your own proposals but you cannot vote." class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Propose Only</button>
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-pencil"></span> Propose Only</strong></p>
+	<p>You have Propose Only permission for this question. This means you can follow what's going on and write your own proposals but you cannot vote.</p>
 	<!-- /ko -->
 	<!-- ko if: questionViewModel.my_permissions() == 7 -->
-	<button title="You have Vote and Propose permissions for this question. This means you can both write proposals and vote." class="btn btn-primary"><span class="glyphicon glyphicon-thumbs-up"></span> <span class="glyphicon glyphicon-pencil"></span> Vote and Propose</button>
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> <span class="glyphicon glyphicon-pencil"></span> Vote and Propose</strong></p>
+	<p>You have Vote and Propose permissions for this question. This means you can both write proposals and vote.</p>
 	<!-- /ko -->
 	</div>
 	<br/>
