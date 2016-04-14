@@ -65,9 +65,25 @@
         </div>
     </div>
 </div>
-			
 			<br>
 		</div>	
+	<div>
+	    
+	<div id="info_panel">	
+	<!-- ko if: questionViewModel.my_permissions() == 1 -->
+	<button title="You have Read Only permission for this question. This means you can follow what's going on but you cannot write proposals or vote." class="btn btn-primary"><span class="glyphicon glyphicon-eye-open"></span> Read Only</button>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == 3 -->
+	<button title="You have Vote Only permission for this question. This means you can follow what's going on and vote but you cannot write proposals of your own." class="btn btn-primary"><span class="glyphicon glyphicon-thumbs-up"></span> Vote Only</button>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == 5 -->
+	<button title="You have Propose Only permission for this question. This means you can follow what's going on and write your own proposals but you cannot vote." class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Propose Only</button>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == 7 -->
+	<button title="You have Vote and Propose permissions for this question. This means you can both write proposals and vote." class="btn btn-primary"><span class="glyphicon glyphicon-thumbs-up"></span> <span class="glyphicon glyphicon-pencil"></span> Vote and Propose</button>
+	<!-- /ko -->
+	</div>
+	<br/>
 		
 	<!-- author controls start -->
 	<div class="author_controls" data-bind="visible: author_id() == currentUserViewModel.userid()">
