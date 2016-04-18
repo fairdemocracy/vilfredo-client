@@ -185,11 +185,17 @@
 	<!-- /ko -->
 	</div>
 		
-		
 		<br>
 		<div class="panel question-info">
 			<div class="well">
+			    <!-- ko if: USE_MARKDOWN_IN_QUESTION_TEXT -->
+			    <span class="blurb" 
+			    data-bind="html: $data.blurb()"></span>
+			    <!-- /ko -->
+			    
+			    <!-- ko ifnot: USE_MARKDOWN_IN_QUESTION_TEXT -->
 				<span class="blurb" data-bind="html: Autolinker.link(convertNewlines($data.blurb()), {email: false, phone: false, twitter: false})"></span>
+				<!-- /ko -->
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
@@ -938,6 +944,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/json2.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/amplify.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>

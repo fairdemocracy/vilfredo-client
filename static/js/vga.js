@@ -234,9 +234,24 @@ function gotomain()
 function convertNewlines(str)
 {
     if (str != undefined)
-        return str.replace(/\r?\n/g, '<br>');
+    {
+        if ($(str).is('p'))
+        {
+            // string has html paragraph tags so just return as is
+            console.log("Sting has HTML tags. Returning unchanged.");
+            return str;
+        }
+        else
+        {
+            // convert line breaks into html break tags
+            console.log("Adding <b> HTML tags.");
+            return str.replace(/\r?\n/g, '<br>');
+        }
+    }
     else
+    {
         return 'No text found';
+    }
 }
 
 function updateProgress(evt) 
@@ -4258,37 +4273,35 @@ function NewQuestionViewModel()
         self.permissions(7);
         self.title.isModified(false);
         self.blurb.isModified(false);
-        //self.minimum_time(self.availableTimePeriods()[2]);
-        //self.maximum_time(self.availableTimePeriods()[3]);
         $('#addquestion .alert').css('display', 'none').html('');
         $("#addquestion .form-control").trigger( "setcharcount" );
     }
     self.close = function()
     {
         console.log("NewQuestionViewModel.close() called ...");
-        self.resetform();
+        //self.resetform();
         $('#addquestion').modal('hide');
     }
-    /*
-    self.add = function()
-	{
-		console.log("NewQuestionViewModel.add() called ...");
 
-		// hare
-		questionsViewModel.addQuestion({
-            title: self.title(),
-            blurb: self.blurb(),
-            question_type: self.question_type(),
-            minimum_time: 1,
-            maximum_time: 2592000
-        });
-	}*/
 	self.addQuestion = function()
 	{
 		console.log("NewQuestionViewModel.addQuestion() called...");
 		
+		var content;
+		if (USE_MARKDOWN_IN_QUESTION_TEXT)
+		{
+		    content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		}
+		else
+		{
+		    content = Autolinker.link(self.blurb());
+		}
+		
 		// Check link count
-		var content = Autolinker.link(self.blurb());
+		//var content = Autolinker.link(self.blurb());
+		//var content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		//console.log("Content = " + content);
+		
 		var numlinks = (content.match(/http/g) || []).length;
 		var recaptcha = $('#g-recaptcha-response').val();
 		if (numlinks > MAX_LINKS_IN_QUESTION && (recaptcha == undefined || recaptcha.length == 0))
@@ -4935,7 +4948,14 @@ function EditQuestionViewModel()
     self.question;
     self.storedQuestion = amplify.store( "editquestion" );
     self.title = ko.observable(self.storedQuestion.title).extend({ required: true, maxLength: 120, minLength:1 });
-    self.blurb = ko.observable(self.storedQuestion.blurb).extend({ required: true, maxLength: 10000, minLength: 1 });
+    
+    var markdown_text = toMarkdown(self.storedQuestion.blurb);
+    self.blurb = ko.observable().extend({ required: true, maxLength: 10000, minLength: 1 });
+    if (USE_MARKDOWN_IN_QUESTION_TEXT == false)
+    {
+        self.blurb(self.storedQuestion.blurb);
+    }
+    
     self.id = ko.observable(self.storedQuestion.id);
     self.question_type = ko.observable(self.storedQuestion.question_type);
     self.voting_type = ko.observable(self.storedQuestion.voting_type);
@@ -4959,11 +4979,19 @@ function EditQuestionViewModel()
        {name: "Triangle", id: 1},
        {name: "Linear", id: 2}
     ]);
+    
+    self.parseBlurbToMarkup = function()
+    {
+        var markdown_text = toMarkdown(self.storedQuestion.blurb);
+		self.blurb(markdown_text);
+		$("#inputQuestionBlurb").trigger( "setcharcount" );
+    }
 	
 	self.setQuestion = function(question)
 	{
-		self.title(self.storedQuestion.title);
-		self.blurb(self.storedQuestion.blurb);
+		//self.title(self.storedQuestion.title);
+		
+		
 		/*
 		self.question = question;
 		self.title(question.title());
@@ -5000,8 +5028,20 @@ function EditQuestionViewModel()
 			return;
 		}
 		
+		var content;
+		if (USE_MARKDOWN_IN_QUESTION_TEXT)
+		{
+		    content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		}
+		else
+		{
+		    content = Autolinker.link(self.blurb());
+		}
+		
 		// Check link count
-		var content = Autolinker.link(self.blurb());
+		// var content = Autolinker.link(self.blurb());
+		//var content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		
 		var numlinks = (content.match(/http/g) || []).length;
 		var recaptcha = $('#g-recaptcha-response').val();
 		if (numlinks > MAX_LINKS_IN_QUESTION && (recaptcha == undefined || recaptcha.length == 0))
