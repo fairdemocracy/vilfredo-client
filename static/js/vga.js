@@ -235,10 +235,10 @@ function convertNewlines(str)
 {
     if (str != undefined)
     {
-        if ($(str).is('p'))
+        if (/<[a-z][\s\S]*>/i.test(str))
         {
             // string has html paragraph tags so just return as is
-            console.log("Sting has HTML tags. Returning unchanged.");
+            console.log("String has HTML tags. Returning unchanged.");
             return str;
         }
         else
