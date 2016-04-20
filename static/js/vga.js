@@ -3755,6 +3755,8 @@ function add_form_alert(containerid, alert, text, class_id) // thrones
 
 function add_page_alert(alert, text, class_id) // bear
 {
+    console.log("add_page_alert called with alert text: " + text);
+    /*
     if (typeof(class_id) == 'undefined')
     {
         class_id = '';
@@ -3766,7 +3768,7 @@ function add_page_alert(alert, text, class_id) // bear
         {
             return;
         }
-    }
+    }*/
 
     var alertbox = '<div class="main alert alert-'+ alert +' alert-dismissable ' + class_id + '">';
 	alertbox = alertbox + '	<span class="flash">' + alert_flash[alert] + '</span> <span class="text">';
@@ -4524,6 +4526,12 @@ function NewPasswordViewModel()
     });
 
     self.confirmpassword = ko.observable('');
+    
+    self.reset = function()
+    {
+        self.password('');
+        self.confirmpassword('');
+    }
 
     self.setnewpassword = function()
     {
@@ -4533,27 +4541,25 @@ function NewPasswordViewModel()
     		$.cookie('vgaclient', null, { path: '/' });
     		var passwords = {'password': self.password() , 'password2': self.confirmpassword(), 'token': self.token};
     		return ajaxRequestPR(URI, 'POST', passwords).done(function(data, textStatus, jqXHR) {
-    			// badger
     			if (jqXHR.status != 201)
 			    {
-				    console.log(data.message);
-				    add_page_alert('danger', data.message);
+				    add_page_alert('danger', getJQXHRMessage(jqXHR));
 				}
 				else
 				{
+				    self.reset();
 				    $.cookie('vgaclient', data.token, {expires: 365, path: '/'});
     			    add_page_alert('success', 'Your password has been reset. Click here to continue <a class="home" href="">Home</a>');
     			    $('.home').attr('href', VILFREDO_URL);
     			    //$('#enter_password').fadeOut(400);
     			    $('#enter_password').find('input').val('');
+    			    $('#enter_password').animate({ opacity: 0 });
 				}
 
     		}).fail(function(jqXHR) {
-               if (jqXHR.status == 403)
-    		    {
     				console.log('Password reset failed.');
-    				add_page_alert('danger', 'Oops! Something went wrong.');
-    			}
+    				self.reset();
+    				add_page_alert('danger', getJQXHRMessage(jqXHR));
             });
         }
     }
@@ -4574,7 +4580,7 @@ function NewPasswordViewModel()
     }
 }
 
-function PasswordResetViewModel() // wolf
+function PasswordResetViewModel()
 {
     var self = this;
     self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
@@ -4583,8 +4589,8 @@ function PasswordResetViewModel() // wolf
 	{
 	    self.email('');
 	    self.email.isModified(false);
-	    $('#reset_pwd .alert').text('').fadeOut(100);
-	    $('#reset_pwd').modal('hide');
+	    //$('#reset_pwd .alert').text('').fadeOut(100);
+	    //$('#reset_pwd').modal('hide');
 	}
 	self.reset = function()
 	{
@@ -4604,8 +4610,8 @@ function PasswordResetViewModel() // wolf
 		ajaxRequestPR(URI, 'POST', {'email': self.email()}).done(function(data, textStatus, jqXHR) {
 			if (jqXHR.status == 201)
 			{
-	  		    self.done();
-	  		    add_page_alert('success', 'An email has been sent to your address with instructions on how to reset your password.', 'reset-email-sent');
+	  		    //self.done();
+                add_page_alert('success', getJQXHRMessage(jqXHR));
 	  		}
 	  		else
 			{
@@ -4617,10 +4623,7 @@ function PasswordResetViewModel() // wolf
 			}
 		}).fail(function(jqXHR) {
             console.log('pwd_reset: There was an error. Error ' + jqXHR.status);
-            $('#reset_pwd .alert')
-            .text(JSON.parse(jqXHR.responseText).message)
-            .setAlertClass('danger')
-            .fadeIn();
+            add_page_alert('danger', getJQXHRMessage(jqXHR));
         });
 	}
 }
