@@ -4583,7 +4583,8 @@ function NewPasswordViewModel()
 function PasswordResetViewModel()
 {
     var self = this;
-    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
+    //self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
+    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5 });
 
 	self.done = function()
 	{
@@ -4599,7 +4600,7 @@ function PasswordResetViewModel()
 		$('#login .message').text('').fadeOut(100);
 		if (self.email() == '')
 		{
-			$('#reset_pwd .message').text('You must enter your email address.')
+			$('#reset_pwd .message').text('You must enter your email address or username.')
 			    .fadeIn(500)
     			.delay(5000)
     			.fadeOut(500);
