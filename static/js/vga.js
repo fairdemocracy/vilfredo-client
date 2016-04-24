@@ -4602,7 +4602,7 @@ function PasswordResetViewModel()
 		{
 			$('#reset_pwd .message').text('You must enter your email address or username.')
 			    .fadeIn(500)
-    			.delay(5000)
+    			.delay(3000)
     			.fadeOut(500);
 			return;
 		}
@@ -4627,6 +4627,19 @@ function PasswordResetViewModel()
             add_page_alert('danger', getJQXHRMessage(jqXHR));
         });
 	}
+	
+	self.logEnter = function(data, e)
+    {
+        if(e.which == 13)
+        {
+            self.reset();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
 
 function LoginViewModel()
@@ -4651,7 +4664,7 @@ function LoginViewModel()
         if(e.which == 13)
         {
             self.dologin();
-            return true;
+            return false;
         }
         else
         {
