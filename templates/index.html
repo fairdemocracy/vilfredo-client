@@ -477,10 +477,14 @@
 			
 			// Load Templates
 			//
-			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
+			if (typeof(LOAD_GOOGLE_ANALYTICS) != "undefined" && LOAD_GOOGLE_ANALYTICS)
 			{
-				$('head').prepend( template );
-			});
+    			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
+    			{
+    				$('head').prepend( template );
+    			});
+			}
+			
 			$.get( STATIC_FILES + "/templates/navbar.template.html", function( template ) 
 			{
 				$( "#navbar" ).html( template );
@@ -546,8 +550,7 @@
 	$(function() {
 		currentUserViewModel = new CurrentUserViewModel();
 		questionsViewModel = new QuestionsViewModel();
-		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
-		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() ); 
+		//editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() ); 
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
@@ -596,8 +599,7 @@
 		ko.applyBindings(questionsViewModel, $('.all-questions')[0]);
 		
 		ko.applyBindings(questionsViewModel, $('.notloggedin')[0]);
-		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
-		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
+		//ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
 		ko.applyBindings(loginViewModel, $('#invited_intro')[0]);
 		//ko.applyBindings(registerViewModel, $('#register')[0]);
 		ko.applyBindings(currentUserViewModel, $('.intro')[0]);
@@ -627,12 +629,6 @@
 		$('body').on('hidden.bs.popover', function() {
   			console.log('popover hidden...');
 		});	
-		
-		$('#addquestion').on('hide.bs.modal', function(e) {
-			$(this).find(".form-control").val('').trigger("setcharcount");
-			newQuestionViewModel().clear();
-			$(this).find("button").removeAttr('disabled');
-		});
 		
 		$('body').tooltip({
 		    selector: "[data-toggle='tooltip']",

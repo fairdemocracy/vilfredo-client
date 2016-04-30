@@ -30,6 +30,17 @@ var generation_id = parseInt(getQuerySegment('gen'));
 var room = getQuerySegment('room');
 console.log(room);
 
+
+// Add function to delete all keys from Amplify storage if defined
+if (typeof(amplify) != "undefined")
+{
+    amplify.clearStore = function() {
+        $.each(amplify.store(), function (storeKey) {
+            amplify.store(storeKey, null);
+        });
+    };
+}
+
 //var room = $.url().param('room') ? $.url().param('room') : '';
 //var room = getQuerySegment('room');
 
@@ -223,9 +234,24 @@ function gotomain()
 function convertNewlines(str)
 {
     if (str != undefined)
-        return str.replace(/\r?\n/g, '<br>');
+    {
+        if (/<[a-z][\s\S]*>/i.test(str))
+        {
+            // string has html paragraph tags so just return as is
+            console.log("String has HTML tags. Returning unchanged.");
+            return str;
+        }
+        else
+        {
+            // convert line breaks into html break tags
+            console.log("Adding <b> HTML tags.");
+            return str.replace(/\r?\n/g, '<br>');
+        }
+    }
     else
+    {
         return 'No text found';
+    }
 }
 
 function updateProgress(evt) 
@@ -3729,6 +3755,8 @@ function add_form_alert(containerid, alert, text, class_id) // thrones
 
 function add_page_alert(alert, text, class_id) // bear
 {
+    console.log("add_page_alert called with alert text: " + text);
+    /*
     if (typeof(class_id) == 'undefined')
     {
         class_id = '';
@@ -3740,7 +3768,7 @@ function add_page_alert(alert, text, class_id) // bear
         {
             return;
         }
-    }
+    }*/
 
     var alertbox = '<div class="main alert alert-'+ alert +' alert-dismissable ' + class_id + '">';
 	alertbox = alertbox + '	<span class="flash">' + alert_flash[alert] + '</span> <span class="text">';
@@ -4185,6 +4213,16 @@ function NewQuestionViewModel()
     self.id = ko.observable(0);
     self.question_type = ko.observable(1);
     self.voting_type = ko.observable(1);
+    self.permissions = ko.observable(7);
+    
+    self.questionPermissions = ko.observableArray([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.selectedPermissions = 7;
     
     self.questionTypes = ko.observableArray([
        {name: "Standard", id: 1},
@@ -4195,21 +4233,15 @@ function NewQuestionViewModel()
        {name: "Linear", id: 2}
     ]);
 
-    self.availableTimePeriods = ko.observableArray([
-       new TimePeriod("1 second", 1),
-       new TimePeriod("1 minute", 60),
-       new TimePeriod("1 hour", 3600),
-       new TimePeriod("1 day", 86400),
-       new TimePeriod("1 week", 604800),
-       new TimePeriod("30 days", 2592000)
-    ]);
-
-    self.minimum_time = ko.observable(self.availableTimePeriods()[2]);
-    self.maximum_time = ko.observable(self.availableTimePeriods()[3]);
 
     self.clear = function()
     {
         self.resetform();
+    }
+    
+    self.select_permissions = function(permissions, $data)
+    {
+        self.permissions(permissions);
     }
     
     self.select_question_type = function(question_type, $data)
@@ -4237,41 +4269,41 @@ function NewQuestionViewModel()
 		console.log("NewQuestionViewModel.resetform() called ...");
         self.title('');
         self.blurb('');
+        self.questionPermissions(7);
         self.question_type(1);
         self.voting_type(1);
+        self.permissions(7);
         self.title.isModified(false);
         self.blurb.isModified(false);
-        //self.minimum_time(self.availableTimePeriods()[2]);
-        //self.maximum_time(self.availableTimePeriods()[3]);
         $('#addquestion .alert').css('display', 'none').html('');
         $("#addquestion .form-control").trigger( "setcharcount" );
     }
     self.close = function()
     {
         console.log("NewQuestionViewModel.close() called ...");
-        self.resetform();
+        //self.resetform();
         $('#addquestion').modal('hide');
     }
-    /*
-    self.add = function()
-	{
-		console.log("NewQuestionViewModel.add() called ...");
 
-		// hare
-		questionsViewModel.addQuestion({
-            title: self.title(),
-            blurb: self.blurb(),
-            question_type: self.question_type(),
-            minimum_time: 1,
-            maximum_time: 2592000
-        });
-	}*/
 	self.addQuestion = function()
 	{
 		console.log("NewQuestionViewModel.addQuestion() called...");
 		
+		var content;
+		if (USE_MARKDOWN_IN_QUESTION_TEXT)
+		{
+		    content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		}
+		else
+		{
+		    content = Autolinker.link(self.blurb());
+		}
+		
 		// Check link count
-		var content = Autolinker.link(self.blurb());
+		//var content = Autolinker.link(self.blurb());
+		//var content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		//console.log("Content = " + content);
+		
 		var numlinks = (content.match(/http/g) || []).length;
 		var recaptcha = $('#g-recaptcha-response').val();
 		if (numlinks > MAX_LINKS_IN_QUESTION && (recaptcha == undefined || recaptcha.length == 0))
@@ -4284,23 +4316,21 @@ function NewQuestionViewModel()
 		var question = {
             title: self.title(),
             blurb: content,
+            permissions: self.permissions(),
             question_type: self.question_type(),
             voting_type: self.voting_type(),
             recaptcha: recaptcha
         };
-		console.log(question);
-		
-		
+		//console.log(question);
 		//var question = new FormData($('#newquestionform')[0]);
 		
 		var URI = VILFREDO_API + '/questions';
 		ajaxRequest(URI, 'POST', question).done(function(data, textStatus, jqXHR) {
-		    console.log('Add question data returned...');
-			console.log(data);
+		    //console.log('Add question data returned...');
+			//console.log(data);
 
 			if (jqXHR.status == 201)
 			{
-				self.clear();
 		  		// Question added - show permissions modal
 		  		$.cookie('vganewquestion', data.question.id, { path: '/' });
 		  		window.location.replace(VILFREDO_URL+"/question/"+data.question.id);
@@ -4496,6 +4526,12 @@ function NewPasswordViewModel()
     });
 
     self.confirmpassword = ko.observable('');
+    
+    self.reset = function()
+    {
+        self.password('');
+        self.confirmpassword('');
+    }
 
     self.setnewpassword = function()
     {
@@ -4505,27 +4541,25 @@ function NewPasswordViewModel()
     		$.cookie('vgaclient', null, { path: '/' });
     		var passwords = {'password': self.password() , 'password2': self.confirmpassword(), 'token': self.token};
     		return ajaxRequestPR(URI, 'POST', passwords).done(function(data, textStatus, jqXHR) {
-    			// badger
     			if (jqXHR.status != 201)
 			    {
-				    console.log(data.message);
-				    add_page_alert('danger', data.message);
+				    add_page_alert('danger', getJQXHRMessage(jqXHR));
 				}
 				else
 				{
+				    self.reset();
 				    $.cookie('vgaclient', data.token, {expires: 365, path: '/'});
     			    add_page_alert('success', 'Your password has been reset. Click here to continue <a class="home" href="">Home</a>');
     			    $('.home').attr('href', VILFREDO_URL);
     			    //$('#enter_password').fadeOut(400);
     			    $('#enter_password').find('input').val('');
+    			    $('#enter_password').animate({ opacity: 0 });
 				}
 
     		}).fail(function(jqXHR) {
-               if (jqXHR.status == 403)
-    		    {
     				console.log('Password reset failed.');
-    				add_page_alert('danger', 'Oops! Something went wrong.');
-    			}
+    				self.reset();
+    				add_page_alert('danger', getJQXHRMessage(jqXHR));
             });
         }
     }
@@ -4546,17 +4580,18 @@ function NewPasswordViewModel()
     }
 }
 
-function PasswordResetViewModel() // wolf
+function PasswordResetViewModel()
 {
     var self = this;
-    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
+    //self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5, email: true });
+    self.email = ko.observable('').extend({ required: true, maxLength: 50, minLength:5 });
 
 	self.done = function()
 	{
 	    self.email('');
 	    self.email.isModified(false);
-	    $('#reset_pwd .alert').text('').fadeOut(100);
-	    $('#reset_pwd').modal('hide');
+	    //$('#reset_pwd .alert').text('').fadeOut(100);
+	    //$('#reset_pwd').modal('hide');
 	}
 	self.reset = function()
 	{
@@ -4565,9 +4600,9 @@ function PasswordResetViewModel() // wolf
 		$('#login .message').text('').fadeOut(100);
 		if (self.email() == '')
 		{
-			$('#reset_pwd .message').text('You must enter your email address.')
+			$('#reset_pwd .message').text('You must enter your email address or username.')
 			    .fadeIn(500)
-    			.delay(5000)
+    			.delay(3000)
     			.fadeOut(500);
 			return;
 		}
@@ -4576,8 +4611,8 @@ function PasswordResetViewModel() // wolf
 		ajaxRequestPR(URI, 'POST', {'email': self.email()}).done(function(data, textStatus, jqXHR) {
 			if (jqXHR.status == 201)
 			{
-	  		    self.done();
-	  		    add_page_alert('success', 'An email has been sent to your address with instructions on how to reset your password.', 'reset-email-sent');
+	  		    //self.done();
+                add_page_alert('success', getJQXHRMessage(jqXHR));
 	  		}
 	  		else
 			{
@@ -4589,12 +4624,22 @@ function PasswordResetViewModel() // wolf
 			}
 		}).fail(function(jqXHR) {
             console.log('pwd_reset: There was an error. Error ' + jqXHR.status);
-            $('#reset_pwd .alert')
-            .text(JSON.parse(jqXHR.responseText).message)
-            .setAlertClass('danger')
-            .fadeIn();
+            add_page_alert('danger', getJQXHRMessage(jqXHR));
         });
 	}
+	
+	self.logEnter = function(data, e)
+    {
+        if(e.which == 13)
+        {
+            self.reset();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
 
 function LoginViewModel()
@@ -4619,7 +4664,7 @@ function LoginViewModel()
         if(e.which == 13)
         {
             self.dologin();
-            return true;
+            return false;
         }
         else
         {
@@ -4918,15 +4963,67 @@ function EditQuestionViewModel()
 {
     var self = this;
     self.question;
-    self.title = ko.observable('').extend({ required: true, maxLength: 120, minLength:1 });
-    self.blurb = ko.observable('').extend({ required: true, maxLength: 10000, minLength: 1 });
+    self.storedQuestion = amplify.store( "editquestion" );
+    self.title = ko.observable(self.storedQuestion.title).extend({ required: true, maxLength: 120, minLength:1 });
+    
+    var markdown_text = toMarkdown(self.storedQuestion.blurb);
+    self.blurb = ko.observable().extend({ required: true, maxLength: 10000, minLength: 1 });
+    if (USE_MARKDOWN_IN_QUESTION_TEXT == false)
+    {
+        self.blurb(self.storedQuestion.blurb);
+    }
+    
+    self.id = ko.observable(self.storedQuestion.id);
+    self.question_type = ko.observable(self.storedQuestion.question_type);
+    self.voting_type = ko.observable(self.storedQuestion.voting_type);
+    self.permissions = ko.observable(self.storedQuestion.permissions);
+    
+    
+    self.questionPermissions = ko.observableArray([
+       {name: "Read", id: 1},
+       {name: "Vote", id: 3},
+	   {name: "Propose", id: 5},
+	   {name: "Vote, Propose", id: 7}
+    ]);
+    
+    self.selectedPermissions = self.storedQuestion.permissions;
+    
+    self.questionTypes = ko.observableArray([
+       {name: "Standard", id: 1},
+       {name: "Image", id: 2}
+    ]);
+    self.votingTypes = ko.observableArray([
+       {name: "Triangle", id: 1},
+       {name: "Linear", id: 2}
+    ]);
+    
+    self.parseBlurbToMarkup = function()
+    {
+        var markdown_text = toMarkdown(self.storedQuestion.blurb);
+		self.blurb(markdown_text);
+		$("#inputQuestionBlurb").trigger( "setcharcount" );
+    }
 	
 	self.setQuestion = function(question)
 	{
+		//self.title(self.storedQuestion.title);
+		
+		
+		/*
 		self.question = question;
 		self.title(question.title());
 		self.blurb(question.blurb());
+		*/
 	}
+	
+	self.cancel = function()
+	{
+	    // Clear cache
+	    amplify.store( "editquestion", null );
+	    // Go back to question
+	    window.location.replace(VILFREDO_URL+"/question/"+self.id());
+	}
+	
 	self.close = function()
 	{
 	    self.question = null;
@@ -4936,7 +5033,7 @@ function EditQuestionViewModel()
 	}
 	self.show = function()
 	{
-	    $('#editquestion').modal('show'); // banger
+	    $('#editquestion').modal('show');
 	}
 	self.updateQuestion = function() 
 	{
@@ -4948,8 +5045,20 @@ function EditQuestionViewModel()
 			return;
 		}
 		
+		var content;
+		if (USE_MARKDOWN_IN_QUESTION_TEXT)
+		{
+		    content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		}
+		else
+		{
+		    content = Autolinker.link(self.blurb());
+		}
+		
 		// Check link count
-		var content = Autolinker.link(self.blurb());
+		// var content = Autolinker.link(self.blurb());
+		//var content = $("#inputQuestionBlurb").data('markdown').parseContent();
+		
 		var numlinks = (content.match(/http/g) || []).length;
 		var recaptcha = $('#g-recaptcha-response').val();
 		if (numlinks > MAX_LINKS_IN_QUESTION && (recaptcha == undefined || recaptcha.length == 0))
@@ -4962,17 +5071,26 @@ function EditQuestionViewModel()
 		var updates = {
             title: self.title(),
             blurb: content,
+            permissions: self.permissions(),
+            question_type: self.question_type(),
+            voting_type: self.voting_type(),
             recaptcha: recaptcha
         };
 		
-		var EDIT_URL = VILFREDO_API + '/questions/' + self.question.id();
+		var EDIT_URL = VILFREDO_API + '/questions/' + self.id();
 	    console.log('updateQuestion called...');
 	    ajaxRequest(EDIT_URL, 'POST', updates).done(function(data) {
+		    // Clear cache
+		    amplify.store( "editquestion", null );
+		    // Goto question
+		    window.location.replace(VILFREDO_URL+"/question/"+self.id());
+		    /*
 		    console.log(data);
 		    $('#editquestion .recaptcha').hide();
 		    self.question.title(self.title());
 		    self.question.blurb(self.blurb());
 		    self.close();
+		    */
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
 			console.log('editproposal: There was an error editing the question. Status: ' + textStatus); // maison
@@ -7052,6 +7170,19 @@ function QuestionViewModel() // bang
 
 	self.participation_table = ko.observable();
 	self.num_proposals = ko.observable();
+	
+	self.edit = function()
+	{
+		console.log("QuestionViewModel.edit called...");
+		
+		//editQuestionViewModel().setQuestion(self);
+		//editQuestionViewModel().show();
+		
+		amplify.store( "editquestion", { blurb: self.blurb(), title: self.title(), id: self.id(),
+		                                question_type: self.question_type(), voting_type: self.voting_type(),
+		                                permissions: self.my_permissions()} );
+		window.location.replace(VILFREDO_URL+"/editquestion");
+	}
 
     self.show_finished_writing_in_table = function(finished) {
         if (finished == 0)
@@ -7243,14 +7374,6 @@ function QuestionViewModel() // bang
             var message = getJQXHRMessage(jqXHR, 'There was a problem updating your proposal');
             add_page_alert('danger', message);
         });
-	}
-	
-	// chat
-	self.edit = function()
-	{
-		console.log("QuestionViewModel.edit called...");
-		editQuestionViewModel().setQuestion(self);
-		editQuestionViewModel().show();
 	}
     
     self.select_pf_only = function(pf_only, $data) // bang

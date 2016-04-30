@@ -64,10 +64,30 @@
 			<span class="status" data-bind="html: set_question_status()"></span></strong></p>
         </div>
     </div>
-</div>
-			
+</div>	
 			<br>
 		</div>	
+	<div>
+	    
+	<div id="info_panel">	
+	<!-- ko if: questionViewModel.my_permissions() == 1 -->
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-eye-open"></span> Read Only</strong></p>
+	<p>You have Read Only permission for this question. This means you can follow what's going on but you cannot write proposals or vote.</p>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == 3 -->
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> Vote Only</strong></p>
+	<p>You have Vote Only permission for this question. This means you can follow what's going on and vote but you cannot write proposals of your own.</p>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == 5 -->
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-pencil"></span> Propose Only</strong></p>
+	<p>You have Propose Only permission for this question. This means you can follow what's going on and write your own proposals but you cannot vote.</p>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == 7 -->
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> <span class="glyphicon glyphicon-pencil"></span> Vote and Propose</strong></p>
+	<p>You have Vote and Propose permissions for this question. This means you can both write proposals and vote.</p>
+	<!-- /ko -->
+	</div>
+	<br/>
 		
 	<!-- author controls start -->
 	<div class="author_controls" data-bind="visible: author_id() == currentUserViewModel.userid()">
@@ -144,7 +164,7 @@
 	<div class="alert alert-info" role="alert">
 	  <h3>Read Only</h3>
 	  <h4>You have been granted read only access to this question.</h4>
-	<p>This allows you to follow the deliberation process but you are unable to submit proposals or vote.</p>
+	<p>This allows you to follow the deliberation process but you are unable to submit proposals or to vote. You are also unable to write and support proposal comments, to ask and support proposal questions.</p>
 	</div>
 	<!-- /ko -->
 	<!-- ko if: phase() == 'voting' && my_permissions() == 5 -->
@@ -165,11 +185,17 @@
 	<!-- /ko -->
 	</div>
 		
-		
 		<br>
 		<div class="panel question-info">
 			<div class="well">
+			    <!-- ko if: USE_MARKDOWN_IN_QUESTION_TEXT -->
+			    <span class="blurb" 
+			    data-bind="html: $data.blurb()"></span>
+			    <!-- /ko -->
+			    
+			    <!-- ko ifnot: USE_MARKDOWN_IN_QUESTION_TEXT -->
 				<span class="blurb" data-bind="html: Autolinker.link(convertNewlines($data.blurb()), {email: false, phone: false, twitter: false})"></span>
+				<!-- /ko -->
 				<br>
 				<div data-bind="visible: phase() == 'writing' && can_propose_ob()">
 				<br><br>
@@ -242,7 +268,9 @@
 	
 			<h2>Results Map</h2>
 			<p>The results map shows the <strong>median</strong> vote for each proposal in grey, the current winning proposals are shown in orange. Click on a median point to display the actual votes from each paticipant.</p>
+			<!-- ko if: my_permissions() == 3 || my_permissions() == 7 -->
 			<p class="note"><strong>Update</strong> You can now drag your votes to various locations on the map to update your vote. This may also cause the median vote to change.</p>
+			<!-- /ko -->
 			<button data-bind="click: resultsShowMediansOnly()" id="clearvotes" type="button" class="btn btn-sm btn-primary resultsmapcontrols">Show Medians Only</button>
 			
 		<!--
@@ -598,16 +626,18 @@
 					<div class="comment for">
 						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
+						<button data-bind="click: questionViewModel.my_permissions() > 1 ? $parent.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
 						</div>
 					</div>					
 					<!-- /ko -->
 					<!-- /ko -->
 					
+					<!-- ko if: questionViewModel.my_permissions() > 1 -->
 					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: comment_for" id="inputForComment" class="form-control" rows="2" placeholder="Point For"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'for')" id="inputForCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</span>
+					<!-- /ko -->
 					
 					</div>
 					<!-- for comments end -->
@@ -621,16 +651,19 @@
 					<div class="comment against">
 						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-						<button data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
+						<button data-bind="click: questionViewModel.my_permissions() > 1 ? $parent.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
 						</div>
 					</div>
 					<!-- /ko -->
 					<!-- /ko -->
 					
+					<!-- ko if: questionViewModel.my_permissions() > 1 -->
 					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: comment_against" id="inputAgainstComment" class="form-control" rows="2" placeholder="Point Against"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'against')" id="inputAgainstCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</span>
+					<!-- /ko -->
+					
 					</div>
 				</div>
 			</div> 
@@ -651,7 +684,7 @@
 							<div class="comment question">
 								<div data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-								<button title="I would also like this question answered" data-bind="click: $parent.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
+								<button title="I would also like this question answered" data-bind="click: questionViewModel.my_permissions() > 1 ? $root.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
 								</div>
 							</div>
 						</div>
@@ -660,14 +693,14 @@
 							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
 								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
-								<button title="I think this answers the question" data-bind="click: $root.toggleCommentSupport" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
+								<button title="I think this answers the question" data-bind="click: questionViewModel.my_permissions() > 1 ? $root.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
 								</div>
 							</div>
 							<!-- /ko -->
 															
 							<!-- ko ifnot: $parent.getAnswerObject(id) -->
 							
-							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id && questionViewModel.phase() == 'voting'-->
+							<!-- ko if: $root.proposal.author_id() == currentUserViewModel.user.id && questionViewModel.phase() == 'voting' && (questionViewModel.my_permissions() > 1) -->
 							<textarea data-bind="attr: { 'data-commentid': id }" class="inputAnswerComment form-control" rows="3" placeholder="Answer Question"></textarea>
 							<button data-bind="click: function() { $root.addcommentanswer(id()) }" type="button" class="btn btn-default btn-xs">answer</button>
 							<!-- /ko -->
@@ -686,10 +719,12 @@
 					<!-- /ko -->
 					<div class="qabox row">
 					<div class="col-md-6">
+					<!-- ko if: questionViewModel.my_permissions() > 1 -->
 					<span data-bind="visible: questionViewModel.phase() == 'voting'">
 					<textarea data-bind="textInput: question" id="inputQuestionComment" class="form-control" rows="2" placeholder="Question"></textarea>
 					<button data-bind="click: submitComment.bind($data, 'question')" id="inputQuestionCommentBtn" type="button" class="btn btn-default btn-xs">Submit</button>
 					</span>
+					<!-- /ko -->
 					</div>
 					<div class="col-md-6"></div>
 					</div>
@@ -909,6 +944,8 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jqBootstrapValidation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/ie-row-fix.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/json2.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/amplify.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		{{ flask_util_js.js }}
@@ -941,10 +978,13 @@
 			$('html head title').text('Vilfredo - ' + questionViewModel.title())
 			
 			// Load Templates
+			if (typeof(LOAD_GOOGLE_ANALYTICS) != "undefined" && LOAD_GOOGLE_ANALYTICS)
+			{
 			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
 			{
-				$('head').append( template );
+    				$('head').prepend( template );
 			});
+			}
 			$.get( STATIC_FILES + "/templates/navbar.template.html", function( template ) 
 			{
 				$( "#navbar" ).html( template );
@@ -1067,7 +1107,7 @@
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		voteMapViewModel = new VoteMapViewModel();
 		passwordResetViewModel = ko.validatedObservable( new PasswordResetViewModel() );
-		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
+		//editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
 
 		
 		//newCommentViewModel = new NewCommentViewModel();
@@ -1135,12 +1175,14 @@
 		    ko.applyBindings(questionViewModel, $(this)[0]);
 		});
 		
+		
+		ko.applyBindings(questionViewModel, $('#info_panel')[0]);
 		ko.applyBindings(questionViewModel, $('.author_controls')[0]);
 		ko.applyBindings(questionViewModel, $('.question_access')[0]);
 		
 		
 		ko.applyBindings(questionViewModel, $('#completed_box')[0]);
-		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
+		//ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
 		//ko.applyBindings(questionViewModel, $('#edit_question_buttons')[0]);
 	
 		//ko.applyBindings(loginViewModel, $('#login')[0]);
