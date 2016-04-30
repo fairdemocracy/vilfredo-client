@@ -6256,7 +6256,8 @@ body {
 }
 .question-view,
 .voting-graphs,
-.current-proposals {
+.current-proposals,
+#completed_box {
   display: none;
 }
 .participant.author {

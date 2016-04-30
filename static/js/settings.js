@@ -32,6 +32,10 @@ var VILFREDO_API_URL = VILFREDO_URL;
 // algorithm version number
 var ALGORITHM_VERSION = 2;
 
+var LOAD_GOOGLE_ANALYTICS = true;
+
+var USE_MARKDOWN_IN_QUESTION_TEXT = false;
+
 // radius of circle representing a vote
 var RADIUS;
 var width = window.innerWidth, height = window.innerHeight;

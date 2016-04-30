@@ -36,8 +36,8 @@
 		-->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.css') }}">
-        
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-markdown.min.css') }}">
+        
 		<!--
 		<link rel="stylesheet/less" type="text/css" href="static/custom-styles/custom-bootstrap.less"/>
 		-->
@@ -56,20 +56,20 @@
 		<button data-bind="click: gotomain.bind()" class="btn btn-primary" title="Go to main page">View All Questions</button>
 		</div>
 		
-		<h1>New Question</h1>
-		<div id="addquestion">
+		<h1>Edit Question</h1>
+		<div id="editquestion">
 			<h4>Submit your new question below.</h4>
 			<div class="container row">
-			  <div id="addquestion_error" class="message-container col-sm-12">
+			  <div id="editquestion_error" class="message-container col-sm-12">
 			   <div class="message alert alert-danger">
 			   </div>
 			  </div>
 			</div>
 
 			<form id="newquestionform" autocomplete="off" class="form-horizontal" role="form"> 
-			    
-			    
-		        <div class="form-group">
+			
+			
+			    <div class="form-group">
     		    <label for="inputPermissions" class="col-sm-2 control-label">Permissions</label>
 
     			<div class="col-sm-2">
@@ -90,8 +90,6 @@
                 <span data-bind="visible: permissions() == 7">Select "Vote and Propose" if you want to both vote and write proposals</span>
                 </div>
     		 </div>
-			
-			
 			
 			<div class="form-group">
 		    <label for="inputQuestionType" class="col-sm-2 control-label">Proposal Type</label>
@@ -155,7 +153,8 @@
 		  </div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button data-bind="click: addQuestion" type="button" class="btn btn-primary">Submit</button>
+		      <button data-bind="click: updateQuestion" type="button" class="btn btn-primary">Submit</button>
+		      <button data-bind="click: cancel" type="button" class="btn btn-primary">Cancel</button>
 		    </div>
 		  </div>
 		</form>
@@ -184,10 +183,12 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/vga.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>		
+		<script type="text/javascript" src="{{ url_for('static', filename='js/json2.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/amplify.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/Autolinker.min.js') }}"></script>
-	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/markdown.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/to-markdown.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-markdown.js') }}"></script>
@@ -207,10 +208,10 @@
 			//
 			if (typeof(LOAD_GOOGLE_ANALYTICS) != "undefined" && LOAD_GOOGLE_ANALYTICS)
 			{
-    			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
-    			{
-    				$('head').prepend( template );
-    			});
+			$.get( STATIC_FILES + "/templates/analytics.template.html", function( template ) 
+			{
+				$('head').prepend( template );
+			});
 			}
 			
 			$.get( STATIC_FILES + "/templates/navbar.template.html", function( data ) 
@@ -266,11 +267,12 @@
 		permissionsViewModel = new PermissionsViewModel();
 		inviteUsersViewModel = new InviteUsersViewModel();
 		questionViewModel = new QuestionViewModel();
+		editQuestionViewModel = ko.validatedObservable( new EditQuestionViewModel() );
 		
 		newQuestionViewModel = ko.validatedObservable( new NewQuestionViewModel() );
 		loginViewModel = ko.validatedObservable( new LoginViewModel() );
 		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
-		ko.applyBindings(newQuestionViewModel, $('#addquestion')[0]);
+		ko.applyBindings(editQuestionViewModel, $('#editquestion')[0]);
 		
 		ko.applyBindings(newQuestionViewModel, $('#authorcontrols')[0]);
 		
@@ -309,10 +311,16 @@
 			counterText: "Left" + " "
 		});
 		
-			
 		if (USE_MARKDOWN_IN_QUESTION_TEXT){
-		    $("#inputQuestionBlurb").markdown();
-	    }	
+		    $("#inputQuestionBlurb").markdown({
+              onShow: function(e){
+                editQuestionViewModel().parseBlurbToMarkup();
+              },
+              onChange: function(e){
+                  $("#inputQuestionBlurb").trigger( "setcharcount" );
+                }
+            });
+	    }
 			
 		ko.validation.init({ insertMessages: false, decorateElement: true, errorClass: "errormsg" });
 			

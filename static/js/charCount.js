@@ -32,6 +32,25 @@
 		
 		function calculate(obj){
 			var count = $(obj).val().length;
+			
+			// Changed so will work with markdown editor plugins --------------
+			var next = $(obj).next().hasClass('counter') ? $(obj).next() : $(obj).parent().next();
+			
+			var available = options.allowed - count;
+			if(available <= options.warning && available >= 0){
+				next.addClass(options.cssWarning);
+			} else {
+				next.removeClass(options.cssWarning);
+			}
+			if(available < 0){
+				next.addClass(options.cssExceeded);
+			} else {
+				next.removeClass(options.cssExceeded);
+			}
+			next.html(options.counterText + available);
+			// ------------------------------------------
+
+			/*
 			var available = options.allowed - count;
 			if(available <= options.warning && available >= 0){
 				$(obj).next().addClass(options.cssWarning);
@@ -44,6 +63,7 @@
 				$(obj).next().removeClass(options.cssExceeded);
 			}
 			$(obj).next().html(options.counterText + available);
+			*/
 		};
 				
 		this.each(function() {  			
@@ -52,6 +72,7 @@
 			$(this).keyup(function(){calculate(this)});
 			$(this).change(function(){calculate(this)});
 			$(this).bind('setcharcount', function() {
+				console.log("setcharcount...");
 				calculate(this);
 			});
 			

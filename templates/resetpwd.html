@@ -67,6 +67,9 @@
 		{{ flask_util_js.js }}
     </head>
     <body>
+        
+    <div id="navbar"></div>
+        
 	<div class="container main">
 		
 		
@@ -74,12 +77,13 @@
 		
 		</div>
 		
-		<div id="enter_password">
 		<h1>Reset Password</h1>
+		
+		<div id="enter_password">
+		
 
 		<p>Enter a new password.</p>
-
-		<div class="message alert alert-danger"></div>
+		
 		
 		<form autocomplete="off" class="form-horizontal" role="form">
 		<div class="form-group">
@@ -104,20 +108,59 @@
 		</div>
 	</form>
 	</div>
-
-		
+	
 	</div>
-	</body>
+		<div id="footer"></div>
+
 	<script type="text/javascript">
 	function initPage()
 	{
 		console.log('initPage called...');
+		
+		$.when(currentUserViewModel.loadUser()).then(function()
+		{
+		    $.get( STATIC_FILES + "/templates/navbar.template.html", function( data ) 
+    		{
+    			$( "#navbar" ).html( data );
+    			ko.applyBindings(currentUserViewModel, $('#navbar')[0]);
+    			$('.home').attr('href', VILFREDO_URL);
+    			$('.navbar-brand').attr('href', VILFREDO_URL);
+    		});
+    		$.get( STATIC_FILES + "/templates/footer.template.html", function( data ) 
+    		{
+    			$( "#footer" ).html( data );
+    		});
+    		
+    		$.get( STATIC_FILES + "/templates/login.template.html", function( template ) 
+			{
+				//$( "#login-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(loginViewModel, $('#login')[0]);
+				$('#login').on('hide.bs.modal', function(e) {
+					loginViewModel().clear();
+				});
+				$('.pwdresetlink').attr('href', VILFREDO_URL+'/lostpassword');
+			});
+			
+			$.get( STATIC_FILES + "/templates/register.template.html", function( template ) 
+			{
+				//$( "#register-box" ).html( template );
+				$('body').append( template )
+				ko.applyBindings(registerViewModel, $('#register')[0]);
+				$('#register').on('hide.bs.modal', function(e) {
+					registerViewModel().clear();
+				});
+			});
+		});
 	}
 	
 	$(function() {
 		//var reset_token = getQuerySegment('t');
 		//console.log(reset_token);
+		currentUserViewModel = new CurrentUserViewModel();
 		newPasswordViewModel = new NewPasswordViewModel();
+		loginViewModel = ko.validatedObservable( new LoginViewModel() );
+		registerViewModel = ko.validatedObservable( new RegisterViewModel() );
 		
 		initPage();
 		
