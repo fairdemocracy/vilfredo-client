@@ -36,7 +36,6 @@
 		-->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/styles.css') }}">
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.css') }}">
-		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='custom-styles/fileinput.min.css') }}">
     </head>
     <body>
 	
@@ -96,7 +95,6 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.validation.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='localization/en-US.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookiebar/jquery.cookiebar.js') }}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/fileinput.min.js') }}"></script>
 		{{ flask_util_js.js }}
 
 	<script type="text/javascript">
@@ -217,25 +215,6 @@
 			e.stopPropagation();
 			currentUserViewModel.uploadAvatar();
 		});
-		
-		//ko.applyBindings(currentUserViewModel, $('#user_settings')[0]);
-		
-		
-		// initialize with defaults
-		//$("#input_avatar").fileinput();
-		
-		/*
-		$("#input_avatar").fileinput({
-			uploadUrl: 'http://0.0.0.0:8080/upload_avatar',
-			allowedFileExtensions: ["jpg", "gif", "png"],
-			maxFileSize: 100
-		});*/
-		
-		// Scenario 1: AJAX based uploads using drag and drop functionality. 
-		// Just set the `uploadUrl` data property and `multiple` 
-		// to `true`. Modify files before upload i.e. append or delete. For this example below, 
-		// you can read the uploaded files on
-		// your server for the input name `kartik-input-700`.
 			
 	});
 	</script>
