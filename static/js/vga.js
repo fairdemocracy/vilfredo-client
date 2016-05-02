@@ -4428,7 +4428,6 @@ function RegisterViewModel()
 		$('#register').modal('show');
 	}
 
-    // winter
     self.register = function() {
 		$('#register .message').text('').fadeOut(100);
 		if (self.username() == '' || self.password() == '' || self.email() == '')
@@ -4480,36 +4479,52 @@ function RegisterViewModel()
             		currentUserViewModel.fetchCurrentUser();
             		add_page_alert('success', 'Welcome to Vilfredo. You can now participate in this question!');
 				}
+				else if (jqXHR.responseJSON && jqXHR.responseJSON.message)
+				{
+				    if (jqXHR.status == 201)
+				    {
+				        add_page_alert('success', getJQXHRMessage(jqXHR));
+				    }
+				    else
+				    {
+				        add_page_alert('danger', getJQXHRMessage(jqXHR));
+				    }
+				}
 				else if (typeof(data.activation_email_sent) != 'undefined' && data.activation_email_sent == true) 
 				{
-				    add_page_alert('success', 'Thank you. An email with an account activation link has been sent to your address.');
+				    var message = getJQXHRMessage(jqXHR);
+                    add_page_alert('success', message);
 				}
 				else
 				{
-				    add_page_alert('info', 'Something odd seems to have happened. Please be patient while we look into it.');
+				    var message = getJQXHRMessage(jqXHR, 'Oops. There seems to have ben some kind of problem.');
+                    add_page_alert('info', message);
 				}
 			}
 			else
 			{
 				console.log("RegisterViewModel.register failed with status " + jqXHR.status);
+				//add_page_alert('danger', getJQXHRMessage(jqXHR));
+				var message = getJQXHRMessage(jqXHR, 'There was a problem with your registration');
 				$('#register .alert')
-				.html(data.message)
-				.setAlertClass('danger')
-				.fadeIn();
+                .text(message)
+                .setAlertClass('danger')
+                .fadeIn();
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown)
 		{
+		    console.log('333');
 		    $('#register_btn').prop('disabled', false);
 		    if (errorThrown == 'abort')
 		    {
 		        console.log("Register aborted...");
 		        return;
 		    }
-            var message = getJQXHRMessage(jqXHR, 'There was a problem with your registrations');
+            var message = getJQXHRMessage(jqXHR, 'There was a problem with your registration');
             $('#register .alert')
-			.html(message)
-			.setAlertClass('danger')
-			.fadeIn();
+            .text(message)
+            .setAlertClass('danger')
+            .fadeIn();
         });
     }
 }
