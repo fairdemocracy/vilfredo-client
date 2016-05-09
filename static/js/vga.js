@@ -1493,13 +1493,13 @@ function calculateModalCanvasDimensions(svg) // bosh
 
     if (container_height < ideal_height)
     {
-        console.log('calculateTriangleDimensions: container_height < ideal_height');
+        //console.log('calculateTriangleDimensions: container_height < ideal_height');
         map_width = container_height / 0.7;
         map_height = container_height;
     }
     else
     {
-        console.log('calculateTriangleDimensions: container_height >= ideal_height');
+        //console.log('calculateTriangleDimensions: container_height >= ideal_height');
         map_width = ideal_width;
         map_height = ideal_height;
     }
