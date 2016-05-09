@@ -1056,7 +1056,8 @@
 		        //proposalsViewModel.fetchProposals();
 				$.when(proposalsViewModel.fetchProposals()).done(function()
 			    {
-					if (proposalsViewModel.votedAll())
+					// if finishd voting or user has read access but no voting access then display triangle
+					if (proposalsViewModel.votedAll() || questionViewModel.my_permissions() == 1 || questionViewModel.my_permissions() == 5)
 					{
 							$('#resultstriangle').svg({onLoad: createResultsMap});
 					}
