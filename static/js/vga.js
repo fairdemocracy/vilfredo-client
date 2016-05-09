@@ -817,7 +817,6 @@ function addMedian(svg, pid, coords) // bang
     return $(med);
 }
 
-
 function addVote(svg, pid, coords, userid)
 {
     console.log("addVote 2 called...");
@@ -1154,7 +1153,7 @@ function showProposalVotes(med, svg) // loud
             //e.stopPropagation();
             console.log('click on user vote... showUserVotes');
             showUserVotes(svg, userid, coords.username);
-        })
+        });
         
         if (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= RESULTS_VOTING_MIN_VOTERS && userid == currentUserViewModel.userid())
         {
@@ -1570,13 +1569,13 @@ function calculateModalTriangleDimensions(svg) // bosh
 
     if (container_height < ideal_height)
     {
-        console.log('calculateTriangleDimensions: container_height < ideal_height');
+        //console.log('calculateTriangleDimensions: container_height < ideal_height');
         map_width = container_height / 0.7;
         map_height = container_height;
     }
     else
     {
-        console.log('calculateTriangleDimensions: container_height >= ideal_height');
+        //console.log('calculateTriangleDimensions: container_height >= ideal_height');
         map_width = ideal_width;
         map_height = ideal_height;
     }
@@ -1617,13 +1616,13 @@ function calculateTriangleDimensions(svg) // bosh
 
     if (container_height < ideal_height)
     {
-        console.log('calculateTriangleDimensions: container_height < ideal_height');
+        //console.log('calculateTriangleDimensions: container_height < ideal_height');
         map_width = container_height / 0.7;
         map_height = container_height;
     }
     else
     {
-        console.log('calculateTriangleDimensions: container_height >= ideal_height');
+        //console.log('calculateTriangleDimensions: container_height >= ideal_height');
         map_width = ideal_width;
         map_height = ideal_height;
     }
@@ -1949,7 +1948,12 @@ function updateResultsMapLinear() // lanister
     });
 }
 
-function updateResultsMap2D() // loud
+
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+
+function updateResultsMap2D()
 {
     var triangle = $('#results_triangle');
     if (triangle.length == 0) 
@@ -1979,7 +1983,7 @@ function updateResultsMap2D() // loud
     */
 
     $.each(questionViewModel.voting_data, function(pid, coords) {
-        console.log("LOOP 1: pid = " + pid + " coords.median.medx = " + coords.median.medx);
+        //console.log("LOOP 1: pid = " + pid + " coords.median.medx = " + coords.median.medx);
         //console.log("*****> pid variable is of type " + typeof pid);
         pid = parseInt(pid);
         //console.log("*****> pid variable is of type " + typeof pid);
@@ -2013,9 +2017,9 @@ function updateResultsMap2D() // loud
 
         if (triangle.data('settings').mode == 'showProposalVotes' && pid == triangle.data('settings').pid)
         {
-            console.log("updateResultsMap: mode == showProposalVotes for pid " + pid);
+            //console.log("updateResultsMap: mode == showProposalVotes for pid " + pid);
             $.each(coords.voters, function(userid, userdata) {
-                console.log("LOOP 2: userid = " + userid + " userdata.username = " + userdata.username);
+                //console.log("LOOP 2: userid = " + userid + " userdata.username = " + userdata.username);
                 userid = parseInt(userid);
                 //console.log("*****> userid variable is of type " + typeof userid);
 
@@ -3074,7 +3078,6 @@ function createVoteMap(svg)
     $(triangle).on( "click", triangleClickHandler );
 }
 
-// herebe
 function beginDraggingVoteResultsLinear(e)
 {
     e.preventDefault();
@@ -3137,8 +3140,7 @@ function endDrag(obj, e)
 }
 
 
-// bosh
-function voteAfterDragResults(e) // stark
+function voteAfterDragResults(e)
 {
     //e.preventDefault();
     //e.stopPropagation();
@@ -6407,8 +6409,8 @@ function ProposalsViewModel()
         });
 	}
 
-	// Add vote using normalised votemap coordinates
-	self.resultsmapEndorseProposal = function(mapx, mapy, pid) // lanister
+	// Add vote using normalised votemap coordinates ttt
+	self.resultsmapEndorseProposal = function(mapx, mapy, pid)
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
 		{
@@ -6450,7 +6452,7 @@ function ProposalsViewModel()
 				if (proposalsViewModel.votedAll())
 				{
 				    console.log('Refreshing graphs after voted FOR ALL...');
-					fetchVotingGraphs(); // boots
+					fetchVotingGraphs();
 				}
 				else
 				{
