@@ -250,7 +250,7 @@
 		<!-- question-view end -->
 
 		
-		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll)">
+		<div id="results_map" data-bind="visible: (questionViewModel.phase() == 'voting' && (proposalsViewModel.votedAll || questionViewModel.my_permissions() == 1 || questionViewModel.my_permissions() == 5))">
 				
 			<!--
 			<div class="btn-group" role="group">
