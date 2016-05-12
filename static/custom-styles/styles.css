@@ -7156,7 +7156,7 @@ a.disabled {
   color: grey;
 }
 #add_users.modal,
-participants.modal {
+#participants.modal {
   overflow: scroll;
 }
 .no-gutter > [class*='col-'] {
