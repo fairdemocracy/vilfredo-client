@@ -12,7 +12,7 @@
 			<form class="form-horizontal" role="form" autocomplete="off">
 				
 			<div class="form-group">
-				<div class="col-sm-6">
+				<div class="col-sm-4">
 				
 			</div>
 			<div class="col-sm-2">
@@ -22,13 +22,16 @@
 				Vote
 			</div>
 			<div class="col-sm-2">
+				Comment
+			</div>
+			<div class="col-sm-2">
 				Read
 			</div> 
 			</div>
 			<h4>Current Participants</h4>
 			<!-- ko foreach: permissions -->
 			<div class="form-group">
-				<div data-bind="text: username, attr: { title: 'Question author' }, css: {author: questionViewModel.author_id() == user_id}" class="col-sm-6 participant"></div>
+				<div data-bind="text: username, attr: { title: 'Question author' }, css: {author: questionViewModel.author_id() == user_id}" class="col-sm-4 participant"></div>
 				<div class="col-sm-2">
 					<!-- Can Propose -->					
 					<div data-bind="if: $parent.userPerms($data, Q_PROPOSE)">
@@ -38,6 +41,11 @@
 				<div class="col-sm-2">
 					<!-- Can Vote -->
 					<div data-bind="if: $parent.userPerms($data, Q_VOTE)">
+						<span class="glyphicon glyphicon-ok"></span>
+					</div>
+				</div>
+				<div class="col-sm-2">
+					<div data-bind="if: $parent.userPerms($data, Q_COMMENT)">
 						<span class="glyphicon glyphicon-ok"></span>
 					</div>
 				</div>

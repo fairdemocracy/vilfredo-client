@@ -70,20 +70,24 @@
 	<div>
 	    
 	<div id="info_panel">	
-	<!-- ko if: questionViewModel.my_permissions() == 1 -->
+	<!-- ko if: questionViewModel.my_permissions() == READ_ONLY -->
 	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-eye-open"></span> Read Only</strong></p>
-	<p>You have Read Only permission for this question. This means you can follow what's going on but you cannot write proposals or vote.</p>
+	<p>You have Read Only permission for this question. This means you can follow what's going, but you cannot write proposals or vote, nor can you comment on proposals.</p>
 	<!-- /ko -->
-	<!-- ko if: questionViewModel.my_permissions() == 3 -->
+	<!-- ko if: questionViewModel.my_permissions() == READ_COMMENT -->
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-comment"></span> Comment Only</strong></p>
+	<p>You have Comment Only permission for this question. This means you can follow what's going on and comment on proposals, but you cannot write proposals or vote.</p>
+	<!-- /ko -->
+	<!-- ko if: questionViewModel.my_permissions() == VOTE_READ -->
 	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> Vote Only</strong></p>
 	<p>You have Vote Only permission for this question. This means you can follow what's going on and vote but you cannot write proposals of your own.</p>
 	<!-- /ko -->
-	<!-- ko if: questionViewModel.my_permissions() == 5 -->
+	<!-- ko if: questionViewModel.my_permissions() == PROPOSE_READ -->
 	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-pencil"></span> Propose Only</strong></p>
 	<p>You have Propose Only permission for this question. This means you can follow what's going on and write your own proposals but you cannot vote.</p>
 	<!-- /ko -->
-	<!-- ko if: questionViewModel.my_permissions() == 7 -->
-	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> <span class="glyphicon glyphicon-pencil"></span> Vote and Propose</strong></p>
+	<!-- ko if: questionViewModel.my_permissions() == VOTE_PROPOSE_READ -->
+	<p>With This Question Your Can: <strong><span class="glyphicon glyphicon-thumbs-up"></span> Vote </strong> and <strong><span class="glyphicon glyphicon-pencil"></span> Propose</strong></p>
 	<p>You have Vote and Propose permissions for this question. This means you can both write proposals and vote.</p>
 	<!-- /ko -->
 	</div>
@@ -159,7 +163,7 @@
 	<!-- author controls end -->
 	
 	<div class="question_access">	
-	<!-- ko if: my_permissions() == 1 -->
+	<!-- ko if: my_permissions() == READ -->
 	<br>
 	<div class="alert alert-info" role="alert">
 	  <h3>Read Only</h3>
@@ -484,7 +488,7 @@
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
 
-					<div data-bind="click: $parent.openvotemap.bind($data), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
+					<div data-bind="click: $parent.openvotemap.bind($data), visible: questionViewModel.can_vote && questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
 			</div>

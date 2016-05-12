@@ -31,6 +31,32 @@ var room = getQuerySegment('room');
 console.log(room);
 
 
+// Put here for now
+var READ = 9;
+var READ_ONLY = 1;
+var VOTE = 2
+var PROPOSE = 4
+var COMMENT = 8
+var VOTE_READ = 3;
+var PROPOSE_READ = 5;
+var VOTE_PROPOSE_READ = 7;
+var READ_COMMENT = 9;
+var COMMENT_ONLY = 9;
+var VOTE_READ_COMMENT = 11;
+var PROPOSE_READ_COMMENT = 13;
+var VOTE_PROPOSE_READ_COMMENT = 15;
+var MODERATE = 32
+
+var PERMISSION_DEFAULT = VOTE_PROPOSE_READ;
+
+var permission_list = [
+    {name: "Read Only", id: READ_ONLY},
+    {name: "Comment Only", id: COMMENT_ONLY},
+    {name: "Vote", id: VOTE_READ},
+	{name: "Propose", id: PROPOSE_READ},
+	{name: "Vote & Propose", id: VOTE_PROPOSE_READ}];
+
+
 // Add function to delete all keys from Amplify storage if defined
 if (typeof(amplify) != "undefined")
 {
@@ -4215,16 +4241,11 @@ function NewQuestionViewModel()
     self.id = ko.observable(0);
     self.question_type = ko.observable(1);
     self.voting_type = ko.observable(1);
-    self.permissions = ko.observable(7);
+    self.permissions = ko.observable(PERMISSION_DEFAULT);
     
-    self.questionPermissions = ko.observableArray([
-       {name: "Read", id: 1},
-       {name: "Vote", id: 3},
-	   {name: "Propose", id: 5},
-	   {name: "Vote, Propose", id: 7}
-    ]);
+    self.questionPermissions = ko.observableArray(permission_list);
     
-    self.selectedPermissions = 7;
+    self.selectedPermissions = PERMISSION_DEFAULT;
     
     self.questionTypes = ko.observableArray([
        {name: "Standard", id: 1},
@@ -4271,10 +4292,10 @@ function NewQuestionViewModel()
 		console.log("NewQuestionViewModel.resetform() called ...");
         self.title('');
         self.blurb('');
-        self.questionPermissions(7);
+        self.questionPermissions(PERMISSION_DEFAULT);
         self.question_type(1);
         self.voting_type(1);
-        self.permissions(7);
+        self.permissions(PERMISSION_DEFAULT);
         self.title.isModified(false);
         self.blurb.isModified(false);
         $('#addquestion .alert').css('display', 'none').html('');
@@ -4996,12 +5017,7 @@ function EditQuestionViewModel()
     self.permissions = ko.observable(self.storedQuestion.permissions);
     
     
-    self.questionPermissions = ko.observableArray([
-       {name: "Read", id: 1},
-       {name: "Vote", id: 3},
-	   {name: "Propose", id: 5},
-	   {name: "Vote, Propose", id: 7}
-    ]);
+    self.questionPermissions = ko.observableArray(permission_list);
     
     self.selectedPermissions = self.storedQuestion.permissions;
     
@@ -6904,21 +6920,11 @@ function InviteUsersViewModel()
     self.emails_rejected = ko.observable('');
     self.emails_already_sent = ko.observable('');
 
-    self.questionPermissions = ko.observable([
-       {name: "Read", id: 1},
-       {name: "Vote", id: 3},
-	   {name: "Propose", id: 5},
-	   {name: "Vote, Propose", id: 7}
-    ]);
+    self.questionPermissions = ko.observable(permission_list);
 
-    self.questionEmailPermissions = ko.observable([
-       {name: "Read", id: 1},
-       {name: "Vote", id: 3},
-	   {name: "Propose", id: 5},
-	   {name: "Vote, Propose", id: 7}
-    ]);
+    self.questionEmailPermissions = ko.observable(permission_list);
 
-    self.selectedPermissions = 7;
+    self.selectedPermissions = PERMISSION_DEFAULT;
     
     self.invite_by_email = function()
 	{
@@ -7016,26 +7022,28 @@ function InviteUsersViewModel()
 	    $('#participants').modal('show');
 	}
 }
-function PermissionsViewModel() // wolf
+function PermissionsViewModel()
 {
     var self = this;
     self.permissions = ko.observableArray();
     self.invitations_sent = ko.observableArray();
     self.email_invitations_sent = ko.observableArray();
 
-    self.questionPermissions = ko.observable([
-       {name: "Read", id: 1},
-       {name: "Vote", id: 3},
-	   {name: "Propose", id: 5},
-	   {name: "Vote, Propose", id: 7}
-    ]);
+    self.questionPermissions = ko.observable(permission_list);
 
-    self.selectedPermissions = 7;
+    self.selectedPermissions = PERMISSION_DEFAULT;
 
     self.userPerms = function (user, perm) {
         return ko.computed({
             read: function () {
-                return !!(user.permissions & perm);
+                if (perm == Q_COMMENT)
+                {
+                    return $.inArray(user.permissions, [Q_VOTE, Q_PROPOSE, Q_COMMENT]);
+                }
+                else
+                {
+                    return !!(user.permissions & perm);
+                }
             },
             write: function (checked) {
                 if (checked)
@@ -7232,12 +7240,7 @@ function QuestionViewModel() // bang
 	
 	self.results_pf_only = ko.observable(false); // lava
 
-	self.questionPermissions = ko.observableArray([
-       {name: "Read", id: 1},
-       {name: "Vote", id: 3},
-	   {name: "Propose", id: 5},
-	   {name: "Vote, Propose", id: 7}
-    ]);
+	self.questionPermissions = ko.observableArray(permission_list);
     
     self.set_finished_writing = function()
     {
@@ -7432,23 +7435,36 @@ function QuestionViewModel() // bang
 		} 
     }, this);
 
-    self.defaultPermissions = 7;
+    self.defaultPermissions = PERMISSION_DEFAULT;
 
+	// Not Used?
 	self.permissionTitles = function(val)
 	{
 	    switch(parseInt(val))
         {
         case 1:
-            return 'Read';
+            return 'Read Only (Not Comment)';
             break;
         case 3:
-            return 'Vote';
+            return 'Vote (Not Comment)';
             break;
         case 5:
-            return 'Propose';
+            return 'Propose (Not Comment)';
             break;
         case 7:
-            return 'Propose, Vote';
+            return 'Propose & Vote (Not Comment)';
+            break;
+        case 9:
+            return 'Comment Only';
+            break;
+        case 11:
+            return 'Vote Only';
+            break;
+        case 13:
+            return 'Propose Only';
+            break;
+        case 16:
+            return 'Propose & Vote';
             break;
         default:
             return '-';

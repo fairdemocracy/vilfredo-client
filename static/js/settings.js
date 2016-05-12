@@ -78,6 +78,7 @@ var VILFREDO_API = VILFREDO_API_URL + '/api/' + API_VERSION;
 var Q_READ = 0x1
 var Q_VOTE = 0x2
 var Q_PROPOSE = 0x4
-var Q_INVITE = 0x8
+var Q_COMMENT = 0x8
+
 
 

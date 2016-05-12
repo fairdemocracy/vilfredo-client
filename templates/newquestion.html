@@ -84,10 +84,11 @@
     			</div>
 
     			<div class="col-sm-8">
-                <span data-bind="visible: permissions() == 1">Select "Read" if you want follow but not participate</span>
-                <span data-bind="visible: permissions() == 3">Select "Vote" if you want to be able to vote but not write proposals</span>
-                <span data-bind="visible: permissions() == 5">Select "Propose" if you want to be able to write proposals but not vote</span>
-                <span data-bind="visible: permissions() == 7">Select "Vote and Propose" if you want to both vote and write proposals</span>
+                <span data-bind="visible: permissions() == READ_ONLY">Select "Read" if you want follow but not participate</span>
+                <span data-bind="visible: permissions() == COMMENT_ONLY">Select "Comment Only" if you want to be able to comment only but not write proposals or vote</span>
+                <span data-bind="visible: permissions() == VOTE_READ">Select "Vote" if you want to be able to vote but not write proposals</span>
+                <span data-bind="visible: permissions() == PROPOSE_READ">Select "Propose" if you want to be able to write proposals but not vote</span>
+                <span data-bind="visible: permissions() == VOTE_PROPOSE_READ">Select "Vote and Propose" if you want to both vote and write proposals</span>
                 </div>
     		 </div>
 			
