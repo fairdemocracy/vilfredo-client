@@ -382,12 +382,14 @@
 			<p data-bind="visible: proposals().length > 0">Vote on all the proposals below:</p>
 			<p class="guide"><em>Click on the blue triangles to open the triangular voting map, then click on the map to place your vote. Follow the guides to locate your vote at the location which best represents how much you understand a proposal, and how much you agree or disagree with it.</em></p>
 		</div>
-		<div data-bind="visible: questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="page-header">
+		
+		<div class="page-header" data-bind="visible: questionViewModel.phase() == 'writing' && proposals().length > 0 ">
 			<h2>
 				Your New Proposals
 			</h2>
 			<p data-bind="visible: proposals().length > 0">Below are the proposals you have created during the writing phase of this generation:</p>
 		</div>
+		</br>
 		
 		<div data-bind="visible: questionViewModel.proposal_count == 0 && questionViewModel.phase() == 'writing' && questionViewModel.can_propose" class="well highlight">
 		<p>There are no new proposals so far. Why not be the first to propose an answer?</p>
@@ -402,6 +404,7 @@
 		<p>Below are the proposals you have not yet voted for.</p>
 		<br>
 		</div>
+		
 		<div class="proposal_list row multi-columns-row">
 			<!-- ko foreach: proposals -->
 			<!-- ko if: isNaN(mapx()) -->
