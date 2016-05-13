@@ -6745,7 +6745,7 @@ function ProposalsViewModel()
 	self.hide_past_proposals = function()
 	{
 	    self.past_proposals([]);
-		self.past_gen_id(questionViewModel.generation());
+	    self.past_gen_id(questionViewModel.generation());
 	}
 	
 	self.show_past_proposals = function(proposalsviewmodel, e) { // ttt
