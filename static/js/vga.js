@@ -6757,7 +6757,7 @@ function ProposalsViewModel()
 	    console.log(e.target.id);
 	    if (e.target.id == 'show_earlier') 
 	    {
-	        if (self.past_gen_id() == 0) 
+	        if (self.past_gen_id() == 1) 
 	        {
 	            console.log('No earlier');
 	            return;
