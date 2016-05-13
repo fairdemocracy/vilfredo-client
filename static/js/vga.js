@@ -6050,6 +6050,9 @@ function ProposalsViewModel()
 	self.key_players = ko.observableArray();
 	// Writing phase only
 	self.inherited_proposals = ko.observableArray();
+	self.past_proposals = ko.observableArray();
+	self.past_gen_id = ko.observable(); // ttt
+	
 	self.pareto = ko.observableArray(); // winning proposals (pareto front)
 
 	self.clearData = function()
@@ -6425,7 +6428,7 @@ function ProposalsViewModel()
         });
 	}
 
-	// Add vote using normalised votemap coordinates ttt
+	// Add vote using normalised votemap coordinates 
 	self.resultsmapEndorseProposal = function(mapx, mapy, pid)
 	{
 		if (currentUserViewModel.isLoggedIn() == false)
@@ -6705,7 +6708,7 @@ function ProposalsViewModel()
 		    console.log('Proposals data returned...');
 			console.log(data);
 			// Clear inherited_proposals list
-+           self.inherited_proposals([]);
+            self.inherited_proposals([]);
 			
 			fetched_proposals = [];
 			for (var i = 0; i < data.proposals.length; i++) {
@@ -6738,6 +6741,87 @@ function ProposalsViewModel()
 			self.inherited_proposals(fetched_proposals);
 		});
 	}
+	
+	self.hide_past_proposals = function()
+	{
+	    self.past_proposals([]);
+		self.past_gen_id(questionViewModel.generation());
+	}
+	
+	self.show_past_proposals = function(proposalsviewmodel, e) { // ttt
+	    console.log('show_past_proposals() called...');
+	    console.log(e.target.id);
+	    var fetch_gen;
+	    console.log(self.past_gen_id());
+	    console.log(questionViewModel.generation());
+	    console.log(e.target.id);
+	    if (e.target.id == 'show_earlier') 
+	    {
+	        if (self.past_gen_id() == 0) 
+	        {
+	            console.log('No earlier');
+	            return;
+            }
+            else
+            {
+	            fetch_gen = self.past_gen_id() - 1;
+	            console.log("Fetch gen = " + fetch_gen);
+            }
+	    }
+	    else if (e.target.id == 'show_later') 
+	    {
+	        if (self.past_gen_id() == questionViewModel.generation() - 1) 
+	        {
+	            console.log('No later');
+	            return;
+            }
+            else
+            {
+	            fetch_gen = self.past_gen_id() + 1;
+	            console.log("Fetch gen = " + fetch_gen);
+            }
+	    }
+	    console.log("Fetch generation " + fetch_gen);
+	    var proposalsURI = VILFREDO_API + '/questions/'+ question_id +'/proposals';
+		proposalsURI = proposalsURI + '?generation='+fetch_gen;
+
+		return ajaxRequest(proposalsURI, 'GET').done(function(data, textStatus, jqXHR) {
+		    console.log('Proposals data returned...');
+			console.log(data);
+			// Clear past_proposals list
+            self.past_proposals([]);
+			var fetched_proposals = [];
+			for (var i = 0; i < data.proposals.length; i++) {
+		  		
+		  		var mapx = parseFloat(data.proposals[i].mapx);
+		  		var mapy = parseFloat(data.proposals[i].mapy);
+		  		var background = setMapColor(mapx, mapy);
+		  		var color = getContrastYIQ(background);
+		  		
+		  		fetched_proposals.push({
+		      		id: ko.observable(parseInt(data.proposals[i].id)),
+					title: ko.observable(data.proposals[i].title),
+		      		blurb: ko.observable(data.proposals[i].blurb),
+		      		abstract: ko.observable(data.proposals[i].abstract),
+		      		author: ko.observable(data.proposals[i].author),
+					endorse_type: ko.observable(data.proposals[i].endorse_type),
+					uri: ko.observable(data.proposals[i].uri),
+					author_id: ko.observable(parseInt(data.proposals[i].author_id)),
+					question_count: ko.observable(parseInt(data.proposals[i].question_count)),
+					generation_created: ko.observable(data.proposals[i].generation_created),
+					comment_count: ko.observable(parseInt(data.proposals[i].comment_count)),
+					vote_count: ko.observable(parseInt(data.proposals[i].vote_count)),
+					image_url: ko.observable(data.proposals[i].image_url),
+					mapx: ko.observable(mapx),
+					mapy: ko.observable(mapy),
+					box_background: ko.observable(background), 
+					box_color: ko.observable(color)
+		  		});
+			}
+			self.past_proposals(fetched_proposals);
+			self.past_gen_id(fetch_gen);
+		});
+    }
 
 
 	self.fetchProposals = function(options) {
@@ -6790,6 +6874,7 @@ function ProposalsViewModel()
 					box_color: ko.observable(color)
 		  		});
 			}
+			
 			proposals_list(fetched_proposals);
 			console.log("***** sort proposals by mapx *****");
 			proposals_list.sort(sortProposalsByLike);

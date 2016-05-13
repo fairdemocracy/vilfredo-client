@@ -319,6 +319,60 @@
 		<!-- Graphs end -->
 		
 		
+		<div id="show_past_proposals" data-bind="visible: questionViewModel.phase() == 'writing' && questionViewModel.generation() > 1">
+		    <h2>
+				<span class="glyphicon glyphicon-time"></span> Display Proposals From Earlier Generations
+			</h2>
+		<p>Click on the buttons to view proposals from earlier generations.</p>
+		<button id="show_earlier" data-bind="click: show_past_proposals" class="btn btn-primary"><span class="glyphicon glyphicon-backward"></span> Earlier</button>
+		<button id="show_later" data-bind="click: show_past_proposals" class="btn btn-primary"><span class="glyphicon glyphicon-forward"></span> Later</button>
+		<button id="hide_past" data-bind="click: hide_past_proposals, visible: past_proposals().length > 0" class="btn btn-primary"><span class="glyphicon glyphicon-eye-close"></span> Hide</button>
+		<br><br><br>
+		</div>
+		
+		<!-- 
+		Past Proposals 
+		-->
+		<div data-bind="visible: questionViewModel.phase() == 'writing' && past_proposals().length > 0" class="past_proposals narrow">
+			
+		<div class="page-header">
+			<h1>
+				Proposals From Generation <span id="gen_id" data-bind="text: proposalsViewModel.past_gen_id()"></span>
+			</h1>
+		</div>
+			
+		<div class="proposal_list row multi-columns-row">
+			<!-- ko foreach: past_proposals -->
+			<div class="proposal col-xs-6 col-sm-4 col-md-4 col-lg-4">
+			<input data-bind="value: id" type="hidden" class="propId" value="">
+			<input data-bind="value: $index" type="hidden" class="index" value="">
+     		<input data-bind="value: author" type="hidden" class="author" value="">
+			<input data-bind="value: uri" type="hidden" class="uri" value="">
+			<div data-bind="css: endorse_type" class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title" data-bind="text: id() + ': ' + title(), click: $parent.read.bind($data, $index(), 'content')"></h3>
+				</div>
+				<div class="panel-body proposal-blurb">
+					<!-- ko if: questionViewModel.question_type() == 1 -->
+					<span data-bind="html: convertNewlines($data.blurb())"></span>  
+					<!-- /ko -->
+					<!-- ko if: questionViewModel.question_type() == 2 -->
+					<img data-bind="attr: { src: image_url }, scaleimage: image_url" width="200px" height="200px"/> 
+					<!-- /ko -->
+				</div>
+				<div class="panel-footer proposal-footer">
+					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
+					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>
+				</div>
+			</div>
+			</div><!-- /ko -->
+		</div>
+		</div>
+		<!-- 
+		Past Proposals End
+		-->
+		
+		
 		<!-- 
 		Inherited Proposals 
 		-->
@@ -979,6 +1033,7 @@
 			   questionViewModel.fetchVotingData()).done(function()
 		{
 			console.log('User and question loaded...');
+			proposalsViewModel.past_gen_id(questionViewModel.generation());
 			$('.question-view, .current-proposals').show();
 			
 			$('html head title').text('Vilfredo - ' + questionViewModel.title())
@@ -1198,6 +1253,9 @@
 		    ko.applyBindings(proposalsViewModel, $(this)[0]);
 		});
 		ko.applyBindings(proposalsViewModel, $('.inherited_proposals')[0]);
+		ko.applyBindings(proposalsViewModel, $('.past_proposals')[0]);
+		ko.applyBindings(proposalsViewModel, $('#show_past_proposals')[0]);
+		
 		
 		//ko.applyBindings(proposalsViewModel, $('.winning_proposals')[0]);
 		
