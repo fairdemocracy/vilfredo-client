@@ -492,7 +492,7 @@
 					&nbsp;
 					<a title="Delete proposal" data-bind="visible: author_id() == currentUserViewModel.userid() && questionViewModel.phase() == 'writing' && questionViewModel.generation() == generation_created(), click: $parent.delete.bind($data, $index())"><span class="glyphicon glyphicon-trash"></span></a>
 					
-					<div data-bind="click: $parent.openvotemap.bind($data), visible: questionViewModel.phase() == 'voting'" class="voting"></div>
+					<div data-bind="click: $parent.openvotemap.bind($data), visible: questionViewModel.can_vote && questionViewModel.phase() == 'voting'" class="voting"></div>
 				</div>
 			</div>
 			</div>
@@ -1118,9 +1118,9 @@
 				$.when(proposalsViewModel.fetchProposals()).done(function()
 			    {
 					// if finishd voting or user has read access but no voting access then display triangle
-					if (proposalsViewModel.votedAll() || questionViewModel.my_permissions() == 5)
+					if (proposalsViewModel.votedAll() || (questionViewModel.my_permissions() == READ_ONLY && questionViewModel.phase() == 'results') || (questionViewModel.my_permissions() == PROPOSE_READ && questionViewModel.phase() == 'results'))
 					{
-							$('#resultstriangle').svg({onLoad: createResultsMap});
+						$('#resultstriangle').svg({onLoad: createResultsMap});
 					}
 					
 					if (questionViewModel.question_type() == 2)
@@ -1129,7 +1129,7 @@
 						//scaleProposalImages();
 					}
 					
-					fetchGraphs(questionViewModel.selected_algorithm()); // boots
+					fetchGraphs(questionViewModel.selected_algorithm());
 					if (currentUserViewModel.isLoggedIn())
 					{
 						resetGraphsForUser();
