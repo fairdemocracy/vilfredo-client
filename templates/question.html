@@ -363,6 +363,10 @@
 				<div class="panel-footer proposal-footer">
 					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>
+					&nbsp;
+					&nbsp;
+					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
+					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
 				</div>
 			</div>
 			</div><!-- /ko -->
@@ -408,11 +412,10 @@
 					<!--<button data-bind="click: $parent.read" type="button" class="btn btn-s btn-primary">Read</button>-->
 					<a title="Open proposal window" data-bind="click: $parent.read.bind($data, $index(), 'content')"><span class="glyphicon glyphicon-new-window"></span></a>
 					&nbsp;
-					<!-- ko if: questionViewModel.phase() == 'voting' -->
 					&nbsp;
 					<a title="Open comments window" data-bind="click: $parent.read.bind($data, $index(), 'comments')"><span class="glyphicon glyphicon-comment"></span>&nbsp;<span data-bind="text: comment_count"></span></a>&nbsp;&nbsp;
 					<a title="Open questions window" data-bind="click: $parent.read.bind($data, $index(), 'questions')"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;<span data-bind="text: question_count"></span></a>
-					<!-- /ko -->
+					
 				</div>
 			</div>
 			</div><!-- /ko -->
@@ -687,7 +690,7 @@
 					<div class="comment for">
 						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-						<button data-bind="click: questionViewModel.my_permissions() > 1 ? $parent.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
+						<button data-bind="click: questionViewModel.my_permissions() > 1 && questionViewModel.phase() == 'voting' ? $parent.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
 						</div>
 					</div>					
 					<!-- /ko -->
@@ -712,7 +715,7 @@
 					<div class="comment against">
 						<span data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></span>
 						<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-						<button data-bind="click: questionViewModel.my_permissions() > 1 ? $parent.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
+						<button data-bind="click: questionViewModel.my_permissions() > 1  && questionViewModel.phase() == 'voting' ? $parent.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">agree <span data-bind="text: num_supporters" class="badge"></span></button>
 						</div>
 					</div>
 					<!-- /ko -->
@@ -745,7 +748,7 @@
 							<div class="comment question">
 								<div data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $parent.userSupports($data) }" class="select_comment">
-								<button title="I would also like this question answered" data-bind="click: questionViewModel.my_permissions() > 1 ? $root.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
+								<button title="I would also like this question answered" data-bind="click: questionViewModel.my_permissions() > 1 && questionViewModel.phase() == 'voting' ? $root.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
 								</div>
 							</div>
 						</div>
@@ -754,7 +757,7 @@
 							<div data-bind="with: $parent.getAnswerObject(id)" class="comment answer">
 								<div data-cid="id" data-bind="click: viewFullText.bind($data.comment()), html: displayCommentText($data.comment())"></div>
 								<div data-bind="css: { supports: $root.userSupports($data) }" class="select_comment">
-								<button title="I think this answers the question" data-bind="click: questionViewModel.my_permissions() > 1 ? $root.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
+								<button title="I think this answers the question" data-bind="click: questionViewModel.my_permissions() > 1  && questionViewModel.phase() == 'voting' ? $root.toggleCommentSupport : null" type="button" class="btn btn-default btn-xs">like <span data-bind="text: num_supporters" class="badge"></span></button>
 								</div>
 							</div>
 							<!-- /ko -->
