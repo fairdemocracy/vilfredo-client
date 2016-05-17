@@ -7586,9 +7586,9 @@ function QuestionViewModel() // bang
         });
 	}
 
-	self.fetchParticipationTable = function() { // fff
+	self.fetchParticipationTable = function() { 
 		//if (questionViewModel.is_author() || questionViewModel.is_moderator())
-		if ((questionViewModel.my_permissions() == VOTE_READ && proposalsViewModel.votedAll) 
+		if (((questionViewModel.my_permissions() == VOTE_READ || questionViewModel.my_permissions() == VOTE_PROPOSE_READ) && proposalsViewModel.votedAll) 
 		   || (questionViewModel.phase() == 'voting' && $.inArray(questionViewModel.my_permissions(), [READ, PROPOSE_READ, READ_COMMENT]) !== -1) 
 		   || questionViewModel.is_author() || questionViewModel.is_moderator())
 		{
