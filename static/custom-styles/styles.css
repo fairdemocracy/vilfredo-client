@@ -6728,6 +6728,9 @@ fieldset[disabled] .select_comment.supports button.active {
 #voting_graphs {
   display: none;
 }
+h2.mod {
+  color: blue;
+}
 .newcommentpanel {
   height: 300px;
   width: 97%;
