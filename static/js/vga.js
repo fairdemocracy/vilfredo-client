@@ -17,9 +17,13 @@
 # along with VilfredoReloadedCore.  If not, see <http://www.gnu.org/licenses/>.
 #
 ****************************************************************************/
+
 var question_id = getQuerySegment('question');
 if (!question_id) {
     question_id = getQuerySegment('domination');
+}
+if (!question_id) {
+    question_id = getQuerySegment('moderate');
 }
 console.log('Question = ' + question_id);
 
@@ -32,7 +36,7 @@ console.log(room);
 
 
 // Put here for now
-var READ = 9;
+var READ = 1;
 var READ_ONLY = 1;
 var VOTE = 2
 var PROPOSE = 4
@@ -6236,8 +6240,7 @@ function ProposalsViewModel()
 		$('#votemap-thisprop').html(proposal.title());
 		$('#votemapwindow').modal('show');
 	}
-	
-	// maison
+
 	self.delete = function(index, proposal)
 	{
 		console.log("ProposalsViewModel.delete called with index " + index);
@@ -6322,51 +6325,40 @@ function ProposalsViewModel()
         
         $.ajax(request).done(function(data, textStatus, jqXHR) {
 			var mapx = parseFloat(data.proposal.mapx);
-		  		var mapy = parseFloat(data.proposal.mapy);
-		  		var background = setMapColor(mapx, mapy);
-		  		var color = getContrastYIQ(background);
+	  		var mapy = parseFloat(data.proposal.mapy);
+	  		var background = setMapColor(mapx, mapy);
+	  		var color = getContrastYIQ(background);
 
-	  		    self.proposals.push({
-					id: ko.observable(parseInt(data.proposal.id)),
-					title: ko.observable(data.proposal.title),
-		      		blurb: ko.observable(data.proposal.blurb),
-		      		abstract: ko.observable(data.proposal.abstract),
-		      		author: ko.observable(data.proposal.author),
-					endorse_type: ko.observable(data.proposal.endorse_type),
-					uri: ko.observable(data.proposal.uri),
-					author_id: ko.observable(parseInt(data.proposal.author_id)),
-					image_url: ko.observable(data.proposal.image_url),
-					question_count: ko.observable(parseInt(data.proposal.question_count)),
-					comment_count: ko.observable(parseInt(data.proposal.comment_count)),
-					vote_count: ko.observable(parseInt(data.proposal.vote_count)),
-					generation_created: ko.observable(data.proposal.generation_created),
-					mapx: ko.observable(mapx),
-					mapy: ko.observable(mapy),
-					box_background: ko.observable(background),
-					box_color: ko.observable(color)
-		  		});
-		  		addProposalViewModel().close();
-		  		questionViewModel.fetchQuestion();
-		  		questionViewModel.fetchParticipationTable();
-		  		
-		  		/*
-		  		var scale_timer;
-		        clearTimeout(scale_timer);
-		        scale_timer = setTimeout(function() 
-				{
-					scaleProposalImages();
-		        }, 500);*/
-		  		
-			
+  		    self.proposals.push({
+				id: ko.observable(parseInt(data.proposal.id)),
+				title: ko.observable(data.proposal.title),
+	      		blurb: ko.observable(data.proposal.blurb),
+	      		abstract: ko.observable(data.proposal.abstract),
+	      		author: ko.observable(data.proposal.author),
+				endorse_type: ko.observable(data.proposal.endorse_type),
+				uri: ko.observable(data.proposal.uri),
+				author_id: ko.observable(parseInt(data.proposal.author_id)),
+				image_url: ko.observable(data.proposal.image_url),
+				question_count: ko.observable(parseInt(data.proposal.question_count)),
+				comment_count: ko.observable(parseInt(data.proposal.comment_count)),
+				vote_count: ko.observable(parseInt(data.proposal.vote_count)),
+				generation_created: ko.observable(data.proposal.generation_created),
+				mapx: ko.observable(mapx),
+				mapy: ko.observable(mapy),
+				box_background: ko.observable(background),
+				box_color: ko.observable(color)
+	  		});
+	  		addProposalViewModel().close();
+	  		questionViewModel.fetchQuestion();
+	  		questionViewModel.fetchParticipationTable();
 		}).fail(function(jqXHR) {
-           var message = getJQXHRMessage(jqXHR, 'There was a problem uploading your file.'); // stuffit
+           var message = getJQXHRMessage(jqXHR, 'There was a problem uploading your file.');
             $('#addproposal .alert')
             .text(message)
             .setAlertClass('danger')
             .fadeIn();
         });
     }
-
 
 	self.add = function(proposal)
 	{
@@ -7263,6 +7255,7 @@ function QuestionViewModel() // bang
     self.inherited_proposal_count = ko.observable();
     self.voting_type = ko.observable();
     self.my_permissions = ko.observable();
+    self.is_moderator = ko.observable();
     
     self.finished_writing = ko.observable(0);
     self.show_finished_writing = ko.computed(function() {
@@ -7443,6 +7436,9 @@ function QuestionViewModel() // bang
     		self.consensus_found(data.question.consensus_found);
     		self.inherited_proposal_count(parseInt(data.question.inherited_proposal_count));
     		self.finished_writing(data.question.finished_writing);
+    		//self.is_author(data.question.is_author);
+    		self.is_moderator(data.question.is_moderator);
+    		
 	    }).fail(function(jqXHR, textStatus, errorThrown)
 		{
             var message = getJQXHRMessage(jqXHR, 'There was an problem with your request');
@@ -7584,17 +7580,30 @@ function QuestionViewModel() // bang
 		    console.log('Question voting data returned...');
 			self.voting_data = data.voting_data;
 			//updateResultsMap();
-		});
+		}).fail(function(jqXHR) {
+            var message = getJQXHRMessage(jqXHR, 'Was unable to fetch data from the server.');
+        	add_page_alert('danger', message);
+        });
 	}
 
-	self.fetchParticipationTable = function() {
-		var URI = VILFREDO_API + '/questions/' + question_id + '/participation_table';
-		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
-		    console.log('participation table data returned...');
-			self.participation_table(data.participation_table);
-			self.num_proposals(data.num_proposals)
-		});
+	self.fetchParticipationTable = function() { // fff
+		//if (questionViewModel.is_author() || questionViewModel.is_moderator())
+		if ((questionViewModel.my_permissions() == VOTE_READ && proposalsViewModel.votedAll) 
+		   || (questionViewModel.phase() == 'voting' && $.inArray(questionViewModel.my_permissions(), [READ, PROPOSE_READ, READ_COMMENT]) !== -1) 
+		   || questionViewModel.is_author() || questionViewModel.is_moderator())
+		{
+		    var URI = VILFREDO_API + '/questions/' + question_id + '/participation_table';
+    		return ajaxRequest(URI, 'GET').done(function(data, textStatus, jqXHR) {
+    		    console.log('participation table data returned...');
+    			self.participation_table(data.participation_table);
+    			self.num_proposals(data.num_proposals)
+    		}).fail(function(jqXHR) {
+                var message = getJQXHRMessage(jqXHR, 'Was unable to fetch data from the server.');
+            	add_page_alert('danger', message);
+            });
+        }
 	}
+	
 	//
     // Participation Table colors and text
     //
@@ -7621,6 +7630,17 @@ function QuestionViewModel() // bang
     }
 	self.proposalsEvaluatedText = function(evaluations) {
         return evaluations + '/' + self.num_proposals();
+    }
+    // fff
+    self.stillVotingText = function(evaluations) {
+        if (evaluations < self.num_proposals())
+        {
+            return 'Still Voting';
+        }
+        else
+        {
+            return 'Finished';
+        }
     }
 
 
@@ -7837,27 +7857,29 @@ function QuestionViewModel() // bang
 	    permissionsViewModel.open();
 	}
 	
-	// final
 	self.show_results = function()
 	{
 	    console.log('show_results called...');
 	    window.location.replace(VILFREDO_URL+"/question/"+ question_id +"/results");
 	}
 	
-	// final
-	self.move_to_results = function()
+	self.move_to_results = function() /// fff
 	{
-	    console.log('moveToResults called...');
-	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'POST', {move_to_results:true}).done(function(data) {
-		    questionViewModel.phase(data.phase);
-		    add_page_alert('success', 'This question is now in ' + questionViewModel.phase() + ' phase');
-		});
+	    console.log('move_to_results called...');
+	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'POST', {move_to_results:true}).done(function(data, textStatus, jqXHR) {
+		    //questionViewModel.phase(data.phase);
+		    //add_page_alert('success', 'This question is now in ' + questionViewModel.phase() + ' phase');
+		    window.location.replace(VILFREDO_URL+"/question/"+ question_id +"/results");
+		}).fail(function(jqXHR) {
+            var message = getJQXHRMessage(jqXHR, 'There was a problem with your request.');
+        	add_page_alert('danger', message);
+        });
 	}
 
 	self.move_on = function()
 	{
 	    console.log('move_on called...');
-	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'POST', {move_on:true}).done(function(data) {
+	    ajaxRequest(VILFREDO_API + '/questions/' + question_id, 'POST', {move_on:true}).done(function(data, textStatus, jqXHR) {
 		    add_page_alert('success', 'Question now in ' + data.question.phase + ' phase');
 		    console.log('Move on question data returned...');
 			console.log(data);
@@ -7903,7 +7925,10 @@ function QuestionViewModel() // bang
 				$('.votebox').svg({loadURL: STATIC_FILES + '/images/triangle.svg'});
 			}*/
 			
-	    });
+	    }).fail(function(jqXHR) {
+                var message = getJQXHRMessage(jqXHR, 'There was a problem with your request.');
+            	add_page_alert('danger', message);
+        });
 	}
 }
 
