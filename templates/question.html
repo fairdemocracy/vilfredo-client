@@ -209,12 +209,10 @@
 				</div>	
 			</div>
 		</div>
-
-
-		<!-- Participation table start -->
-		<br>
-		<div id="participationtable" data-bind="visible: questionViewModel.is_author() && questionViewModel.phase() == 'writing'">
-			
+	
+		<!-- Participation table start-->
+		<div id="participationtable" data-bind="visible: (questionViewModel.my_permissions() == VOTE_READ && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'voting' && $.inArray(questionViewModel.my_permissions(), [READ, PROPOSE_READ, READ_COMMENT]) !== -1) || questionViewModel.is_author() || questionViewModel.is_moderator()">
+			</br>
 			<h2>Participation Table</h2>
 			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
 			
@@ -223,14 +221,24 @@
 		<tr>
 		<th>User</th>
 		<th>Proposals Written</th>
+		<!-- ko if: questionViewModel.phase() == 'voting' -->
 		<th>Proposals Evaluated</th>
+		<!-- /ko -->
+		
 <!--		<th>Finished <span data-bind="text: questionViewModel.phase() == 'writing' ? 'Writing' : 'Voting'"></span></th> -->
-		<th>Finished <span data-bind="text: 'Writing'"></span></th>
+		<!-- ko if: questionViewModel.phase() == 'writing' -->
+		<th>Finished Writing</th>
+		<!-- /ko -->
+		<!-- ko if: questionViewModel.phase() == 'voting' -->
+		<th>Finished Voting</th>
+		<!-- /ko -->
 		</tr>
 		<tr>
 		<th></th>
 		<th><span data-bind="text: num_proposals"></span> proposals in total</th>
+		<!-- ko if: questionViewModel.phase() == 'voting' -->
 		<th></th>
+		<!-- /ko -->
 		<th></th>
 		</tr>
 		</thead>
@@ -239,8 +247,16 @@
 		<tr>
 			<td class="verthdr" data-bind="text: username"></td>
 			<td data-bind="text: proposals_written"></td>
+			<!-- ko if: questionViewModel.phase() == 'voting' -->
 			<td data-bind="text: $parent.proposalsEvaluatedText(evaluations), css: $parent.proposalsEvaluatedClass(evaluations)"></td>
+			<!-- /ko -->
+			
+			<!-- ko if: questionViewModel.phase() == 'writing' -->
 			<td data-bind="text: $parent.show_finished_writing_in_table(finished_writing)"></td>
+			<!-- /ko -->
+			<!-- ko if: questionViewModel.phase() == 'voting' -->
+			<td data-bind="text: $parent.stillVotingText(evaluations)"></td>
+			<!-- /ko -->
 		</tr>
 		<!-- /ko -->
 		</tbody>
@@ -248,6 +264,7 @@
 			
 		</div>
 		<!-- Participation table end -->
+
 
 
 		</div>
@@ -1137,6 +1154,7 @@
 					{
 						resetGraphsForUser();
 					}
+					questionViewModel.fetchParticipationTable();
 				});
 		    }
 		
