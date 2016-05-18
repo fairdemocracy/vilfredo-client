@@ -211,7 +211,8 @@
 		</div>
 	
 		<!-- Participation table start-->
-		<div id="participationtable" data-bind="visible: (questionViewModel.my_permissions() == VOTE_READ && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'voting' && $.inArray(questionViewModel.my_permissions(), [READ, PROPOSE_READ, READ_COMMENT]) !== -1) || questionViewModel.is_author() || questionViewModel.is_moderator()">
+<!--		<div id="participationtable" data-bind="visible: (questionViewModel.my_permissions() == VOTE_READ && proposalsViewModel.votedAll) || (questionViewModel.phase() == 'voting' && $.inArray(questionViewModel.my_permissions(), [READ, PROPOSE_READ, READ_COMMENT]) !== -1) || questionViewModel.is_author() || questionViewModel.is_moderator()"> -->
+		<div id="participationtable" data-bind="visible: questionViewModel.is_author() || questionViewModel.is_moderator()">
 			</br>
 			<h2>Participation Table</h2>
 			<h4 data-bind="text: alternateVotes(selected_generation())"></h4>
