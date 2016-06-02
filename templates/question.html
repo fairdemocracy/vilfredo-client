@@ -157,7 +157,7 @@
 	<!-- /ko -->
 	<!-- ko if: (questionViewModel.phase() == 'voting' && questionViewModel.completed_voter_count() >= MIN_VOTERS_BEFORE_MOVEON) || (questionViewModel.completed_voter_count() == participant_count()) -->
 	<button data-bind="click: move_to_results" class="btn btn-primary" title="Move the question to the results phase. This will end the writing and voting cycle and create a results page."><span class="glyphicon glyphicon-thumbs-up"></span> Move to Results</button>
-	<button data-bind="click: move_on" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> Move to Next Generation</button>
+	<button data-bind="click: move_on" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> Move to Generation <span data-bind="text: questionViewModel.generation() + 1"></span></button>
 	<!-- /ko -->
 	</div>
 	<!-- author controls end -->
