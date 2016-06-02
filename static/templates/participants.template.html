@@ -33,7 +33,7 @@
 			<div class="form-group">
 				<div data-bind="text: username, attr: { title: 'Question author' }, css: {author: questionViewModel.author_id() == user_id}" class="col-sm-4 participant"></div>
 				<div class="col-sm-2">
-					<!-- Can Propose -->					
+					<!-- Can Propose -->	
 					<div data-bind="if: $parent.userPerms($data, Q_PROPOSE)">
 						<span class="glyphicon glyphicon-ok"></span>
 					</div>
@@ -50,7 +50,7 @@
 					</div>
 				</div>
 				<div class="col-sm-2">
-					<div>
+					<div data-bind="if: $parent.userPerms($data, Q_READ)">
 						<span class="glyphicon glyphicon-ok"></span>
 					</div>
 				</div>
