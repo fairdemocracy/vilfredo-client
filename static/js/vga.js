@@ -5878,7 +5878,6 @@ function QuestionsViewModel()
 			var fetched_qustions = [];
 			var question_link;
 			for (var i = 0; i < data.questions.length; i++) {
-		  		question_link = VILFREDO_URL + "/question/" + data.questions[i].id;
 		  		fetched_qustions.push({
 		      		id: ko.observable(data.questions[i].id),
 					title: ko.observable(data.questions[i].title),
@@ -5902,7 +5901,7 @@ function QuestionsViewModel()
             		finished_writing_count: ko.observable(data.questions[i].finished_writing_count),
 					consensus_found: ko.observable(data.questions[i].consensus_found),
 					inherited_proposal_count: ko.observable(parseInt(data.questions[i].inherited_proposal_count)),
-					link: question_link
+					link: data.questions[i].link
 		  		});
 			}
 			self.questions(fetched_qustions);
