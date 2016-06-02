@@ -2245,7 +2245,7 @@ function createResultsMapLinear(svg) // lanister
 {
 	console.log('createResultsMapLinear called...');
 	
-	if (proposalsViewModel.votedAll() == false)
+	if (!proposalsViewModel.votedAll() && questionViewModel.my_permissions() != MODERATE)
 	{
 	    console.log("User not finished voting: don't show results triengle.");
 	}
@@ -2392,7 +2392,7 @@ function createResultsMap2D(svg) // loud
 {
 	console.log('createResultsMap2D V2 called...');
 	
-	if (questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll() == false)
+	if ((questionViewModel.phase() == 'voting' && proposalsViewModel.votedAll() == false && questionViewModel.my_permissions() != MODERATE))
 	{
 	    console.log("User not finished voting: don't show results triengle.");
 	}
@@ -5876,12 +5876,15 @@ function QuestionsViewModel()
 			console.log(data);
 			self.questions([]);
 			var fetched_qustions = [];
+			var question_link;
 			for (var i = 0; i < data.questions.length; i++) {
+		  		question_link = VILFREDO_URL + "/question/" + data.questions[i].id;
 		  		fetched_qustions.push({
 		      		id: ko.observable(data.questions[i].id),
 					title: ko.observable(data.questions[i].title),
 		      		blurb: ko.observable(data.questions[i].blurb),
 		      		author: ko.observable(data.questions[i].author),
+		      		is_moderator: ko.observable(data.questions[i].is_moderator || false),
 					uri: ko.observable(data.questions[i].url),
 					phase: ko.observable(data.questions[i].phase),
 					question_type: ko.observable(data.questions[i].question_type),
@@ -5899,7 +5902,7 @@ function QuestionsViewModel()
             		finished_writing_count: ko.observable(data.questions[i].finished_writing_count),
 					consensus_found: ko.observable(data.questions[i].consensus_found),
 					inherited_proposal_count: ko.observable(parseInt(data.questions[i].inherited_proposal_count)),
-					link: VILFREDO_URL + "/question/" + data.questions[i].id
+					link: question_link
 		  		});
 			}
 			self.questions(fetched_qustions);
@@ -7113,14 +7116,16 @@ function PermissionsViewModel()
     self.userPerms = function (user, perm) {
         return ko.computed({
             read: function () {
+                /*
                 if (perm == Q_COMMENT)
                 {
-                    return $.inArray(user.permissions, [Q_VOTE, Q_PROPOSE, Q_COMMENT]);
+                    console.log('user.permissions=' + user.permissions + '  perm = ' + perm + '  return = ' + $.inArray(user.permissions, [VOTE_READ, PROPOSE_READ, VOTE_PROPOSE_READ, COMMENT_ONLY]));
+                    return $.inArray(user.permissions, [VOTE_READ, PROPOSE_READ, VOTE_PROPOSE_READ, COMMENT_ONLY]);
                 }
                 else
-                {
+                {*/
                     return !!(user.permissions & perm);
-                }
+                //}
             },
             write: function (checked) {
                 if (checked)
@@ -8041,7 +8046,7 @@ function fetchVotingGraph(generation, algorithm)
 	generation = generation !== undefined ? generation : questionViewModel.generation();
 	algorithm = algorithm !== undefined ? algorithm : ALGORITHM_VERSION;
 	
-	if (!proposalsViewModel.votedAll())
+	if (!proposalsViewModel.votedAll() && questionViewModel.my_permissions() != MODERATE)
 	{
 	    console.log("Don't fetch graph until user has voted for all proposals - " + proposalsViewModel.votedAll());
 	    return;
