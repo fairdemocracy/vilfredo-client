@@ -6731,6 +6731,9 @@ fieldset[disabled] .select_comment.supports button.active {
 h2.mod {
   color: blue;
 }
+.question-list.modicon {
+  color: green;
+}
 .newcommentpanel {
   height: 300px;
   width: 97%;
